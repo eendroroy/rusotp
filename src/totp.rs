@@ -2,15 +2,17 @@ use crate::otp::otp;
 
 pub struct TOTP {
     secret: Vec<u8>,
+    issuer: String,
     length: u8,
     radix: u8,
     interval: u8,
 }
 
 impl TOTP {
-    pub fn new(secret: &str, length: u8, radix: u8, interval: u8) -> Self {
+    pub fn new(secret: &str, issuer: &str, length: u8, radix: u8, interval: u8) -> Self {
         TOTP {
             secret: Vec::from(secret),
+            issuer: String::from(issuer),
             length,
             radix,
             interval,
@@ -61,6 +63,31 @@ impl TOTP {
         }
 
         None
+    }
+
+    pub fn provisioning_uri(&self, name: &str) -> String {
+        let issuer_str = if !self.issuer.is_empty() {
+            format!(
+                "{}{}",
+                urlencoding::encode(&self.issuer.to_owned()),
+                urlencoding::encode(":")
+            )
+        } else {
+            String::new()
+        };
+
+        let query = format!(
+            "secret={}&issuer={}",
+            urlencoding::encode(&String::from_utf8_lossy(&self.secret)),
+            urlencoding::encode(&self.issuer)
+        );
+
+        format!(
+            "otpauth://totp/{}{}?{}",
+            issuer_str,
+            urlencoding::encode(name),
+            query
+        )
     }
 
     fn time_code(&self, timestamp: u64) -> u64 {

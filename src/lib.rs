@@ -16,10 +16,10 @@ mod tests {
 
         println!("HOTP: {}, Valid: {}, Url: {}", hotp, hotp_is_valid, hotp_tool.provisioning_uri("test", 0));
 
-        let totp_tool = TOTP::new(secret, 8, 10, 30);
+        let totp_tool = TOTP::new(secret, "IAM", 8, 10, 30);
         let totp = totp_tool.at(31);
         let totp_is_valid = totp_tool.verify(&*totp, 59, None, 0, 0).is_some();
 
-        println!("TOTP: {}, Valid: {}", totp, totp_is_valid);
+        println!("TOTP: {}, Valid: {}, Url: {}", totp, totp_is_valid, totp_tool.provisioning_uri("test@mail.com"));
     }
 }
