@@ -17,8 +17,8 @@ mod tests {
         println!("HOTP: {}, Valid: {}", hotp, hotp_is_valid);
 
         let totp_tool = TOTP::new(secret, 8, 10, 30);
-        let totp = totp_tool.now();
-        let totp_is_valid = true;
+        let totp = totp_tool.at(31);
+        let totp_is_valid = totp_tool.verify(&*totp, 59, None, 0, 0).is_some();
 
         println!("TOTP: {}, Valid: {}", totp, totp_is_valid);
     }

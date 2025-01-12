@@ -19,7 +19,7 @@ impl TOTP {
 
     pub fn now(&self) -> String {
         otp(
-            (chrono::Local::now().timestamp() / self.interval as i64) as u64,
+            self.time_code(chrono::Local::now().timestamp() as u64),
             self.secret.clone(),
             self.length,
             self.radix,
@@ -28,10 +28,42 @@ impl TOTP {
 
     pub fn at(&self, timestamp: i64) -> String {
         otp(
-            (timestamp / self.interval as i64) as u64,
+            self.time_code(timestamp as u64),
             self.secret.clone(),
             self.length,
             self.radix,
         )
+    }
+
+    pub fn verify(
+        &self,
+        otp: &str,
+        at: i64,
+        after: Option<i64>,
+        drift_ahead: i64,
+        drift_behind: i64,
+    ) -> Option<i64> {
+        let mut start = at - drift_behind;
+
+        if let Some(after_time) = after {
+            let after_code = after_time;
+            if start < after_code {
+                start = after_code;
+            }
+        }
+
+        let end = at + drift_ahead;
+
+        for i in start..=end {
+            if otp == self.at(i) {
+                return Some(i);
+            }
+        }
+
+        None
+    }
+
+    fn time_code(&self, timestamp: u64) -> u64 {
+        timestamp / self.interval as u64
     }
 }
