@@ -27,4 +27,14 @@ impl HOTP {
         }
         None
     }
+
+    pub fn provisioning_uri(&self, name: &str, initial_count: u64) -> String {
+        let query = format!(
+            "secret={}&counter={}",
+            urlencoding::encode(&String::from_utf8_lossy(&self.secret)),
+            initial_count
+        );
+
+        format!("otpauth://hotp/{}?{}", urlencoding::encode(name), query)
+    }
 }

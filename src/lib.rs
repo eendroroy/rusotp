@@ -14,7 +14,7 @@ mod tests {
         let hotp = hotp_tool.generate(0);
         let hotp_is_valid = hotp_tool.verify(&*hotp, 0, 10).is_some();
 
-        println!("HOTP: {}, Valid: {}", hotp, hotp_is_valid);
+        println!("HOTP: {}, Valid: {}, Url: {}", hotp, hotp_is_valid, hotp_tool.provisioning_uri("test", 0));
 
         let totp_tool = TOTP::new(secret, 8, 10, 30);
         let totp = totp_tool.at(31);
