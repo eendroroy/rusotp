@@ -10,9 +10,16 @@ mod tests {
     #[test]
     fn test_hotp() {
         let secret = "12345678901234567890";
+        let hotp_tool = HOTP::new(secret, 8, 10);
+        let hotp = hotp_tool.generate(0);
+        let hotp_is_valid = hotp_tool.verify(&*hotp, 0, 10).is_some();
 
-        println!("HOTP: {}", HOTP::new(secret, 8, 10).generate(0));
+        println!("HOTP: {}, Valid: {}", hotp, hotp_is_valid);
 
-        println!("TOTP: {}", TOTP::new(secret, 8, 10, 30).now());
+        let totp_tool = TOTP::new(secret, 8, 10, 30);
+        let totp = totp_tool.now();
+        let totp_is_valid = true;
+
+        println!("TOTP: {}, Valid: {}", totp, totp_is_valid);
     }
 }

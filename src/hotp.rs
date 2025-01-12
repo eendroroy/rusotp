@@ -18,4 +18,13 @@ impl HOTP {
     pub fn generate(&self, counter: u64) -> String {
         otp(counter, self.secret.clone(), self.length, self.radix)
     }
+
+    pub fn verify(&self, otp: &str, counter: u64, retries: u64) -> Option<u64> {
+        for i in counter..(counter + retries) {
+            if otp == self.generate(i) {
+                return Some(i);
+            }
+        }
+        None
+    }
 }
