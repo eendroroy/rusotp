@@ -36,15 +36,29 @@ mod tests {
             hotp, hotp_is_valid, hotp_provisioning_uri
         );
 
-        let totp_tool = TOTP::new(secret, "IAM", 8, 10, 30);
-        let totp = TOTP::at(&totp_tool, 31);
-        let totp_is_valid = TOTP::verify(&totp_tool, &*totp, 59, None, 0, 0).is_some();
+        let totp_tool = match TOTP::new(secret, "IAM", 6, 10, 30) {
+            Ok(totp_tool) => totp_tool,
+            Err(e) => panic!("{}", e),
+        };
+
+        let totp = match TOTP::at_timestamp(&totp_tool, 31) {
+            Ok(totp) => totp,
+            Err(e) => panic!("{}", e),
+        };
+
+        let totp_is_valid = match TOTP::verify(&totp_tool, &*totp, 59, None, 0, 0) {
+            Ok(verified) => verified.is_some(),
+            Err(e) => panic!("{}", e),
+        };
+
+        let totp_provisioning_uri = match TOTP::provisioning_uri(&totp_tool, "test@mail.com") {
+            Ok(totp_provisioning_uri) => totp_provisioning_uri,
+            Err(e) => panic!("{}", e),
+        };
 
         println!(
             "TOTP: {}, Valid: {}, Url: {}",
-            totp,
-            totp_is_valid,
-            totp_tool.provisioning_uri("test@mail.com")
+            totp, totp_is_valid, totp_provisioning_uri
         );
     }
 }

@@ -38,19 +38,20 @@ impl HOTP {
         retries: u64,
     ) -> Result<Option<u64>, &'static str> {
         if self.length != otp.len() as u8 {
-            return Err("OTP length does not match the length of the HOTP configuration");
-        }
-        for i in counter..(counter + retries) {
-            match self.generate(i) {
-                Ok(generated_otp) => {
-                    if otp == generated_otp {
-                        return Ok(Some(i));
+            Err("OTP length does not match the length of the HOTP configuration")
+        } else {
+            for i in counter..(counter + retries) {
+                match self.generate(i) {
+                    Ok(generated_otp) => {
+                        if otp == generated_otp {
+                            return Ok(Some(i));
+                        }
                     }
+                    Err(e) => panic!("{}", e),
                 }
-                Err(e) => panic!("{}", e),
             }
+            Ok(None)
         }
-        Ok(None)
     }
 
     pub fn provisioning_uri(&self, name: &str, initial_count: u64) -> Result<String, &'static str> {
