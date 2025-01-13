@@ -1,4 +1,4 @@
-use crate::otp::otp;
+use crate::otp::otp::otp;
 
 pub struct TOTP {
     secret: Vec<u8>,
@@ -10,7 +10,7 @@ pub struct TOTP {
 
 impl TOTP {
     pub fn new(secret: &str, issuer: &str, length: u8, radix: u8, interval: u8) -> Self {
-        TOTP {
+        Self {
             secret: Vec::from(secret),
             issuer: String::from(issuer),
             length,
