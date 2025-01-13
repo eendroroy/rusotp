@@ -33,13 +33,13 @@ impl TOTP {
         }
     }
 
-    pub fn now(&self) -> String {
-        otp(
+    pub fn now(&self) -> Result<String, &'static str> {
+        Ok(otp(
             self.time_code(chrono::Local::now().timestamp() as u64),
             self.secret.clone(),
             self.length,
             self.radix,
-        )
+        ))
     }
 
     pub fn at_timestamp(&self, timestamp: i64) -> Result<String, &'static str> {
@@ -132,5 +132,84 @@ impl TOTP {
 
     fn time_code(&self, timestamp: u64) -> u64 {
         timestamp / self.interval as u64
+    }
+}
+
+pub fn generate_totp_now(
+    secret: &str,
+    issuer: &str,
+    length: u8,
+    radix: u8,
+    interval: u8,
+) -> String {
+    let totp_tool = match TOTP::new(secret, issuer, length, radix, interval) {
+        Ok(totp_tool) => totp_tool,
+        Err(e) => panic!("{}", e),
+    };
+
+    match TOTP::now(&totp_tool) {
+        Ok(totp) => totp,
+        Err(e) => panic!("{}", e),
+    }
+}
+
+pub fn generate_totp_at(
+    secret: &str,
+    issuer: &str,
+    length: u8,
+    radix: u8,
+    interval: u8,
+    timestamp: i64,
+) -> String {
+    let totp_tool = match TOTP::new(secret, issuer, length, radix, interval) {
+        Ok(totp_tool) => totp_tool,
+        Err(e) => panic!("{}", e),
+    };
+
+    match TOTP::at_timestamp(&totp_tool, timestamp) {
+        Ok(totp) => totp,
+        Err(e) => panic!("{}", e),
+    }
+}
+
+pub fn verify_totp(
+    secret: &str,
+    issuer: &str,
+    length: u8,
+    radix: u8,
+    interval: u8,
+    otp: &str,
+    timestamp: i64,
+    after: Option<i64>,
+    drift_ahead: i64,
+    drift_behind: i64,
+) -> Option<i64> {
+    let totp_tool = match TOTP::new(secret, issuer, length, radix, interval) {
+        Ok(totp_tool) => totp_tool,
+        Err(e) => panic!("{}", e),
+    };
+
+    match TOTP::verify(&totp_tool, otp, timestamp, after, drift_ahead, drift_behind) {
+        Ok(verified) => verified,
+        Err(e) => panic!("{}", e),
+    }
+}
+
+pub fn totp_provisioning_uri(
+    secret: &str,
+    issuer: &str,
+    length: u8,
+    radix: u8,
+    interval: u8,
+    name: &str,
+) -> String {
+    let totp_tool = match TOTP::new(secret, issuer, length, radix, interval) {
+        Ok(totp_tool) => totp_tool,
+        Err(e) => panic!("{}", e),
+    };
+
+    match TOTP::provisioning_uri(&totp_tool, name) {
+        Ok(totp_provisioning_uri) => totp_provisioning_uri,
+        Err(e) => panic!("{}", e),
     }
 }

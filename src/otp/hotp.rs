@@ -74,3 +74,52 @@ impl HOTP {
         }
     }
 }
+
+pub fn generate_hotp(secret: &str, length: u8, radix: u8, counter: u64) -> String {
+    let hotp_tool = match HOTP::new(secret, length, radix) {
+        Ok(hotp_tool) => hotp_tool,
+        Err(e) => panic!("{}", e),
+    };
+
+    match HOTP::generate(&hotp_tool, counter) {
+        Ok(hotp) => hotp,
+        Err(e) => panic!("{}", e),
+    }
+}
+
+pub fn verify_hotp(
+    secret: &str,
+    length: u8,
+    radix: u8,
+    otp: &str,
+    counter: u64,
+    retries: u64,
+) -> bool {
+    let hotp_tool = match HOTP::new(secret, length, radix) {
+        Ok(hotp_tool) => hotp_tool,
+        Err(e) => panic!("{}", e),
+    };
+
+    match HOTP::verify(&hotp_tool, otp, counter, retries) {
+        Ok(verified) => verified.is_some(),
+        Err(e) => panic!("{}", e),
+    }
+}
+
+pub fn hotp_provisioning_uri(
+    secret: &str,
+    length: u8,
+    radix: u8,
+    name: &str,
+    initial_count: u64,
+) -> String {
+    let hotp_tool = match HOTP::new(secret, length, radix) {
+        Ok(hotp_tool) => hotp_tool,
+        Err(e) => panic!("{}", e),
+    };
+
+    match hotp_tool.provisioning_uri(name, initial_count) {
+        Ok(hotp_provisioning_uri) => hotp_provisioning_uri,
+        Err(e) => panic!("{}", e),
+    }
+}
