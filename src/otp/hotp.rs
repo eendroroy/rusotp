@@ -40,7 +40,7 @@ impl HOTP {
         if self.length != otp.len() as u8 {
             Err("OTP length does not match the length of the HOTP configuration")
         } else {
-            for i in counter..(counter + retries) {
+            for i in counter..=(counter + retries) {
                 match self.generate(i) {
                     Ok(generated_otp) => {
                         if otp == generated_otp {
