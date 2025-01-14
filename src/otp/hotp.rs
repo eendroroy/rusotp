@@ -27,7 +27,7 @@ impl HOTP {
         if counter < 1 {
             Err("Counter must be greater than or equal to 1")
         } else {
-            Ok(otp(counter, self.secret.clone(), self.length, self.radix))
+            Ok(otp(self.secret.clone(), self.length, self.radix, counter))
         }
     }
 
@@ -76,32 +76,28 @@ impl HOTP {
 }
 
 pub fn generate_hotp(secret: &str, length: u8, radix: u8, counter: u64) -> String {
-    let hotp_tool = match HOTP::new(secret, length, radix) {
-        Ok(hotp_tool) => hotp_tool,
-        Err(e) => panic!("{}", e),
-    };
-
-    match HOTP::generate(&hotp_tool, counter) {
-        Ok(hotp) => hotp,
+    match HOTP::new(secret, length, radix) {
+        Ok(hotp_tool) => match hotp_tool.generate(counter) {
+            Ok(hotp) => hotp,
+            Err(e) => panic!("{}", e),
+        },
         Err(e) => panic!("{}", e),
     }
 }
 
 pub fn verify_hotp(
     secret: &str,
+    otp: &str,
     length: u8,
     radix: u8,
-    otp: &str,
     counter: u64,
     retries: u64,
 ) -> bool {
-    let hotp_tool = match HOTP::new(secret, length, radix) {
-        Ok(hotp_tool) => hotp_tool,
-        Err(e) => panic!("{}", e),
-    };
-
-    match HOTP::verify(&hotp_tool, otp, counter, retries) {
-        Ok(verified) => verified.is_some(),
+    match HOTP::new(secret, length, radix) {
+        Ok(hotp_tool) => match hotp_tool.verify(otp, counter, retries) {
+            Ok(verified) => verified.is_some(),
+            Err(e) => panic!("{}", e),
+        },
         Err(e) => panic!("{}", e),
     }
 }
@@ -113,13 +109,11 @@ pub fn hotp_provisioning_uri(
     name: &str,
     initial_count: u64,
 ) -> String {
-    let hotp_tool = match HOTP::new(secret, length, radix) {
-        Ok(hotp_tool) => hotp_tool,
-        Err(e) => panic!("{}", e),
-    };
-
-    match hotp_tool.provisioning_uri(name, initial_count) {
-        Ok(hotp_provisioning_uri) => hotp_provisioning_uri,
+    match HOTP::new(secret, length, radix) {
+        Ok(hotp) => match hotp.provisioning_uri(name, initial_count) {
+            Ok(provisioning_uri) => provisioning_uri,
+            Err(e) => panic!("{}", e),
+        },
         Err(e) => panic!("{}", e),
     }
 }

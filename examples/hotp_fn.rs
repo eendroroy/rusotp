@@ -28,7 +28,7 @@ fn main() {
                 radix,
                 counter,
                 generate_hotp(secret, *length, *radix, *counter),
-                verify_hotp(secret, *length, *radix, otp, *counter, 0),
+                verify_hotp(secret, otp, *length, *radix, *counter, 0),
                 hotp_provisioning_uri(secret, *length, *radix, "rusotp", *counter)
             );
         } else {
@@ -38,7 +38,7 @@ fn main() {
                 radix,
                 counter,
                 generate_hotp(secret, *length, *radix, *counter),
-                verify_hotp(secret, *length, *radix, otp, *counter, 0),
+                verify_hotp(secret, otp, *length, *radix, *counter, 0),
             );
         }
     });

@@ -12,7 +12,7 @@ fn main() {
         Err(e) => panic!("{}", e),
     };
 
-    let hotp_is_valid = match HOTP::verify(&hotp_tool, &*hotp, 1, 10) {
+    let hotp_is_valid = match HOTP::verify(&hotp_tool, hotp.as_ref(), 1, 1) {
         Ok(verified) => verified.is_some(),
         Err(e) => panic!("{}", e),
     };

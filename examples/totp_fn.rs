@@ -23,15 +23,15 @@ fn main() {
     data.iter().for_each(|(length, radix, interval, timestamp, otp)| {
         if *length == 6 && *radix == 10 && *interval == 30 {
             println!(
-                "LENGTH: {}, RADIX: {}, INTERVAL: {}, TIMESTAMP: {} \tNOW: {} \tTOTP : {} \tVERIFIED : {} \tURI : {}",
+                "LENGTH: {}, RADIX: {}, INTERVAL: {}, TIMESTAMP: {} \tNOW: {} \tTOTP : {} \tVERIFIED : {}\tURI : {}",
                 length,
                 radix,
                 interval,
                 timestamp,
-                generate_totp_now(secret, "rusotp", *length, *radix, *interval),
-                generate_totp_at(secret, "rusotp", *length, *radix, *interval, *timestamp),
-                verify_totp(secret, "rusotp", *length, *radix, *interval, otp, *timestamp, Some(0), 0, 0).is_some(),
-                totp_provisioning_uri(secret, "rusotp", *length, *radix, *interval, "user@email.mail")
+                generate_totp_now(secret, *length, *radix, *interval),
+                generate_totp_at(secret, *length, *radix, *interval, *timestamp),
+                verify_totp(secret, *length, *radix, *interval, otp, *timestamp, Some(0), 0, 0).is_some(),
+                totp_provisioning_uri(secret, *length, *radix, *interval, "rusotp", "user@email.mail")
             );
         } else {
             println!(
@@ -40,9 +40,9 @@ fn main() {
                 radix,
                 interval,
                 timestamp,
-                generate_totp_now(secret, "rusotp", *length, *radix, *interval),
-                generate_totp_at(secret, "rusotp", *length, *radix, *interval, *timestamp),
-                verify_totp(secret, "rusotp", *length, *radix, *interval, otp, *timestamp, Some(0), 0, 0).is_some(),
+                generate_totp_now(secret, *length, *radix, *interval),
+                generate_totp_at(secret, *length, *radix, *interval, *timestamp),
+                verify_totp(secret, *length, *radix, *interval, otp, *timestamp, Some(0), 0, 0).is_some(),
             );
         }
     });

@@ -3,7 +3,7 @@ use rusotp::TOTP;
 fn main() {
     let secret = "12345678901234567890";
 
-    let totp_tool = match TOTP::new(secret, "IAM", 6, 10, 30) {
+    let totp_tool = match TOTP::new(secret, 6, 10, 30) {
         Ok(totp_tool) => totp_tool,
         Err(e) => panic!("{}", e),
     };
@@ -18,7 +18,7 @@ fn main() {
         Err(e) => panic!("{}", e),
     };
 
-    let totp_provisioning_uri = match TOTP::provisioning_uri(&totp_tool, "test@mail.com") {
+    let totp_provisioning_uri = match TOTP::provisioning_uri(&totp_tool, "IAM", "test@mail.com") {
         Ok(totp_provisioning_uri) => totp_provisioning_uri,
         Err(e) => panic!("{}", e),
     };
