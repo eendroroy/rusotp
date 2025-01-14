@@ -50,7 +50,7 @@ use std::os::raw::{c_char, c_ulong, c_ushort};
 ///     return 0;
 /// }
 /// ```
-#[no_mangle]
+#[export_name = "generate_hotp"]
 pub unsafe extern "C" fn c_generate_hotp(
     secret: *const c_char,
     length: c_ushort,
@@ -114,7 +114,7 @@ pub unsafe extern "C" fn c_generate_hotp(
 ///     return 0;
 /// }
 /// ```
-#[no_mangle]
+#[export_name = "hotp_provisioning_uri"]
 pub unsafe extern "C" fn c_hotp_provisioning_uri(
     secret: *const c_char,
     length: c_ushort,
@@ -180,7 +180,7 @@ pub unsafe extern "C" fn c_hotp_provisioning_uri(
 ///     return 0;
 /// }
 /// ```
-#[no_mangle]
+#[export_name = "verify_hotp"]
 pub unsafe extern "C" fn c_verify_hotp(
     secret: *const c_char,
     otp: *const c_char,
@@ -244,7 +244,7 @@ pub unsafe extern "C" fn c_verify_hotp(
 ///     return 0;
 /// }
 /// ```
-#[no_mangle]
+#[export_name = "generate_totp_now"]
 pub unsafe extern "C" fn c_generate_totp_now(
     secret: *const c_char,
     length: c_ushort,
@@ -308,7 +308,7 @@ pub unsafe extern "C" fn c_generate_totp_now(
 ///     return 0;
 /// }
 /// ```
-#[no_mangle]
+#[export_name = "generate_totp_at"]
 pub unsafe extern "C" fn c_generate_totp_at(
     secret: *const c_char,
     length: c_ushort,
@@ -383,7 +383,7 @@ pub unsafe extern "C" fn c_generate_totp_at(
 ///     return 0;
 /// }
 /// ```
-#[no_mangle]
+#[export_name = "verify_totp"]
 pub unsafe extern "C" fn c_verify_totp(
     secret: *const c_char,
     length: c_ushort,
@@ -460,7 +460,7 @@ pub unsafe extern "C" fn c_verify_totp(
 ///     return 0;
 /// }
 /// ```
-#[no_mangle]
+#[export_name = "totp_provisioning_uri"]
 pub unsafe extern "C" fn c_totp_provisioning_uri(
     secret: *const c_char,
     length: c_ushort,

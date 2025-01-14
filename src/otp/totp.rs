@@ -30,7 +30,7 @@ impl TOTP {
             self.secret.clone(),
             self.length,
             self.radix,
-            self.time_code(chrono::Local::now().timestamp() as u64),
+            self.time_code(std::time::UNIX_EPOCH.elapsed().unwrap().as_secs()),
         ))
     }
 

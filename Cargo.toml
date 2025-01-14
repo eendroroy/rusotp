@@ -3,9 +3,13 @@ name = "rusotp"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "rusotp"
+path = "src/lib.rs"
+crate-type = ["staticlib", "lib"]
+
 [dependencies]
 hmac = "0.12.1"
 sha2 = "0.10.8"
 num-bigint = "0.4.6"
-chrono = "0.4.39"
 urlencoding = "2.1.3"
