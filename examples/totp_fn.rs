@@ -1,4 +1,4 @@
-use rusotp::{generate_totp_at, generate_totp_now, totp_provisioning_uri, verify_totp};
+use rusotp::{generate_totp_at, generate_totp_now, totp_provisioning_uri, verify_totp, Algorithm};
 
 fn main() {
     let secret = "12345678901234567890";
@@ -28,10 +28,26 @@ fn main() {
                 radix,
                 interval,
                 timestamp,
-                generate_totp_now(secret, *length, *radix, *interval),
-                generate_totp_at(secret, *length, *radix, *interval, *timestamp),
-                verify_totp(secret, *length, *radix, *interval, otp, *timestamp, Some(0), 0, 0).is_some(),
-                totp_provisioning_uri(secret, *length, *radix, *interval, "rusotp", "user@email.mail")
+                generate_totp_now(Algorithm::SHA256, secret, *length, *radix, *interval),
+                generate_totp_at(Algorithm::SHA256, secret, *length, *radix, *interval, *timestamp),
+                verify_totp(
+                    Algorithm::SHA256,
+                    secret, *length,
+                    *radix, *interval,
+                    otp, *timestamp,
+                    Some(0),
+                    0,
+                    0
+                ).is_some(),
+                totp_provisioning_uri(
+                    Algorithm::SHA256,
+                    secret,
+                    *length,
+                    *radix,
+                    *interval,
+                    "rusotp",
+                    "user@email.mail"
+                )
             );
         } else {
             println!(
@@ -40,9 +56,18 @@ fn main() {
                 radix,
                 interval,
                 timestamp,
-                generate_totp_now(secret, *length, *radix, *interval),
-                generate_totp_at(secret, *length, *radix, *interval, *timestamp),
-                verify_totp(secret, *length, *radix, *interval, otp, *timestamp, Some(0), 0, 0).is_some(),
+                generate_totp_now(Algorithm::SHA256, secret, *length, *radix, *interval),
+                generate_totp_at(Algorithm::SHA256, secret, *length, *radix, *interval, *timestamp),
+                verify_totp(
+                    Algorithm::SHA256,
+                    secret, *length,
+                    *radix, *interval,
+                    otp,
+                    *timestamp,
+                    Some(0),
+                    0,
+                    0
+                ).is_some(),
             );
         }
     });

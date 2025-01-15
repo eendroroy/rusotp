@@ -1,11 +1,13 @@
 use crate::messages::{
     DRIFT_AHEAD_INVALID, DRIFT_BEHIND_INVALID, INTERVAL_INVALID, OTP_LENGTH_INVALID,
     OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID,
-    SECRET_EMPTY, TIMESTAMP_INVALID,
+    SECRET_EMPTY, TIMESTAMP_INVALID, UNSUPPORTED_ALGORITHM,
 };
+use crate::otp::algorithm::{Algorithm, AlgorithmTrait};
 use crate::otp::otp::otp;
 
 pub struct TOTP {
+    algorithm: Algorithm,
     secret: Vec<u8>,
     length: u8,
     radix: u8,
@@ -13,7 +15,13 @@ pub struct TOTP {
 }
 
 impl TOTP {
-    pub fn new(secret: &str, length: u8, radix: u8, interval: u8) -> Result<TOTP, &'static str> {
+    pub fn new(
+        algorithm: Algorithm,
+        secret: &str,
+        length: u8,
+        radix: u8,
+        interval: u8,
+    ) -> Result<TOTP, &'static str> {
         if secret.len() < 1 {
             Err(SECRET_EMPTY)
         } else if length < 4 {
@@ -22,6 +30,7 @@ impl TOTP {
             Err(RADIX_INVALID)
         } else {
             Ok(Self {
+                algorithm,
                 secret: Vec::from(secret),
                 length,
                 radix,
@@ -32,6 +41,7 @@ impl TOTP {
 
     pub fn now(&self) -> Result<String, &'static str> {
         Ok(otp(
+            &self.algorithm,
             self.secret.clone(),
             self.length,
             self.radix,
@@ -44,6 +54,7 @@ impl TOTP {
             Err(TIMESTAMP_INVALID)
         } else {
             Ok(otp(
+                &self.algorithm,
                 self.secret.clone(),
                 self.length,
                 self.radix,
@@ -101,6 +112,8 @@ impl TOTP {
             panic!("{}", PROV_OTP_LENGTH_INVALID);
         } else if self.radix != 10 {
             panic!("{}", PROV_OTP_RADIX_INVALID);
+        } else if self.algorithm.to_str() != "SHA256" {
+            Err(UNSUPPORTED_ALGORITHM)
         } else {
             let issuer_str = if !issuer.is_empty() {
                 format!(
@@ -132,8 +145,8 @@ impl TOTP {
     }
 }
 
-pub fn generate_totp_now(secret: &str, length: u8, radix: u8, interval: u8) -> String {
-    match TOTP::new(secret, length, radix, interval) {
+pub fn generate_totp_now(algorithm: Algorithm, secret: &str, length: u8, radix: u8, interval: u8) -> String {
+    match TOTP::new(algorithm, secret, length, radix, interval) {
         Ok(totp) => match totp.now() {
             Ok(otp) => otp,
             Err(e) => panic!("{}", e),
@@ -143,13 +156,14 @@ pub fn generate_totp_now(secret: &str, length: u8, radix: u8, interval: u8) -> S
 }
 
 pub fn generate_totp_at(
+    algorithm: Algorithm,
     secret: &str,
     length: u8,
     radix: u8,
     interval: u8,
     timestamp: i64,
 ) -> String {
-    match TOTP::new(secret, length, radix, interval) {
+    match TOTP::new(algorithm, secret, length, radix, interval) {
         Ok(totp) => match totp.at_timestamp(timestamp) {
             Ok(otp) => otp,
             Err(e) => panic!("{}", e),
@@ -159,6 +173,7 @@ pub fn generate_totp_at(
 }
 
 pub fn verify_totp(
+    algorithm: Algorithm,
     secret: &str,
     length: u8,
     radix: u8,
@@ -169,7 +184,7 @@ pub fn verify_totp(
     drift_ahead: i64,
     drift_behind: i64,
 ) -> Option<i64> {
-    match TOTP::new(secret, length, radix, interval) {
+    match TOTP::new(algorithm, secret, length, radix, interval) {
         Ok(totp) => match totp.verify(otp, timestamp, after, drift_ahead, drift_behind) {
             Ok(verified) => verified,
             Err(e) => panic!("{}", e),
@@ -179,6 +194,7 @@ pub fn verify_totp(
 }
 
 pub fn totp_provisioning_uri(
+    algorithm: Algorithm,
     secret: &str,
     length: u8,
     radix: u8,
@@ -186,7 +202,7 @@ pub fn totp_provisioning_uri(
     issuer: &str,
     name: &str,
 ) -> String {
-    match TOTP::new(secret, length, radix, interval) {
+    match TOTP::new(algorithm, secret, length, radix, interval) {
         Ok(totp) => match TOTP::provisioning_uri(&totp, issuer, name) {
             Ok(provisioning_uri) => provisioning_uri,
             Err(e) => panic!("{}", e),

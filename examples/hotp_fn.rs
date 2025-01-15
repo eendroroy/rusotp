@@ -1,4 +1,4 @@
-use rusotp::{generate_hotp, hotp_provisioning_uri, verify_hotp};
+use rusotp::{generate_hotp, hotp_provisioning_uri, verify_hotp, Algorithm};
 
 fn main() {
     let secret = "12345678901234567890";
@@ -27,9 +27,16 @@ fn main() {
                 length,
                 radix,
                 counter,
-                generate_hotp(secret, *length, *radix, *counter),
-                verify_hotp(secret, otp, *length, *radix, *counter, 0),
-                hotp_provisioning_uri(secret, *length, *radix, "rusotp", *counter)
+                generate_hotp(Algorithm::SHA256, secret, *length, *radix, *counter),
+                verify_hotp(Algorithm::SHA256, secret, otp, *length, *radix, *counter, 0),
+                hotp_provisioning_uri(
+                    Algorithm::SHA256,
+                    secret,
+                    *length,
+                    *radix,
+                    "rusotp",
+                    *counter
+                )
             );
         } else {
             println!(
@@ -37,8 +44,8 @@ fn main() {
                 length,
                 radix,
                 counter,
-                generate_hotp(secret, *length, *radix, *counter),
-                verify_hotp(secret, otp, *length, *radix, *counter, 0),
+                generate_hotp(Algorithm::SHA256, secret, *length, *radix, *counter),
+                verify_hotp(Algorithm::SHA256, secret, otp, *length, *radix, *counter, 0),
             );
         }
     });

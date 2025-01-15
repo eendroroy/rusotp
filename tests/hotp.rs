@@ -1,13 +1,15 @@
+use rusotp::Algorithm;
+
 #[test]
 fn fail_with_empty_secret() {
-    let result = rusotp::HOTP::new("", 1, 1);
+    let result = rusotp::HOTP::new(Algorithm::SHA256, "", 1, 1);
     assert!(result.is_err(), "Expected an error");
     assert_eq!(result.err().unwrap(), "Secret must not be empty");
 }
 
 #[test]
 fn fail_with_invalid_otp_length() {
-    let result = rusotp::HOTP::new("12312341234", 1, 10);
+    let result = rusotp::HOTP::new(Algorithm::SHA256, "12312341234", 1, 10);
     assert!(result.is_err(), "Expected an error");
     assert_eq!(
         result.err().unwrap(),
@@ -17,7 +19,7 @@ fn fail_with_invalid_otp_length() {
 
 #[test]
 fn fail_with_invalid_radix() {
-    let result = rusotp::HOTP::new("12312341234", 4, 1);
+    let result = rusotp::HOTP::new(Algorithm::SHA256, "12312341234", 4, 1);
     assert!(result.is_err(), "Expected an error");
     assert_eq!(
         result.err().unwrap(),
@@ -27,7 +29,7 @@ fn fail_with_invalid_radix() {
 
 #[test]
 fn fail_with_invalid_counter() {
-    let hotp = match rusotp::HOTP::new("12312341234", 4, 10) {
+    let hotp = match rusotp::HOTP::new(Algorithm::SHA256, "12312341234", 4, 10) {
         Ok(hotp) => hotp,
         Err(e) => panic!("{}", e),
     };
@@ -43,7 +45,7 @@ fn fail_with_invalid_counter() {
 
 #[test]
 fn fail_with_otp_length_not_matched() {
-    let hotp = match rusotp::HOTP::new("12312341234", 4, 10) {
+    let hotp = match rusotp::HOTP::new(Algorithm::SHA256, "12312341234", 4, 10) {
         Ok(hotp) => hotp,
         Err(e) => panic!("{}", e),
     };
@@ -79,7 +81,7 @@ fn generated_otp_is_correct() {
     ];
 
     data.iter().for_each(|(length, radix, counter, otp)| {
-        match rusotp::HOTP::new(secret, *length, *radix) {
+        match rusotp::HOTP::new(Algorithm::SHA256, secret, *length, *radix) {
             Ok(hotp) => {
                 let result = hotp.generate(*counter);
                 assert!(result.is_ok(), "Expected a result");
@@ -111,7 +113,7 @@ fn generated_otp_gets_verified() {
     ];
 
     data.iter().for_each(|(length, radix, counter)| {
-        match rusotp::HOTP::new(secret, *length, *radix) {
+        match rusotp::HOTP::new(Algorithm::SHA256, secret, *length, *radix) {
             Ok(hotp) => {
                 match hotp.generate(*counter) {
                     Ok(otp) => {

@@ -1,3 +1,4 @@
+use crate::otp::algorithm::{Algorithm, AlgorithmTrait};
 use crate::{
     generate_hotp, generate_totp_at, generate_totp_now, hotp_provisioning_uri,
     totp_provisioning_uri, verify_hotp, verify_totp,
@@ -5,53 +6,9 @@ use crate::{
 use std::ffi::CStr;
 use std::os::raw::{c_char, c_ulong, c_ushort};
 
-/// Generates an HOTP code using the provided secret and counter.
-///
-/// # Parameters
-/// - `secret`: A pointer to a C string containing the secret key.
-/// - `length`: The length of the OTP to generate.
-/// - `radix`: The base of the OTP (e.g., 10 for decimal).
-/// - `counter`: The counter value.
-///
-/// # Returns
-/// A pointer to a C string containing the generated HOTP code.
-///
-/// # Safety
-/// This function is unsafe because it dereferences raw pointers.
-///
-/// # C Usage
-/// ```c
-/// #include <stdio.h>
-/// #include <stdlib.h>
-///
-/// // Declaration of the FFI function
-/// extern char* c_generate_hotp(
-///     const char* secret,
-///     unsigned short length,
-///     unsigned short radix,
-///     unsigned long counter
-/// );
-///
-/// int main() {
-///     const char* secret = "your_secret_key";
-///     unsigned short length = 6;
-///     unsigned short radix = 10;
-///     unsigned long counter = 1;
-///
-///     // Call the FFI function
-///     char* hotp = c_generate_hotp(secret, length, radix, counter);
-///
-///     // Print the generated HOTP
-///     printf("Generated HOTP: %s\n", hotp);
-///
-///     // Free the allocated memory if necessary
-///     free(hotp);
-///
-///     return 0;
-/// }
-/// ```
 #[export_name = "generate_hotp"]
 pub unsafe extern "C" fn c_generate_hotp(
+    algorithm: *const c_char,
     secret: *const c_char,
     length: c_ushort,
     radix: c_ushort,
@@ -60,7 +17,11 @@ pub unsafe extern "C" fn c_generate_hotp(
     if secret.is_null() {
         panic!("Secret is null");
     }
+    if algorithm.is_null() {
+        panic!("Algorithm is null");
+    }
     let hotp = generate_hotp(
+        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -70,56 +31,9 @@ pub unsafe extern "C" fn c_generate_hotp(
     c_string.into_raw()
 }
 
-/// Generates a provisioning URI for HOTP using the provided secret, length, radix, name, and counter.
-///
-/// # Parameters
-/// - `secret`: A pointer to a C string containing the secret key.
-/// - `length`: The length of the OTP to generate.
-/// - `radix`: The base of the OTP (e.g., 10 for decimal).
-/// - `name`: A pointer to a C string containing the name.
-/// - `counter`: The counter value.
-///
-/// # Returns
-/// A pointer to a C string containing the generated provisioning URI.
-///
-/// # Safety
-/// This function is unsafe because it dereferences raw pointers.
-///
-/// # C Usage
-/// ```c
-/// #include <stdio.h>
-/// #include <stdlib.h>
-///
-/// // Declaration of the FFI function
-/// extern char* c_hotp_provisioning_uri(
-///     const char* secret,
-///     unsigned short length,
-///     unsigned short radix,
-///     const char* name,
-///     unsigned long counter
-/// );
-///
-/// int main() {
-///     const char* secret = "your_secret_key";
-///     unsigned short length = 6;
-///     unsigned short radix = 10;
-///     const char* name = "your_name";
-///     unsigned long counter = 1;
-///
-///     // Call the FFI function
-///     char* uri = c_hotp_provisioning_uri(secret, length, radix, name, counter);
-///
-///     // Print the generated URI
-///     printf("Generated URI: %s\n", uri);
-///
-///     // Free the allocated memory if necessary
-///     free(uri);
-///
-///     return 0;
-/// }
-/// ```
 #[export_name = "hotp_provisioning_uri"]
 pub unsafe extern "C" fn c_hotp_provisioning_uri(
+    algorithm: *const c_char,
     secret: *const c_char,
     length: c_ushort,
     radix: c_ushort,
@@ -132,7 +46,12 @@ pub unsafe extern "C" fn c_hotp_provisioning_uri(
     if name.is_null() {
         panic!("Name is null");
     }
+
+    if algorithm.is_null() {
+        panic!("Algorithm is null");
+    }
     let uri = hotp_provisioning_uri(
+        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -143,56 +62,9 @@ pub unsafe extern "C" fn c_hotp_provisioning_uri(
     c_string.into_raw()
 }
 
-/// Verifies an HOTP code using the provided secret, OTP, and counter.
-///
-/// # Parameters
-/// - `secret`: A pointer to a C string containing the secret key.
-/// - `otp`: A pointer to a C string containing the OTP to verify.
-/// - `length`: The length of the OTP.
-/// - `radix`: The base of the OTP (e.g., 10 for decimal).
-/// - `counter`: The counter value.
-/// - `retries`: The number of retries allowed.
-///
-/// # Returns
-/// `true` if the OTP is valid, `false` otherwise.
-///
-/// # Safety
-/// This function is unsafe because it dereferences raw pointers.
-///
-/// # C Usage
-/// ```c
-/// #include <stdio.h>
-/// #include <stdbool.h>
-///
-/// // Declaration of the FFI function
-/// extern bool c_verify_hotp(
-///     const char* secret,
-///     const char* otp,
-///     unsigned short length,
-///     unsigned short radix,
-///     unsigned long counter,
-///     unsigned long retries
-/// );
-///
-/// int main() {
-///     const char* secret = "your_secret_key";
-///     const char* otp = "123456";
-///     unsigned short length = 6;
-///     unsigned short radix = 10;
-///     unsigned long counter = 1;
-///     unsigned long retries = 3;
-///
-///     // Call the FFI function
-///     bool is_valid = c_verify_hotp(secret, otp, length, radix, counter, retries);
-///
-///     // Print the verification result
-///     printf("OTP is %s\n", is_valid ? "valid" : "invalid");
-///
-///     return 0;
-/// }
-/// ```
 #[export_name = "verify_hotp"]
 pub unsafe extern "C" fn c_verify_hotp(
+    algorithm: *const c_char,
     secret: *const c_char,
     otp: *const c_char,
     length: c_ushort,
@@ -206,7 +78,11 @@ pub unsafe extern "C" fn c_verify_hotp(
     if otp.is_null() {
         panic!("OTP is null");
     }
+    if algorithm.is_null() {
+        panic!("Algorithm is null");
+    }
     verify_hotp(
+        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
         CStr::from_ptr(secret).to_str().unwrap(),
         CStr::from_ptr(otp).to_str().unwrap(),
         length as u8,
@@ -216,53 +92,9 @@ pub unsafe extern "C" fn c_verify_hotp(
     )
 }
 
-/// Generates a TOTP code for the current time using the provided secret.
-///
-/// # Parameters
-/// - `secret`: A pointer to a C string containing the secret key.
-/// - `length`: The length of the OTP to generate.
-/// - `radix`: The base of the OTP (e.g., 10 for decimal).
-/// - `interval`: The time interval in seconds for the TOTP.
-///
-/// # Returns
-/// A pointer to a C string containing the generated TOTP code.
-///
-/// # Safety
-/// This function is unsafe because it dereferences raw pointers.
-///
-/// # C Usage
-/// ```c
-/// #include <stdio.h>
-/// #include <stdlib.h>
-///
-/// // Declaration of the FFI function
-/// extern char* c_generate_totp_now(
-///     const char* secret,
-///     unsigned short length,
-///     unsigned short radix,
-///     unsigned short interval
-/// );
-///
-/// int main() {
-///     const char* secret = "your_secret_key";
-///     unsigned short length = 6;
-///     unsigned short radix = 10;
-///     unsigned short interval = 30;
-///
-///     // Call the FFI function
-///     char* totp = c_generate_totp_now(secret, length, radix, interval);
-///
-///     // Print the generated TOTP
-///     printf("Generated TOTP: %s\n", totp);
-///
-///     // Free the allocated memory if necessary
-///     free(totp);
-///
-///     return 0;
-/// }
-/// ```
 #[export_name = "generate_totp_now"]
 pub unsafe extern "C" fn c_generate_totp_now(
+    algorithm: *const c_char,
     secret: *const c_char,
     length: c_ushort,
     radix: c_ushort,
@@ -271,7 +103,11 @@ pub unsafe extern "C" fn c_generate_totp_now(
     if secret.is_null() {
         panic!("Secret is null");
     }
+    if algorithm.is_null() {
+        panic!("Algorithm is null");
+    }
     let hotp = generate_totp_now(
+        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -281,56 +117,9 @@ pub unsafe extern "C" fn c_generate_totp_now(
     c_string.into_raw()
 }
 
-/// Generates a TOTP code for a specific timestamp using the provided secret.
-///
-/// # Parameters
-/// - `secret`: A pointer to a C string containing the secret key.
-/// - `length`: The length of the OTP to generate.
-/// - `radix`: The base of the OTP (e.g., 10 for decimal).
-/// - `interval`: The time interval in seconds for the TOTP.
-/// - `timestamp`: The specific timestamp for which to generate the TOTP.
-///
-/// # Returns
-/// A pointer to a C string containing the generated TOTP code.
-///
-/// # Safety
-/// This function is unsafe because it dereferences raw pointers.
-///
-/// # C Usage
-/// ```c
-/// #include <stdio.h>
-/// #include <stdlib.h>
-///
-/// // Declaration of the FFI function
-/// extern char* c_generate_totp_at(
-///     const char* secret,
-///     unsigned short length,
-///     unsigned short radix,
-///     unsigned short interval,
-///     unsigned long timestamp
-/// );
-///
-/// int main() {
-///     const char* secret = "your_secret_key";
-///     unsigned short length = 6;
-///     unsigned short radix = 10;
-///     unsigned short interval = 30;
-///     unsigned long timestamp = 1627846261; // Example timestamp
-///
-///     // Call the FFI function
-///     char* totp = c_generate_totp_at(secret, length, radix, interval, timestamp);
-///
-///     // Print the generated TOTP
-///     printf("Generated TOTP: %s\n", totp);
-///
-///     // Free the allocated memory if necessary
-///     free(totp);
-///
-///     return 0;
-/// }
-/// ```
 #[export_name = "generate_totp_at"]
 pub unsafe extern "C" fn c_generate_totp_at(
+    algorithm: *const c_char,
     secret: *const c_char,
     length: c_ushort,
     radix: c_ushort,
@@ -340,7 +129,11 @@ pub unsafe extern "C" fn c_generate_totp_at(
     if secret.is_null() {
         panic!("Secret is null");
     }
+    if algorithm.is_null() {
+        panic!("Algorithm is null");
+    }
     let totp = generate_totp_at(
+        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -351,65 +144,9 @@ pub unsafe extern "C" fn c_generate_totp_at(
     c_string.into_raw()
 }
 
-/// Verifies a TOTP code using the provided secret, OTP, and timestamp.
-///
-/// # Parameters
-/// - `secret`: A pointer to a C string containing the secret key.
-/// - `length`: The length of the OTP.
-/// - `radix`: The base of the OTP (e.g., 10 for decimal).
-/// - `interval`: The time interval in seconds for the TOTP.
-/// - `otp`: A pointer to a C string containing the OTP to verify.
-/// - `timestamp`: The specific timestamp for which to verify the TOTP.
-/// - `after`: The time after the timestamp to allow for verification.
-/// - `drift_ahead`: The allowed drift ahead of the timestamp.
-/// - `drift_behind`: The allowed drift behind the timestamp.
-///
-/// # Returns
-/// `true` if the OTP is valid, `false` otherwise.
-///
-/// # Safety
-/// This function is unsafe because it dereferences raw pointers.
-///
-/// # C Usage
-/// ```c
-/// #include <stdio.h>
-/// #include <stdbool.h>
-///
-/// // Declaration of the FFI function
-/// extern bool c_verify_totp(
-///     const char* secret,
-///     unsigned short length,
-///     unsigned short radix,
-///     unsigned short interval,
-///     const char* otp,
-///     unsigned long timestamp,
-///     unsigned long after,
-///     unsigned long drift_ahead,
-///     unsigned long drift_behind
-/// );
-///
-/// int main() {
-///     const char* secret = "your_secret_key";
-///     const char* otp = "123456";
-///     unsigned short length = 6;
-///     unsigned short radix = 10;
-///     unsigned short interval = 30;
-///     unsigned long timestamp = 1627846261; // Example timestamp
-///     unsigned long after = 0;
-///     unsigned long drift_ahead = 1;
-///     unsigned long drift_behind = 1;
-///
-///     // Call the FFI function
-///     bool is_valid = c_verify_totp(secret, length, radix, interval, otp, timestamp, after, drift_ahead, drift_behind);
-///
-///     // Print the verification result
-///     printf("TOTP is %s\n", is_valid ? "valid" : "invalid");
-///
-///     return 0;
-/// }
-/// ```
 #[export_name = "verify_totp"]
 pub unsafe extern "C" fn c_verify_totp(
+    algorithm: *const c_char,
     secret: *const c_char,
     length: c_ushort,
     radix: c_ushort,
@@ -421,12 +158,16 @@ pub unsafe extern "C" fn c_verify_totp(
     drift_behind: c_ulong,
 ) -> bool {
     if secret.is_null() {
-        return false;
+        panic!("Secret is null");
     }
     if otp.is_null() {
-        return false;
+        panic!("OTP is null");
+    }
+    if algorithm.is_null() {
+        panic!("Algorithm is null");
     }
     verify_totp(
+        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -440,59 +181,9 @@ pub unsafe extern "C" fn c_verify_totp(
     .is_some()
 }
 
-/// Generates a provisioning URI for TOTP using the provided secret, length, radix, interval, issuer, and name.
-///
-/// # Parameters
-/// - `secret`: A pointer to a C string containing the secret key.
-/// - `length`: The length of the OTP to generate.
-/// - `radix`: The base of the OTP (e.g., 10 for decimal).
-/// - `interval`: The time interval in seconds for the TOTP.
-/// - `issuer`: A pointer to a C string containing the issuer name.
-/// - `name`: A pointer to a C string containing the name.
-///
-/// # Returns
-/// A pointer to a C string containing the generated provisioning URI.
-///
-/// # Safety
-/// This function is unsafe because it dereferences raw pointers.
-///
-/// # C Usage
-/// ```c
-/// #include <stdio.h>
-/// #include <stdlib.h>
-///
-/// // Declaration of the FFI function
-/// extern char* c_totp_provisioning_uri(
-///     const char* secret,
-///     unsigned short length,
-///     unsigned short radix,
-///     unsigned short interval,
-///     const char* issuer,
-///     const char* name
-/// );
-///
-/// int main() {
-///     const char* secret = "your_secret_key";
-///     unsigned short length = 6;
-///     unsigned short radix = 10;
-///     unsigned short interval = 30;
-///     const char* issuer = "your_issuer";
-///     const char* name = "your_name";
-///
-///     // Call the FFI function
-///     char* uri = c_totp_provisioning_uri(secret, length, radix, interval, issuer, name);
-///
-///     // Print the generated URI
-///     printf("Generated URI: %s\n", uri);
-///
-///     // Free the allocated memory if necessary
-///     free(uri);
-///
-///     return 0;
-/// }
-/// ```
 #[export_name = "totp_provisioning_uri"]
 pub unsafe extern "C" fn c_totp_provisioning_uri(
+    algorithm: *const c_char,
     secret: *const c_char,
     length: c_ushort,
     radix: c_ushort,
@@ -509,7 +200,11 @@ pub unsafe extern "C" fn c_totp_provisioning_uri(
     if name.is_null() {
         panic!("Name is null");
     }
+    if algorithm.is_null() {
+        panic!("Algorithm is null");
+    }
     let uri = totp_provisioning_uri(
+        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,

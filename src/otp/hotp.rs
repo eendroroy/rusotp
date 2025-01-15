@@ -1,17 +1,24 @@
 use crate::messages::{
     COUNTER_INVALID, OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID,
-    PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY,
+    PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
+use crate::otp::algorithm::{Algorithm, AlgorithmTrait};
 use crate::otp::otp::otp;
 
 pub struct HOTP {
+    algorithm: Algorithm,
     secret: Vec<u8>,
     length: u8,
     radix: u8,
 }
 
 impl HOTP {
-    pub fn new(secret: &str, length: u8, radix: u8) -> Result<HOTP, &'static str> {
+    pub fn new(
+        algorithm: Algorithm,
+        secret: &str,
+        length: u8,
+        radix: u8,
+    ) -> Result<HOTP, &'static str> {
         if secret.len() < 1 {
             Err(SECRET_EMPTY)
         } else if length < 4 {
@@ -20,6 +27,7 @@ impl HOTP {
             Err(RADIX_INVALID)
         } else {
             Ok(Self {
+                algorithm,
                 secret: Vec::from(secret),
                 length,
                 radix,
@@ -31,7 +39,13 @@ impl HOTP {
         if counter < 1 {
             Err(COUNTER_INVALID)
         } else {
-            Ok(otp(self.secret.clone(), self.length, self.radix, counter))
+            Ok(otp(
+                &self.algorithm,
+                self.secret.clone(),
+                self.length,
+                self.radix,
+                counter,
+            ))
         }
     }
 
@@ -63,6 +77,8 @@ impl HOTP {
             Err(PROV_OTP_LENGTH_INVALID)
         } else if self.radix != 10 {
             Err(PROV_OTP_RADIX_INVALID)
+        } else if self.algorithm.to_str() != "SHA256" {
+            Err(UNSUPPORTED_ALGORITHM)
         } else {
             let query = format!(
                 "secret={}&counter={}",
@@ -79,8 +95,14 @@ impl HOTP {
     }
 }
 
-pub fn generate_hotp(secret: &str, length: u8, radix: u8, counter: u64) -> String {
-    match HOTP::new(secret, length, radix) {
+pub fn generate_hotp(
+    algorithm: Algorithm,
+    secret: &str,
+    length: u8,
+    radix: u8,
+    counter: u64,
+) -> String {
+    match HOTP::new(algorithm, secret, length, radix) {
         Ok(hotp_tool) => match hotp_tool.generate(counter) {
             Ok(hotp) => hotp,
             Err(e) => panic!("{}", e),
@@ -90,6 +112,7 @@ pub fn generate_hotp(secret: &str, length: u8, radix: u8, counter: u64) -> Strin
 }
 
 pub fn verify_hotp(
+    algorithm: Algorithm,
     secret: &str,
     otp: &str,
     length: u8,
@@ -97,7 +120,7 @@ pub fn verify_hotp(
     counter: u64,
     retries: u64,
 ) -> bool {
-    match HOTP::new(secret, length, radix) {
+    match HOTP::new(algorithm, secret, length, radix) {
         Ok(hotp_tool) => match hotp_tool.verify(otp, counter, retries) {
             Ok(verified) => verified.is_some(),
             Err(e) => panic!("{}", e),
@@ -107,13 +130,14 @@ pub fn verify_hotp(
 }
 
 pub fn hotp_provisioning_uri(
+    algorithm: Algorithm,
     secret: &str,
     length: u8,
     radix: u8,
     name: &str,
     initial_count: u64,
 ) -> String {
-    match HOTP::new(secret, length, radix) {
+    match HOTP::new(algorithm, secret, length, radix) {
         Ok(hotp) => match hotp.provisioning_uri(name, initial_count) {
             Ok(provisioning_uri) => provisioning_uri,
             Err(e) => panic!("{}", e),

@@ -1,8 +1,8 @@
-use rusotp::HOTP;
+use rusotp::{Algorithm, HOTP};
 
 fn main() {
     let secret = "12345678901234567890";
-    let hotp_tool = match HOTP::new(secret, 6, 10) {
+    let hotp_tool = match HOTP::new(Algorithm::SHA256, secret, 6, 10) {
         Ok(hotp_tool) => hotp_tool,
         Err(e) => panic!("{}", e),
     };

@@ -1,9 +1,9 @@
-use rusotp::TOTP;
+use rusotp::{Algorithm, TOTP};
 
 fn main() {
     let secret = "12345678901234567890";
 
-    let totp_tool = match TOTP::new(secret, 6, 10, 30) {
+    let totp_tool = match TOTP::new(Algorithm::SHA256, secret, 6, 10, 30) {
         Ok(totp_tool) => totp_tool,
         Err(e) => panic!("{}", e),
     };

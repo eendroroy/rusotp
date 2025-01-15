@@ -11,3 +11,4 @@ pub const INTERVAL_INVALID: &str = "Interval must be greater than or equal to 30
 pub const PROV_OTP_LENGTH_INVALID: &str = "HOTP length must be 6";
 pub const PROV_OTP_RADIX_INVALID: &str = "HOTP radix must be 10";
 pub const MAC_CREATE_ERROR: &str = "Failed to create HMAC";
+pub const UNSUPPORTED_ALGORITHM: &str = "Unsupported algorithm";
