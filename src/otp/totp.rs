@@ -1,3 +1,8 @@
+use crate::messages::{
+    DRIFT_AHEAD_INVALID, DRIFT_BEHIND_INVALID, INTERVAL_INVALID, OTP_LENGTH_INVALID,
+    OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID,
+    SECRET_EMPTY, TIMESTAMP_INVALID,
+};
 use crate::otp::otp::otp;
 
 pub struct TOTP {
@@ -10,11 +15,11 @@ pub struct TOTP {
 impl TOTP {
     pub fn new(secret: &str, length: u8, radix: u8, interval: u8) -> Result<TOTP, &'static str> {
         if secret.len() < 1 {
-            Err("Secret must not be empty")
+            Err(SECRET_EMPTY)
         } else if length < 4 {
-            Err("Length must be greater than or equal to 4")
+            Err(OTP_LENGTH_INVALID)
         } else if radix < 2 || radix > 36 {
-            Err("Radix must be between 2 and 36 inclusive")
+            Err(RADIX_INVALID)
         } else {
             Ok(Self {
                 secret: Vec::from(secret),
@@ -36,7 +41,7 @@ impl TOTP {
 
     pub fn at_timestamp(&self, timestamp: i64) -> Result<String, &'static str> {
         if timestamp < 0 {
-            Err("Timestamp must be greater than or equal to 0")
+            Err(TIMESTAMP_INVALID)
         } else {
             Ok(otp(
                 self.secret.clone(),
@@ -56,13 +61,13 @@ impl TOTP {
         drift_behind: i64,
     ) -> Result<Option<i64>, &'static str> {
         if self.length != otp.len() as u8 {
-            Err("OTP length does not match the length of the HOTP configuration")
+            Err(OTP_LENGTH_NOT_MATCHED)
         } else if timestamp < 1 {
-            Err("Timestamp must be greater than or equal to 1")
+            Err(TIMESTAMP_INVALID)
         } else if drift_behind >= timestamp {
-            Err("Drift behind must be less than timestamp")
+            Err(DRIFT_BEHIND_INVALID)
         } else if drift_ahead < 0 {
-            Err("Drift ahead must be greater than or equal to 0")
+            Err(DRIFT_AHEAD_INVALID)
         } else {
             let mut start = timestamp - drift_behind;
 
@@ -91,11 +96,11 @@ impl TOTP {
 
     pub fn provisioning_uri(&self, issuer: &str, name: &str) -> Result<String, &'static str> {
         if self.interval < 30 {
-            panic!("Interval must be greater than or equal to 30");
+            panic!("{}", INTERVAL_INVALID);
         } else if self.length != 6 {
-            panic!("HOTP length must be 6");
+            panic!("{}", PROV_OTP_LENGTH_INVALID);
         } else if self.radix != 10 {
-            panic!("HOTP radix must be 10");
+            panic!("{}", PROV_OTP_RADIX_INVALID);
         } else {
             let issuer_str = if !issuer.is_empty() {
                 format!(

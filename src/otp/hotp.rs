@@ -1,3 +1,7 @@
+use crate::messages::{
+    COUNTER_INVALID, OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID,
+    PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY,
+};
 use crate::otp::otp::otp;
 
 pub struct HOTP {
@@ -9,11 +13,11 @@ pub struct HOTP {
 impl HOTP {
     pub fn new(secret: &str, length: u8, radix: u8) -> Result<HOTP, &'static str> {
         if secret.len() < 1 {
-            Err("Secret must not be empty")
+            Err(SECRET_EMPTY)
         } else if length < 4 {
-            Err("Length must be greater than or equal to 4")
+            Err(OTP_LENGTH_INVALID)
         } else if radix < 2 || radix > 36 {
-            Err("Radix must be between 2 and 36 inclusive")
+            Err(RADIX_INVALID)
         } else {
             Ok(Self {
                 secret: Vec::from(secret),
@@ -25,7 +29,7 @@ impl HOTP {
 
     pub fn generate(&self, counter: u64) -> Result<String, &'static str> {
         if counter < 1 {
-            Err("Counter must be greater than or equal to 1")
+            Err(COUNTER_INVALID)
         } else {
             Ok(otp(self.secret.clone(), self.length, self.radix, counter))
         }
@@ -38,7 +42,7 @@ impl HOTP {
         retries: u64,
     ) -> Result<Option<u64>, &'static str> {
         if self.length != otp.len() as u8 {
-            Err("OTP length does not match the length of the HOTP configuration")
+            Err(OTP_LENGTH_NOT_MATCHED)
         } else {
             for i in counter..=(counter + retries) {
                 match self.generate(i) {
@@ -56,9 +60,9 @@ impl HOTP {
 
     pub fn provisioning_uri(&self, name: &str, initial_count: u64) -> Result<String, &'static str> {
         if self.length != 6 {
-            Err("HOTP length must be 6")
+            Err(PROV_OTP_LENGTH_INVALID)
         } else if self.radix != 10 {
-            Err("HOTP radix must be 10")
+            Err(PROV_OTP_RADIX_INVALID)
         } else {
             let query = format!(
                 "secret={}&counter={}",

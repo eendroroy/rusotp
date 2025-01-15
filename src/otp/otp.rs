@@ -1,3 +1,5 @@
+use crate::messages::MAC_CREATE_ERROR;
+
 use hmac::{Hmac, Mac};
 use num_bigint::BigUint;
 use sha2::Sha256;
@@ -16,7 +18,7 @@ pub(crate) fn otp(secret: Vec<u8>, length: u8, radix: u8, counter: u64) -> Strin
 }
 
 fn otp_bin_code(secret: Vec<u8>, counter: u64) -> u64 {
-    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_ref()).expect("SOMETHING WENT WRONG");
+    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_ref()).expect(MAC_CREATE_ERROR);
     mac.update(&counter.to_be_bytes());
     let hmac_result = mac.finalize().into_bytes();
 
