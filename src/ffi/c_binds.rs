@@ -57,13 +57,17 @@ pub unsafe extern "C" fn c_generate_hotp(
     radix: c_ushort,
     counter: c_ulong,
 ) -> *mut c_char {
-    generate_hotp(
-        CStr::from_ptr(secret).to_string_lossy().as_ref(),
+    if secret.is_null() {
+        panic!("Secret is null");
+    }
+    let hotp = generate_hotp(
+        CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
         counter,
-    )
-    .as_ptr() as *mut c_char
+    );
+    let c_string = std::ffi::CString::new(hotp).unwrap();
+    c_string.into_raw()
 }
 
 /// Generates a provisioning URI for HOTP using the provided secret, length, radix, name, and counter.
@@ -122,14 +126,21 @@ pub unsafe extern "C" fn c_hotp_provisioning_uri(
     name: *const c_char,
     counter: c_ulong,
 ) -> *mut c_char {
-    hotp_provisioning_uri(
-        CStr::from_ptr(secret).to_string_lossy().as_ref(),
+    if secret.is_null() {
+        panic!("Secret is null");
+    }
+    if name.is_null() {
+        panic!("Name is null");
+    }
+    let uri = hotp_provisioning_uri(
+        CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
-        CStr::from_ptr(name).to_string_lossy().as_ref(),
+        CStr::from_ptr(name).to_str().unwrap(),
         counter,
-    )
-    .as_ptr() as *mut c_char
+    );
+    let c_string = std::ffi::CString::new(uri).unwrap();
+    c_string.into_raw()
 }
 
 /// Verifies an HOTP code using the provided secret, OTP, and counter.
@@ -189,9 +200,15 @@ pub unsafe extern "C" fn c_verify_hotp(
     counter: c_ulong,
     retries: c_ulong,
 ) -> bool {
+    if secret.is_null() {
+        panic!("Secret is null");
+    }
+    if otp.is_null() {
+        panic!("OTP is null");
+    }
     verify_hotp(
-        CStr::from_ptr(secret).to_string_lossy().as_ref(),
-        CStr::from_ptr(otp).to_string_lossy().as_ref(),
+        CStr::from_ptr(secret).to_str().unwrap(),
+        CStr::from_ptr(otp).to_str().unwrap(),
         length as u8,
         radix as u8,
         counter,
@@ -251,13 +268,17 @@ pub unsafe extern "C" fn c_generate_totp_now(
     radix: c_ushort,
     interval: c_ushort,
 ) -> *mut c_char {
-    generate_totp_now(
-        CStr::from_ptr(secret).to_string_lossy().as_ref(),
+    if secret.is_null() {
+        panic!("Secret is null");
+    }
+    let hotp = generate_totp_now(
+        CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
         interval as u8,
-    )
-    .as_ptr() as *mut c_char
+    );
+    let c_string = std::ffi::CString::new(hotp).unwrap();
+    c_string.into_raw()
 }
 
 /// Generates a TOTP code for a specific timestamp using the provided secret.
@@ -316,14 +337,18 @@ pub unsafe extern "C" fn c_generate_totp_at(
     interval: c_ushort,
     timestamp: c_ulong,
 ) -> *mut c_char {
-    generate_totp_at(
-        CStr::from_ptr(secret).to_string_lossy().as_ref(),
+    if secret.is_null() {
+        panic!("Secret is null");
+    }
+    let totp = generate_totp_at(
+        CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
         interval as u8,
         timestamp as i64,
-    )
-    .as_ptr() as *mut c_char
+    );
+    let c_string = std::ffi::CString::new(totp).unwrap();
+    c_string.into_raw()
 }
 
 /// Verifies a TOTP code using the provided secret, OTP, and timestamp.
@@ -395,12 +420,18 @@ pub unsafe extern "C" fn c_verify_totp(
     drift_ahead: c_ulong,
     drift_behind: c_ulong,
 ) -> bool {
+    if secret.is_null() {
+        return false;
+    }
+    if otp.is_null() {
+        return false;
+    }
     verify_totp(
-        CStr::from_ptr(secret).to_string_lossy().as_ref(),
+        CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
         interval as u8,
-        CStr::from_ptr(otp).to_string_lossy().as_ref(),
+        CStr::from_ptr(otp).to_str().unwrap(),
         timestamp as i64,
         Some(after as i64),
         drift_ahead as i64,
@@ -469,13 +500,23 @@ pub unsafe extern "C" fn c_totp_provisioning_uri(
     issuer: *const c_char,
     name: *const c_char,
 ) -> *mut c_char {
-    totp_provisioning_uri(
-        CStr::from_ptr(secret).to_string_lossy().as_ref(),
+    if secret.is_null() {
+        panic!("Secret is null");
+    }
+    if issuer.is_null() {
+        panic!("Issuer is null");
+    }
+    if name.is_null() {
+        panic!("Name is null");
+    }
+    let uri = totp_provisioning_uri(
+        CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
         interval as u8,
-        CStr::from_ptr(issuer).to_string_lossy().as_ref(),
-        CStr::from_ptr(name).to_string_lossy().as_ref(),
-    )
-    .as_ptr() as *mut c_char
+        CStr::from_ptr(issuer).to_str().unwrap(),
+        CStr::from_ptr(name).to_str().unwrap(),
+    );
+    let c_string = std::ffi::CString::new(uri).unwrap();
+    c_string.into_raw()
 }
