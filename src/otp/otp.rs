@@ -1,4 +1,4 @@
-use crate::messages::{COUNTER_INVALID, OTP_LENGTH_INVALID, RADIX_INVALID, SECRET_EMPTY};
+use crate::messages::COUNTER_INVALID;
 
 use crate::otp::algorithm::{Algorithm, AlgorithmTrait};
 use num_bigint::BigUint;
@@ -11,13 +11,7 @@ pub(crate) fn otp(
     radix: u8,
     counter: u64,
 ) -> Result<String, String> {
-    if secret.len() < 1 {
-        Err(SECRET_EMPTY.to_string())
-    } else if length < 4 {
-        Err(OTP_LENGTH_INVALID.to_string())
-    } else if radix < 2 || radix > 36 {
-        Err(RADIX_INVALID.to_string())
-    } else if counter < 1 {
+    if counter < 1 {
         Err(COUNTER_INVALID.to_string())
     } else {
         match otp_bin_code(algorithm, secret, counter) {

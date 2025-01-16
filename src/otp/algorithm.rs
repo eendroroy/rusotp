@@ -10,6 +10,7 @@ pub trait AlgorithmTrait {
     fn hash(&self, secret: Vec<u8>, data: u64) -> Result<Vec<u8>, String>;
 }
 
+#[derive(Copy, Clone)]
 pub enum Algorithm {
     SHA1,
     SHA256,

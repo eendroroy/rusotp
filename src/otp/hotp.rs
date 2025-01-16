@@ -1,6 +1,6 @@
 use crate::messages::{
-    OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID,
-    PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
+    OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID,
+    RADIX_INVALID, SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
@@ -21,7 +21,7 @@ impl HOTP {
     ) -> Result<HOTP, &'static str> {
         if secret.len() < 1 {
             Err(SECRET_EMPTY)
-        } else if length < 4 {
+        } else if length < 1 {
             Err(OTP_LENGTH_INVALID)
         } else if radix < 2 || radix > 36 {
             Err(RADIX_INVALID)
@@ -45,12 +45,7 @@ impl HOTP {
         )
     }
 
-    pub fn verify(
-        &self,
-        otp: &str,
-        counter: u64,
-        retries: u64,
-    ) -> Result<Option<u64>, String> {
+    pub fn verify(&self, otp: &str, counter: u64, retries: u64) -> Result<Option<u64>, String> {
         if self.length != otp.len() as u8 {
             Err(OTP_LENGTH_NOT_MATCHED.to_string())
         } else {
