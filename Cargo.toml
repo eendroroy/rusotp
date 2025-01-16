@@ -2,11 +2,12 @@
 name = "rusotp"
 version = "0.1.0"
 edition = "2021"
+exclude = ["/tests", "/examples", "/c_examples", "/c_examples.sh"]
 
 [lib]
 name = "rusotp"
 path = "src/lib.rs"
-crate-type = ["staticlib", "lib"]
+crate-type = ["staticlib", "lib", "cdylib"]
 
 [dependencies]
 hmac = "0.12.1"
