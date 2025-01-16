@@ -6,10 +6,10 @@ int main() {
 
     struct Data {
         const char* algorithm;
-        int length;
-        int radix;
-        int interval;
-        int timestamp;
+        unsigned short length;
+        unsigned short radix;
+        unsigned short interval;
+        unsigned long timestamp;
         const char* otp;
     } data[] = {
         {"SHA256", 6, 10, 10, 10000, "959738"},
@@ -30,9 +30,9 @@ int main() {
 
     for (int i = 0; i < sizeof(data) / sizeof(data[0]); i++) {
         struct Data d = data[i];
-        if (d.length == 6 && d.radix == 10 && d.interval == 30) {
+        if (d.length == 6 && d.radix == 10 && d.interval == 30 && strcmp(d.algorithm, "SHA1") == 0) {
             printf(
-                "LENGTH: %d, RADIX: %d, INTERVAL: %d, TIMESTAMP: %d \tNOW: %s \tTOTP : %s \tVERIFIED : %d\tURI : %s\n",
+                "LENGTH: %d, RADIX: %d, INTERVAL: %d, TIMESTAMP: %lu \tNOW: %s \tTOTP : %s \tVERIFIED : %d\tURI : %s\n",
                 d.length,
                 d.radix,
                 d.interval,
@@ -43,7 +43,7 @@ int main() {
                 totp_provisioning_uri(d.algorithm, secret, d.length, d.radix, d.interval, "rusotp", "user@email.mail"));
         } else {
             printf(
-                "LENGTH: %d, RADIX: %d, INTERVAL: %d, TIMESTAMP: %d \t NOW: %s \tTOTP : %s \tVERIFIED : %d\n",
+                "LENGTH: %d, RADIX: %d, INTERVAL: %d, TIMESTAMP: %lu \t NOW: %s \tTOTP : %s \tVERIFIED : %d\n",
                 d.length,
                 d.radix,
                 d.interval,

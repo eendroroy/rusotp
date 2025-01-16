@@ -6,9 +6,9 @@ int main() {
 
     struct {
         const char* algorithm;
-        int length;
-        int radix;
-        int counter;
+        unsigned short length;
+        unsigned short radix;
+        unsigned long counter;
         const char* otp;
     } data[] = {
         {"SHA256", 6, 10, 1, "247374"},
@@ -37,7 +37,7 @@ int main() {
         char *otp = generate_hotp(algorithm, secret, length, radix, counter);
         int verified = verify_hotp(algorithm, secret, otp_value, length, radix, counter, 0);
 
-        if (radix == 10 && length == 6) {
+        if (radix == 10 && length == 6 && strcmp(algorithm, "SHA1") == 0) {
             char *uri = hotp_provisioning_uri(algorithm, secret, length, radix, "rusotp", counter);
             printf("LENGTH: %d, RADIX: %d, COUNTER: %d \tHOTP : %s \tVERIFIED : %d \tURI : %s\n",
                    length, radix, counter, otp, verified, uri);
