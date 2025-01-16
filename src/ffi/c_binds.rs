@@ -56,7 +56,7 @@ pub unsafe extern "C" fn c_hotp_provisioning_uri(
         length as u8,
         radix as u8,
         CStr::from_ptr(name).to_str().unwrap(),
-        counter,
+        counter as u64,
     );
     let c_string = std::ffi::CString::new(uri).unwrap();
     c_string.into_raw()
@@ -87,8 +87,8 @@ pub unsafe extern "C" fn c_verify_hotp(
         CStr::from_ptr(otp).to_str().unwrap(),
         length as u8,
         radix as u8,
-        counter,
-        retries,
+        counter as u64,
+        retries as u64,
     )
 }
 
@@ -138,7 +138,7 @@ pub unsafe extern "C" fn c_generate_totp_at(
         length as u8,
         radix as u8,
         interval as u8,
-        timestamp as i64,
+        timestamp as u64,
     );
     let c_string = std::ffi::CString::new(totp).unwrap();
     c_string.into_raw()
@@ -173,10 +173,10 @@ pub unsafe extern "C" fn c_verify_totp(
         radix as u8,
         interval as u8,
         CStr::from_ptr(otp).to_str().unwrap(),
-        timestamp as i64,
-        Some(after as i64),
-        drift_ahead as i64,
-        drift_behind as i64,
+        timestamp as u64,
+        Some(after as u64),
+        drift_ahead as u64,
+        drift_behind as u64,
     )
     .is_some()
 }

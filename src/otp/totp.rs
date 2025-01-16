@@ -1,7 +1,7 @@
 use crate::messages::{
-    DRIFT_AHEAD_INVALID, DRIFT_BEHIND_INVALID, INTERVAL_INVALID, OTP_LENGTH_INVALID,
-    OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID,
-    SECRET_EMPTY, TIMESTAMP_INVALID, UNSUPPORTED_ALGORITHM,
+    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED,
+    PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY,
+    TIMESTAMP_INVALID, UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
@@ -49,8 +49,8 @@ impl TOTP {
         ))
     }
 
-    pub fn at_timestamp(&self, timestamp: i64) -> Result<String, &'static str> {
-        if timestamp < 0 {
+    pub fn at_timestamp(&self, timestamp: u64) -> Result<String, &'static str> {
+        if timestamp < 1 {
             Err(TIMESTAMP_INVALID)
         } else {
             Ok(otp(
@@ -58,7 +58,7 @@ impl TOTP {
                 self.secret.clone(),
                 self.length,
                 self.radix,
-                self.time_code(timestamp as u64),
+                self.time_code(timestamp),
             ))
         }
     }
@@ -66,19 +66,17 @@ impl TOTP {
     pub fn verify(
         &self,
         otp: &str,
-        timestamp: i64,
-        after: Option<i64>,
-        drift_ahead: i64,
-        drift_behind: i64,
-    ) -> Result<Option<i64>, &'static str> {
+        timestamp: u64,
+        after: Option<u64>,
+        drift_ahead: u64,
+        drift_behind: u64,
+    ) -> Result<Option<u64>, &'static str> {
         if self.length != otp.len() as u8 {
             Err(OTP_LENGTH_NOT_MATCHED)
         } else if timestamp < 1 {
             Err(TIMESTAMP_INVALID)
         } else if drift_behind >= timestamp {
             Err(DRIFT_BEHIND_INVALID)
-        } else if drift_ahead < 0 {
-            Err(DRIFT_AHEAD_INVALID)
         } else {
             let mut start = timestamp - drift_behind;
 
@@ -145,7 +143,13 @@ impl TOTP {
     }
 }
 
-pub fn generate_totp_now(algorithm: Algorithm, secret: &str, length: u8, radix: u8, interval: u8) -> String {
+pub fn generate_totp_now(
+    algorithm: Algorithm,
+    secret: &str,
+    length: u8,
+    radix: u8,
+    interval: u8,
+) -> String {
     match TOTP::new(algorithm, secret, length, radix, interval) {
         Ok(totp) => match totp.now() {
             Ok(otp) => otp,
@@ -161,7 +165,7 @@ pub fn generate_totp_at(
     length: u8,
     radix: u8,
     interval: u8,
-    timestamp: i64,
+    timestamp: u64,
 ) -> String {
     match TOTP::new(algorithm, secret, length, radix, interval) {
         Ok(totp) => match totp.at_timestamp(timestamp) {
@@ -179,11 +183,11 @@ pub fn verify_totp(
     radix: u8,
     interval: u8,
     otp: &str,
-    timestamp: i64,
-    after: Option<i64>,
-    drift_ahead: i64,
-    drift_behind: i64,
-) -> Option<i64> {
+    timestamp: u64,
+    after: Option<u64>,
+    drift_ahead: u64,
+    drift_behind: u64,
+) -> Option<u64> {
     match TOTP::new(algorithm, secret, length, radix, interval) {
         Ok(totp) => match totp.verify(otp, timestamp, after, drift_ahead, drift_behind) {
             Ok(verified) => verified,
