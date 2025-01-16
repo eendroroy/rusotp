@@ -25,7 +25,7 @@ pub unsafe extern "C" fn c_generate_hotp(
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
-        counter,
+        counter as u64,
     );
     let c_string = std::ffi::CString::new(hotp).unwrap();
     c_string.into_raw()
