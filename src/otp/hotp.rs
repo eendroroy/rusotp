@@ -2,7 +2,7 @@ use crate::messages::{
     COUNTER_INVALID, OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID,
     PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
-use crate::otp::algorithm::{Algorithm, AlgorithmTrait};
+use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
 
 pub struct HOTP {
@@ -77,7 +77,7 @@ impl HOTP {
             Err(PROV_OTP_LENGTH_INVALID)
         } else if self.radix != 10 {
             Err(PROV_OTP_RADIX_INVALID)
-        } else if self.algorithm.to_str() != "SHA256" {
+        } else if self.algorithm != Algorithm::SHA1 {
             Err(UNSUPPORTED_ALGORITHM)
         } else {
             let query = format!(

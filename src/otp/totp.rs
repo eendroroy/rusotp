@@ -3,7 +3,7 @@ use crate::messages::{
     OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID,
     SECRET_EMPTY, TIMESTAMP_INVALID, UNSUPPORTED_ALGORITHM,
 };
-use crate::otp::algorithm::{Algorithm, AlgorithmTrait};
+use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
 
 pub struct TOTP {
@@ -112,7 +112,7 @@ impl TOTP {
             panic!("{}", PROV_OTP_LENGTH_INVALID);
         } else if self.radix != 10 {
             panic!("{}", PROV_OTP_RADIX_INVALID);
-        } else if self.algorithm.to_str() != "SHA256" {
+        } else if self.algorithm != Algorithm::SHA1 {
             Err(UNSUPPORTED_ALGORITHM)
         } else {
             let issuer_str = if !issuer.is_empty() {

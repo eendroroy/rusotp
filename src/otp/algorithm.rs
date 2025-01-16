@@ -16,6 +16,16 @@ pub enum Algorithm {
     SHA512,
 }
 
+impl PartialEq for Algorithm {
+    fn eq(&self, other: &Self) -> bool {
+        self.to_str() == other.to_str()
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        self.to_str() != other.to_str()
+    }
+}
+
 impl AlgorithmTrait for Algorithm {
     fn to_str(&self) -> &str {
         match self {
