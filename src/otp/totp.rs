@@ -1,7 +1,6 @@
 use crate::messages::{
-    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED,
-    PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY,
-    TIMESTAMP_INVALID, UNSUPPORTED_ALGORITHM,
+    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID,
+    PROV_OTP_RADIX_INVALID, TIMESTAMP_INVALID, UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
@@ -21,45 +20,37 @@ impl TOTP {
         length: u8,
         radix: u8,
         interval: u8,
-    ) -> Result<TOTP, &'static str> {
-        if secret.len() < 1 {
-            Err(SECRET_EMPTY)
-        } else if length < 4 {
-            Err(OTP_LENGTH_INVALID)
-        } else if radix < 2 || radix > 36 {
-            Err(RADIX_INVALID)
-        } else {
-            Ok(Self {
-                algorithm,
-                secret: Vec::from(secret),
-                length,
-                radix,
-                interval,
-            })
-        }
+    ) -> Result<TOTP, String> {
+        Ok(Self {
+            algorithm,
+            secret: Vec::from(secret),
+            length,
+            radix,
+            interval,
+        })
     }
 
-    pub fn now(&self) -> Result<String, &'static str> {
-        Ok(otp(
+    pub fn now(&self) -> Result<String, String> {
+        otp(
             &self.algorithm,
             self.secret.clone(),
             self.length,
             self.radix,
             self.time_code(std::time::UNIX_EPOCH.elapsed().unwrap().as_secs()),
-        ))
+        )
     }
 
-    pub fn at_timestamp(&self, timestamp: u64) -> Result<String, &'static str> {
+    pub fn at_timestamp(&self, timestamp: u64) -> Result<String, String> {
         if timestamp < 1 {
-            Err(TIMESTAMP_INVALID)
+            Err(TIMESTAMP_INVALID.to_string())
         } else {
-            Ok(otp(
+            otp(
                 &self.algorithm,
                 self.secret.clone(),
                 self.length,
                 self.radix,
                 self.time_code(timestamp),
-            ))
+            )
         }
     }
 
@@ -70,13 +61,13 @@ impl TOTP {
         after: Option<u64>,
         drift_ahead: u64,
         drift_behind: u64,
-    ) -> Result<Option<u64>, &'static str> {
+    ) -> Result<Option<u64>, String> {
         if self.length != otp.len() as u8 {
-            Err(OTP_LENGTH_NOT_MATCHED)
+            Err(OTP_LENGTH_NOT_MATCHED.to_string())
         } else if timestamp < 1 {
-            Err(TIMESTAMP_INVALID)
+            Err(TIMESTAMP_INVALID.to_string())
         } else if drift_behind >= timestamp {
-            Err(DRIFT_BEHIND_INVALID)
+            Err(DRIFT_BEHIND_INVALID.to_string())
         } else {
             let mut start = timestamp - drift_behind;
 
@@ -103,7 +94,7 @@ impl TOTP {
         }
     }
 
-    pub fn provisioning_uri(&self, issuer: &str, name: &str) -> Result<String, &'static str> {
+    pub fn provisioning_uri(&self, issuer: &str, name: &str) -> Result<String, String> {
         if self.interval < 30 {
             panic!("{}", INTERVAL_INVALID);
         } else if self.length != 6 {
@@ -111,7 +102,7 @@ impl TOTP {
         } else if self.radix != 10 {
             panic!("{}", PROV_OTP_RADIX_INVALID);
         } else if self.algorithm != Algorithm::SHA1 {
-            Err(UNSUPPORTED_ALGORITHM)
+            Err(UNSUPPORTED_ALGORITHM.to_string())
         } else {
             let issuer_str = if !issuer.is_empty() {
                 format!(

@@ -21,7 +21,7 @@ pub unsafe extern "C" fn c_generate_hotp(
         panic!("Algorithm is null");
     }
     let hotp = generate_hotp(
-        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
+        Algorithm::from_string(CStr::from_ptr(algorithm).to_str().unwrap().to_string()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -51,7 +51,7 @@ pub unsafe extern "C" fn c_hotp_provisioning_uri(
         panic!("Algorithm is null");
     }
     let uri = hotp_provisioning_uri(
-        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
+        Algorithm::from_string(CStr::from_ptr(algorithm).to_str().unwrap().to_string()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -82,7 +82,7 @@ pub unsafe extern "C" fn c_verify_hotp(
         panic!("Algorithm is null");
     }
     verify_hotp(
-        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
+        Algorithm::from_string(CStr::from_ptr(algorithm).to_str().unwrap().to_string()),
         CStr::from_ptr(secret).to_str().unwrap(),
         CStr::from_ptr(otp).to_str().unwrap(),
         length as u8,
@@ -107,7 +107,7 @@ pub unsafe extern "C" fn c_generate_totp_now(
         panic!("Algorithm is null");
     }
     let hotp = generate_totp_now(
-        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
+        Algorithm::from_string(CStr::from_ptr(algorithm).to_str().unwrap().to_string()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -133,7 +133,7 @@ pub unsafe extern "C" fn c_generate_totp_at(
         panic!("Algorithm is null");
     }
     let totp = generate_totp_at(
-        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
+        Algorithm::from_string(CStr::from_ptr(algorithm).to_str().unwrap().to_string()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -167,7 +167,7 @@ pub unsafe extern "C" fn c_verify_totp(
         panic!("Algorithm is null");
     }
     verify_totp(
-        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
+        Algorithm::from_string(CStr::from_ptr(algorithm).to_str().unwrap().to_string()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,
@@ -204,7 +204,7 @@ pub unsafe extern "C" fn c_totp_provisioning_uri(
         panic!("Algorithm is null");
     }
     let uri = totp_provisioning_uri(
-        Algorithm::from_str(CStr::from_ptr(algorithm).to_str().unwrap()),
+        Algorithm::from_string(CStr::from_ptr(algorithm).to_str().unwrap().to_string()),
         CStr::from_ptr(secret).to_str().unwrap(),
         length as u8,
         radix as u8,

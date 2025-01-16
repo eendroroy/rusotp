@@ -27,10 +27,10 @@ fn main() {
                 length,
                 radix,
                 counter,
-                generate_hotp(Algorithm::SHA256, secret, *length, *radix, *counter),
-                verify_hotp(Algorithm::SHA256, secret, otp, *length, *radix, *counter, 0),
+                generate_hotp(Algorithm::SHA1, secret, *length, *radix, *counter),
+                verify_hotp(Algorithm::SHA1, secret, otp, *length, *radix, *counter, 0),
                 hotp_provisioning_uri(
-                    Algorithm::SHA256,
+                    Algorithm::SHA1,
                     secret,
                     *length,
                     *radix,

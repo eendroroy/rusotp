@@ -28,10 +28,10 @@ fn main() {
                 radix,
                 interval,
                 timestamp,
-                generate_totp_now(Algorithm::SHA256, secret, *length, *radix, *interval),
-                generate_totp_at(Algorithm::SHA256, secret, *length, *radix, *interval, *timestamp),
+                generate_totp_now(Algorithm::SHA1, secret, *length, *radix, *interval),
+                generate_totp_at(Algorithm::SHA1, secret, *length, *radix, *interval, *timestamp),
                 verify_totp(
-                    Algorithm::SHA256,
+                    Algorithm::SHA1,
                     secret, *length,
                     *radix, *interval,
                     otp, *timestamp,
@@ -40,7 +40,7 @@ fn main() {
                     0
                 ).is_some(),
                 totp_provisioning_uri(
-                    Algorithm::SHA256,
+                    Algorithm::SHA1,
                     secret,
                     *length,
                     *radix,
