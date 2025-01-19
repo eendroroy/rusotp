@@ -1,4 +1,4 @@
-use rusotp::{generate_hotp, hotp_provisioning_uri, verify_hotp, Algorithm};
+use rusotp::{Algorithm};
 
 fn main() {
     let secret = "12345678901234567890";
@@ -21,22 +21,19 @@ fn main() {
     ];
 
     data.iter().for_each(|(length, radix, counter, otp)| {
+        let hotp = match rusotp::HOTP::new(Algorithm::SHA1, secret, *length, *radix) {
+            Ok(hotp) => hotp,
+            Err(e) => panic!("{}", e),
+        };
         if radix == &10 && length == &6 {
             println!(
                 "LENGTH: {}, RADIX: {}, COUNTER: {} \tHOTP : {} \tVERIFIED : {} \tURI : {}",
                 length,
                 radix,
                 counter,
-                generate_hotp(Algorithm::SHA1, secret, *length, *radix, *counter),
-                verify_hotp(Algorithm::SHA1, secret, otp, *length, *radix, *counter, 0),
-                hotp_provisioning_uri(
-                    Algorithm::SHA1,
-                    secret,
-                    *length,
-                    *radix,
-                    "rusotp",
-                    *counter
-                )
+                hotp.generate(*counter).unwrap(),
+                hotp.verify(otp, *counter, 0).unwrap().is_some(),
+                hotp.provisioning_uri("IAM", *counter).unwrap(),
             );
         } else {
             println!(
@@ -44,8 +41,8 @@ fn main() {
                 length,
                 radix,
                 counter,
-                generate_hotp(Algorithm::SHA256, secret, *length, *radix, *counter),
-                verify_hotp(Algorithm::SHA256, secret, otp, *length, *radix, *counter, 0),
+                hotp.generate(*counter).unwrap(),
+                hotp.verify(otp, *counter, 0).unwrap().is_some(),
             );
         }
     });

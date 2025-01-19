@@ -14,12 +14,7 @@ pub struct HOTP {
 }
 
 impl HOTP {
-    pub fn new(
-        algorithm: Algorithm,
-        secret: &str,
-        length: u8,
-        radix: u8,
-    ) -> Result<HOTP, String> {
+    pub fn new(algorithm: Algorithm, secret: &str, length: u8, radix: u8) -> Result<HOTP, String> {
         if secret.len() < 1 {
             Err(SECRET_EMPTY.to_string())
         } else if length < 1 {
@@ -84,56 +79,5 @@ impl HOTP {
                 query
             ))
         }
-    }
-}
-
-pub fn generate_hotp(
-    algorithm: Algorithm,
-    secret: &str,
-    length: u8,
-    radix: u8,
-    counter: u64,
-) -> String {
-    match HOTP::new(algorithm, secret, length, radix) {
-        Ok(hotp_tool) => match hotp_tool.generate(counter) {
-            Ok(hotp) => hotp,
-            Err(e) => panic!("{}", e),
-        },
-        Err(e) => panic!("{}", e),
-    }
-}
-
-pub fn verify_hotp(
-    algorithm: Algorithm,
-    secret: &str,
-    otp: &str,
-    length: u8,
-    radix: u8,
-    counter: u64,
-    retries: u64,
-) -> bool {
-    match HOTP::new(algorithm, secret, length, radix) {
-        Ok(hotp_tool) => match hotp_tool.verify(otp, counter, retries) {
-            Ok(verified) => verified.is_some(),
-            Err(e) => panic!("{}", e),
-        },
-        Err(e) => panic!("{}", e),
-    }
-}
-
-pub fn hotp_provisioning_uri(
-    algorithm: Algorithm,
-    secret: &str,
-    length: u8,
-    radix: u8,
-    name: &str,
-    initial_count: u64,
-) -> String {
-    match HOTP::new(algorithm, secret, length, radix) {
-        Ok(hotp) => match hotp.provisioning_uri(name, initial_count) {
-            Ok(provisioning_uri) => provisioning_uri,
-            Err(e) => panic!("{}", e),
-        },
-        Err(e) => panic!("{}", e),
     }
 }
