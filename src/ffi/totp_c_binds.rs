@@ -23,11 +23,7 @@ pub unsafe extern "C" fn c_generate_totp_now(config: TotpConfig) -> *mut c_char 
 #[export_name = "generate_totp_at"]
 pub unsafe extern "C" fn c_generate_totp_at(config: TotpConfig, timestamp: c_ulong) -> *mut c_char {
     let totp = to_totp(config);
-    match totp.at_timestamp(timestamp) {
-        Ok(otp) => std::ffi::CString::new(otp).unwrap().into_raw(),
-        Err(e) => panic!("{}", e),
-    };
-    match totp.at_timestamp(timestamp) {
+    match totp.at_timestamp(timestamp.into()) {
         Ok(otp) => std::ffi::CString::new(otp).unwrap().into_raw(),
         Err(e) => panic!("{}", e),
     }
@@ -50,7 +46,7 @@ pub unsafe extern "C" fn c_verify_totp(
 
     match totp.verify(
         to_str(otp),
-        timestamp,
+        timestamp.into(),
         Some(after as u64),
         drift_ahead as u64,
         drift_behind as u64,

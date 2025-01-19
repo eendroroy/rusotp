@@ -15,7 +15,7 @@ pub struct HotpConfig {
 pub unsafe extern "C" fn c_generate_hotp(config: HotpConfig, counter: c_ulong) -> *mut c_char {
     let hotp = to_hotp(config);
 
-    match hotp.generate(counter as u64) {
+    match hotp.generate(counter.into()) {
         Ok(otp) => std::ffi::CString::new(otp).unwrap().into_raw(),
         Err(e) => panic!("{}", e),
     }
@@ -33,7 +33,7 @@ pub unsafe extern "C" fn c_hotp_provisioning_uri(
 
     let hotp = to_hotp(config);
 
-    match hotp.provisioning_uri(CStr::from_ptr(name).to_str().unwrap(), counter) {
+    match hotp.provisioning_uri(CStr::from_ptr(name).to_str().unwrap(), counter.into()) {
         Ok(uri) => std::ffi::CString::new(uri).unwrap().into_raw(),
         Err(e) => panic!("{}", e),
     }
@@ -52,7 +52,7 @@ pub unsafe extern "C" fn c_verify_hotp(
 
     let hotp = to_hotp(config);
 
-    match hotp.verify(to_str(otp), counter, retries) {
+    match hotp.verify(to_str(otp), counter.into(), retries.into()) {
         Ok(verified) => verified.is_some(),
         Err(e) => {
             panic!("{}", e)
