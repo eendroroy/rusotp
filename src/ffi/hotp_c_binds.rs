@@ -37,7 +37,7 @@ pub struct HotpConfig {
 ///
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[export_name = "generate_hotp"]
-pub unsafe extern "C" fn c_generate_hotp(config: HotpConfig, counter: c_ulong) -> *mut c_char {
+pub unsafe extern "C" fn generate_hotp(config: HotpConfig, counter: c_ulong) -> *mut c_char {
     let hotp = to_hotp(config);
 
     match hotp.generate(counter.into()) {
@@ -66,7 +66,7 @@ pub unsafe extern "C" fn c_generate_hotp(config: HotpConfig, counter: c_ulong) -
 ///
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[export_name = "hotp_provisioning_uri"]
-pub unsafe extern "C" fn c_hotp_provisioning_uri(
+pub unsafe extern "C" fn hotp_provisioning_uri(
     config: HotpConfig,
     name: *const c_char,
     counter: c_ulong,
@@ -104,7 +104,7 @@ pub unsafe extern "C" fn c_hotp_provisioning_uri(
 ///
 /// This function is unsafe because it dereferences raw pointers.
 #[export_name = "verify_hotp"]
-pub unsafe extern "C" fn c_verify_hotp(
+pub unsafe extern "C" fn verify_hotp(
     config: HotpConfig,
     otp: *const c_char,
     counter: c_ulong,
