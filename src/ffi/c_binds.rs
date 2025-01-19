@@ -178,7 +178,6 @@ pub unsafe extern "C" fn c_verify_totp(
         drift_ahead as u64,
         drift_behind as u64,
     )
-    .is_some()
 }
 
 #[export_name = "totp_provisioning_uri"]

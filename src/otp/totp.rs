@@ -1,10 +1,12 @@
 use crate::messages::{
-    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID,
-    PROV_OTP_RADIX_INVALID, TIMESTAMP_INVALID, UNSUPPORTED_ALGORITHM,
+    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED,
+    PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY,
+    UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
 
+#[derive(Debug)]
 pub struct TOTP {
     algorithm: Algorithm,
     secret: Vec<u8>,
@@ -21,13 +23,21 @@ impl TOTP {
         radix: u8,
         interval: u8,
     ) -> Result<TOTP, String> {
-        Ok(Self {
-            algorithm,
-            secret: Vec::from(secret),
-            length,
-            radix,
-            interval,
-        })
+        if secret.len() < 1 {
+            Err(SECRET_EMPTY.to_string())
+        } else if length < 1 {
+            Err(OTP_LENGTH_INVALID.to_string())
+        } else if radix < 2 || radix > 36 {
+            Err(RADIX_INVALID.to_string())
+        } else {
+            Ok(Self {
+                algorithm,
+                secret: Vec::from(secret),
+                length,
+                radix,
+                interval,
+            })
+        }
     }
 
     pub fn now(&self) -> Result<String, String> {
@@ -41,17 +51,13 @@ impl TOTP {
     }
 
     pub fn at_timestamp(&self, timestamp: u64) -> Result<String, String> {
-        if timestamp < 1 {
-            Err(TIMESTAMP_INVALID.to_string())
-        } else {
-            otp(
-                &self.algorithm,
-                self.secret.clone(),
-                self.length,
-                self.radix,
-                self.time_code(timestamp),
-            )
-        }
+        otp(
+            &self.algorithm,
+            self.secret.clone(),
+            self.length,
+            self.radix,
+            self.time_code(timestamp),
+        )
     }
 
     pub fn verify(
@@ -64,8 +70,6 @@ impl TOTP {
     ) -> Result<Option<u64>, String> {
         if self.length != otp.len() as u8 {
             Err(OTP_LENGTH_NOT_MATCHED.to_string())
-        } else if timestamp < 1 {
-            Err(TIMESTAMP_INVALID.to_string())
         } else if drift_behind >= timestamp {
             Err(DRIFT_BEHIND_INVALID.to_string())
         } else {
@@ -178,10 +182,10 @@ pub fn verify_totp(
     after: Option<u64>,
     drift_ahead: u64,
     drift_behind: u64,
-) -> Option<u64> {
+) -> bool {
     match TOTP::new(algorithm, secret, length, radix, interval) {
         Ok(totp) => match totp.verify(otp, timestamp, after, drift_ahead, drift_behind) {
-            Ok(verified) => verified,
+            Ok(verified) => verified.is_some(),
             Err(e) => panic!("{}", e),
         },
         Err(e) => panic!("{}", e),

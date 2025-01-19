@@ -38,7 +38,7 @@ fn main() {
                     Some(0),
                     0,
                     0
-                ).is_some(),
+                ),
                 totp_provisioning_uri(
                     Algorithm::SHA1,
                     secret,
@@ -67,7 +67,7 @@ fn main() {
                     Some(0),
                     0,
                     0
-                ).is_some(),
+                ),
             );
         }
     });

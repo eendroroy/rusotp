@@ -5,6 +5,7 @@ use crate::messages::{
 use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
 
+#[derive(Debug)]
 pub struct HOTP {
     algorithm: Algorithm,
     secret: Vec<u8>,
@@ -18,13 +19,13 @@ impl HOTP {
         secret: &str,
         length: u8,
         radix: u8,
-    ) -> Result<HOTP, &'static str> {
+    ) -> Result<HOTP, String> {
         if secret.len() < 1 {
-            Err(SECRET_EMPTY)
+            Err(SECRET_EMPTY.to_string())
         } else if length < 1 {
-            Err(OTP_LENGTH_INVALID)
+            Err(OTP_LENGTH_INVALID.to_string())
         } else if radix < 2 || radix > 36 {
-            Err(RADIX_INVALID)
+            Err(RADIX_INVALID.to_string())
         } else {
             Ok(Self {
                 algorithm,

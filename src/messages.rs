@@ -1,4 +1,3 @@
-pub const COUNTER_INVALID: &str = "Counter must be greater than or equal to 1";
 pub const DRIFT_BEHIND_INVALID: &str = "Drift behind must be less than timestamp";
 pub const INTERVAL_INVALID: &str = "Interval must be greater than or equal to 30";
 pub const OTP_LENGTH_INVALID: &str = "OTP length must be greater than or equal to 1";
@@ -7,5 +6,4 @@ pub const PROV_OTP_LENGTH_INVALID: &str = "OTP length must be 6";
 pub const PROV_OTP_RADIX_INVALID: &str = "Radix must be 10";
 pub const RADIX_INVALID: &str = "Radix must be between 2 and 36 inclusive";
 pub const SECRET_EMPTY: &str = "Secret must not be empty";
-pub const TIMESTAMP_INVALID: &str = "Timestamp must be greater than or equal to 1";
 pub const UNSUPPORTED_ALGORITHM: &str = "Unsupported algorithm";
