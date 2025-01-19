@@ -8,11 +8,6 @@ pub use crate::otp::algorithm::AlgorithmTrait;
 pub use crate::otp::hotp::HOTP;
 pub use crate::otp::totp::TOTP;
 
-pub use crate::otp::totp::generate_totp_at;
-pub use crate::otp::totp::generate_totp_now;
-pub use crate::otp::totp::totp_provisioning_uri;
-pub use crate::otp::totp::verify_totp;
-
 pub use crate::ffi::hotp_c_binds::generate_hotp;
 pub use crate::ffi::hotp_c_binds::hotp_provisioning_uri;
 pub use crate::ffi::hotp_c_binds::verify_hotp;
