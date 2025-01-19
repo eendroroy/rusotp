@@ -1,30 +1,74 @@
-use rusotp::{Algorithm, TOTP};
+use rusotp::{generate_totp_at, generate_totp_now, totp_provisioning_uri, verify_totp, Algorithm};
 
 fn main() {
     let secret = "12345678901234567890";
 
-    let totp_tool = match TOTP::new(Algorithm::SHA1, secret, 6, 10, 30) {
-        Ok(totp_tool) => totp_tool,
-        Err(e) => panic!("{}", e),
-    };
+    let data = vec![
+        (6, 10, 10, 10000, "959738"),
+        (6, 10, 20, 10000, "946818"),
+        (6, 10, 30, 10000, "474706"),
+        (6, 16, 1, 10000, "A4AC65"),
+        (6, 24, 2, 10000, "HIH7EE"),
+        (6, 10, 30, 300, "586609"),
+        (8, 10, 100, 10000, "93583477"),
+        (8, 16, 100, 10000, "23615D75"),
+        (8, 24, 100, 10000, "032D2EKL"),
+        (8, 36, 100, 10000, "009TEJXX"),
+        (4, 36, 1, 10000, "D55X"),
+        (4, 36, 200, 10000, "GZ11"),
+        (4, 36, 31, 10000, "XJTQ"),
+        (4, 36, 44, 10000, "8KE5"),
+    ];
 
-    let totp = match TOTP::at_timestamp(&totp_tool, 31) {
-        Ok(totp) => totp,
-        Err(e) => panic!("{}", e),
-    };
-
-    let totp_is_valid = match TOTP::verify(&totp_tool, &*totp, 59, None, 0, 0) {
-        Ok(verified) => verified.is_some(),
-        Err(e) => panic!("{}", e),
-    };
-
-    let totp_provisioning_uri = match TOTP::provisioning_uri(&totp_tool, "IAM", "test@mail.com") {
-        Ok(totp_provisioning_uri) => totp_provisioning_uri,
-        Err(e) => panic!("{}", e),
-    };
-
-    println!(
-        "TOTP: {}, Valid: {}, Url: {}",
-        totp, totp_is_valid, totp_provisioning_uri
-    );
+    data.iter().for_each(|(length, radix, interval, timestamp, otp)| {
+        if *length == 6 && *radix == 10 && *interval == 30 {
+            println!(
+                "LENGTH: {}, RADIX: {}, INTERVAL: {}, TIMESTAMP: {} \tNOW: {} \tTOTP : {} \tVERIFIED : {}\tURI : {}",
+                length,
+                radix,
+                interval,
+                timestamp,
+                generate_totp_now(Algorithm::SHA1, secret, *length, *radix, *interval),
+                generate_totp_at(Algorithm::SHA1, secret, *length, *radix, *interval, *timestamp),
+                verify_totp(
+                    Algorithm::SHA1,
+                    secret, *length,
+                    *radix, *interval,
+                    otp, *timestamp,
+                    Some(0),
+                    0,
+                    0
+                ),
+                totp_provisioning_uri(
+                    Algorithm::SHA1,
+                    secret,
+                    *length,
+                    *radix,
+                    *interval,
+                    "rusotp",
+                    "user@email.mail"
+                )
+            );
+        } else {
+            println!(
+                "LENGTH: {}, RADIX: {}, INTERVAL: {}, TIMESTAMP: {} \t NOW: {} \tTOTP : {} \tVERIFIED : {}",
+                length,
+                radix,
+                interval,
+                timestamp,
+                generate_totp_now(Algorithm::SHA256, secret, *length, *radix, *interval),
+                generate_totp_at(Algorithm::SHA256, secret, *length, *radix, *interval, *timestamp),
+                verify_totp(
+                    Algorithm::SHA256,
+                    secret, *length,
+                    *radix, *interval,
+                    otp,
+                    *timestamp,
+                    Some(0),
+                    0,
+                    0
+                ),
+            );
+        }
+    });
 }
