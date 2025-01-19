@@ -171,11 +171,11 @@ impl TOTP {
     /// This function returns an error if the interval is less than 30, the length is not 6, the radix is not 10, or the algorithm is not SHA-1.
     pub fn provisioning_uri(&self, issuer: &str, name: &str) -> Result<String, String> {
         if self.interval < 30 {
-            panic!("{}", INTERVAL_INVALID);
+            Err(INTERVAL_INVALID.to_string())
         } else if self.length != 6 {
-            panic!("{}", PROV_OTP_LENGTH_INVALID);
+            Err(PROV_OTP_LENGTH_INVALID.to_string())
         } else if self.radix != 10 {
-            panic!("{}", PROV_OTP_RADIX_INVALID);
+            Err(PROV_OTP_RADIX_INVALID.to_string())
         } else if self.algorithm != Algorithm::SHA1 {
             Err(UNSUPPORTED_ALGORITHM.to_string())
         } else {

@@ -53,9 +53,9 @@ impl AlgorithmTrait for Algorithm {
     /// A `String` representing the algorithm.
     fn to_string(&self) -> String {
         match self {
-            Algorithm::SHA1 => "SHA1".to_string(),
-            Algorithm::SHA256 => "SHA256".to_string(),
-            Algorithm::SHA512 => "SHA512".to_string(),
+            Algorithm::SHA1 => "SHA1".into(),
+            Algorithm::SHA256 => "SHA256".into(),
+            Algorithm::SHA512 => "SHA512".into(),
         }
     }
 
@@ -77,7 +77,7 @@ impl AlgorithmTrait for Algorithm {
             "SHA1" => Algorithm::SHA1,
             "SHA256" => Algorithm::SHA256,
             "SHA512" => Algorithm::SHA512,
-            _ => panic!("{:?}", UNSUPPORTED_ALGORITHM),
+            _ => panic!("{}", UNSUPPORTED_ALGORITHM),
         }
     }
 

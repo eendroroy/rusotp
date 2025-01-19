@@ -1,17 +1,20 @@
 use rusotp::{Algorithm, HOTP};
 
+const ALGORITHM: Algorithm = Algorithm::SHA256;
 const SECRET: &str = "12345678901234567890";
+const LENGTH: u8 = 6;
+const RADIX: u8 = 10;
 
 #[test]
 fn hotp_should_fail_with_empty_secret() {
-    let result = HOTP::new(Algorithm::SHA256, "", 1, 1);
+    let result = HOTP::new(ALGORITHM, "", LENGTH, RADIX);
     assert!(result.is_err(), "Expected an error");
     assert_eq!(result.err().unwrap(), "Secret must not be empty");
 }
 
 #[test]
 fn should_fail_with_otp_length_less_than_1() {
-    let result = HOTP::new(Algorithm::SHA256, SECRET, 0, 10);
+    let result = HOTP::new(ALGORITHM, SECRET, 0, RADIX);
     assert!(result.is_err(), "Expected an error");
     assert_eq!(
         result.err().unwrap(),
@@ -21,7 +24,7 @@ fn should_fail_with_otp_length_less_than_1() {
 
 #[test]
 fn should_fail_with_radix_less_than_2() {
-    let lesser_radix = HOTP::new(Algorithm::SHA256, SECRET, 4, 1);
+    let lesser_radix = HOTP::new(ALGORITHM, SECRET, LENGTH, 1);
     assert!(lesser_radix.is_err(), "Expected an error");
     assert_eq!(
         lesser_radix.err().unwrap(),
@@ -31,7 +34,7 @@ fn should_fail_with_radix_less_than_2() {
 
 #[test]
 fn should_fail_with_radix_greater_than_36() {
-    let greater_radix = HOTP::new(Algorithm::SHA256, SECRET, 4, 37);
+    let greater_radix = HOTP::new(ALGORITHM, SECRET, LENGTH, 37);
     assert!(greater_radix.is_err(), "Expected an error");
     assert_eq!(
         greater_radix.err().unwrap(),
@@ -41,7 +44,7 @@ fn should_fail_with_radix_greater_than_36() {
 
 #[test]
 fn should_fail_with_otp_length_not_matched() {
-    let hotp = HOTP::new(Algorithm::SHA256, SECRET, 4, 10).unwrap();
+    let hotp = HOTP::new(ALGORITHM, SECRET, LENGTH, RADIX).unwrap();
     let result = hotp.verify("12345", 10, 0);
 
     assert!(result.is_err(), "Expected an error");
@@ -70,13 +73,14 @@ fn generated_otp_should_be_verified() {
         (Algorithm::SHA256, 4, 36, 4, "ROTO"),
     ];
 
-    data.iter().for_each(|(algorithm, length, radix, counter, otp)| {
-        let hotp = HOTP::new(*algorithm, SECRET, *length, *radix).unwrap();
+    data.iter()
+        .for_each(|(algorithm, length, radix, counter, otp)| {
+            let hotp = HOTP::new(*algorithm, SECRET, *length, *radix).unwrap();
 
-        let result = hotp.generate(*counter);
-        assert!(result.is_ok(), "Expected a result");
-        assert_eq!(result.unwrap(), otp.to_string());
-    });
+            let result = hotp.generate(*counter);
+            assert!(result.is_ok(), "Expected a result");
+            assert_eq!(result.unwrap(), otp.to_string());
+        });
 }
 
 #[test]
@@ -169,7 +173,7 @@ fn generated_otp_gets_verified() {
 
 #[test]
 fn provisioning_uri_should_be_correct() {
-    let hotp_tool = HOTP::new(Algorithm::SHA1, SECRET, 6, 10).unwrap();
+    let hotp_tool = HOTP::new(Algorithm::SHA1, SECRET, LENGTH, RADIX).unwrap();
 
     let result = hotp_tool.provisioning_uri("test", 0);
 
@@ -182,7 +186,7 @@ fn provisioning_uri_should_be_correct() {
 
 #[test]
 fn provisioning_uri_should_fail_with_sha256() {
-    let hotp_tool = HOTP::new(Algorithm::SHA256, SECRET, 6, 10).unwrap();
+    let hotp_tool = HOTP::new(Algorithm::SHA256, SECRET, LENGTH, RADIX).unwrap();
 
     let result = hotp_tool.provisioning_uri("test", 0);
 
@@ -192,7 +196,7 @@ fn provisioning_uri_should_fail_with_sha256() {
 
 #[test]
 fn provisioning_uri_should_fail_with_sha512() {
-    let hotp_tool = HOTP::new(Algorithm::SHA512, SECRET, 6, 10).unwrap();
+    let hotp_tool = HOTP::new(Algorithm::SHA512, SECRET, LENGTH, RADIX).unwrap();
 
     let result = hotp_tool.provisioning_uri("test", 0);
 
@@ -202,7 +206,7 @@ fn provisioning_uri_should_fail_with_sha512() {
 
 #[test]
 fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
-    let hotp_tool = HOTP::new(Algorithm::SHA1, SECRET, 4, 10).unwrap();
+    let hotp_tool = HOTP::new(ALGORITHM, SECRET, 5, RADIX).unwrap();
 
     let result = hotp_tool.provisioning_uri("test", 0);
 
@@ -212,7 +216,7 @@ fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
 
 #[test]
 fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
-    let hotp_tool = HOTP::new(Algorithm::SHA1, SECRET, 8, 10).unwrap();
+    let hotp_tool = HOTP::new(ALGORITHM, SECRET, 7, RADIX).unwrap();
 
     let result = hotp_tool.provisioning_uri("test", 0);
 
@@ -222,7 +226,7 @@ fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
 
 #[test]
 fn provisioning_uri_should_fail_with_radix_less_than_10() {
-    let hotp_tool = HOTP::new(Algorithm::SHA1, SECRET, 6, 9).unwrap();
+    let hotp_tool = HOTP::new(ALGORITHM, SECRET, LENGTH, 9).unwrap();
 
     let result = hotp_tool.provisioning_uri("test", 0);
 
@@ -232,7 +236,7 @@ fn provisioning_uri_should_fail_with_radix_less_than_10() {
 
 #[test]
 fn provisioning_uri_should_fail_with_radix_more_than_10() {
-    let hotp_tool = HOTP::new(Algorithm::SHA1, SECRET, 6, 11).unwrap();
+    let hotp_tool = HOTP::new(ALGORITHM, SECRET, LENGTH, 11).unwrap();
 
     let result = hotp_tool.provisioning_uri("test", 0);
 
