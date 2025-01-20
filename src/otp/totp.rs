@@ -1,7 +1,7 @@
 use crate::messages::{
-    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED,
-    PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY,
-    UNSUPPORTED_ALGORITHM,
+    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, INVALID_AFTER_TIMESTAMP, OTP_LENGTH_INVALID,
+    OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID,
+    SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
@@ -106,7 +106,7 @@ impl TOTP {
     ///
     /// * `otp` - The OTP to be verified as a string.
     /// * `timestamp` - A timestamp value used in the OTP verification.
-    /// * `after` - An optional timestamp value after which the OTP is valid.
+    /// * `after_timestamp` - An optional timestamp value after which the OTP is valid.
     /// * `drift_ahead` - The allowed drift ahead in seconds.
     /// * `drift_behind` - The allowed drift behind in seconds.
     ///
@@ -121,7 +121,7 @@ impl TOTP {
         &self,
         otp: &str,
         timestamp: u64,
-        after: Option<u64>,
+        after_timestamp: Option<u64>,
         drift_ahead: u64,
         drift_behind: u64,
     ) -> Result<Option<u64>, String> {
@@ -129,13 +129,14 @@ impl TOTP {
             Err(OTP_LENGTH_NOT_MATCHED.to_string())
         } else if drift_behind >= timestamp {
             Err(DRIFT_BEHIND_INVALID.to_string())
+        } else if after_timestamp.is_some() && after_timestamp.unwrap() > timestamp {
+            Err(INVALID_AFTER_TIMESTAMP.to_string())
         } else {
             let mut start = timestamp - drift_behind;
 
-            if let Some(after_time) = after {
-                let after_code = after_time;
-                if start < after_code {
-                    start = after_code;
+            if let Some(after) = after_timestamp {
+                if start <= after {
+                    start = after;
                 }
             }
 
@@ -148,7 +149,7 @@ impl TOTP {
                             return Ok(Some(i));
                         }
                     }
-                    Err(e) => panic!("{}", e),
+                    Err(e) => return Err(e),
                 }
             }
             Ok(None)
@@ -189,11 +190,18 @@ impl TOTP {
                 String::new()
             };
 
-            let query = format!(
-                "secret={}&issuer={}",
-                urlencoding::encode(&String::from_utf8_lossy(&self.secret)),
-                urlencoding::encode(&issuer)
-            );
+            let query = if !issuer.is_empty() {
+                format!(
+                    "secret={}&issuer={}",
+                    urlencoding::encode(&String::from_utf8_lossy(&self.secret)),
+                    urlencoding::encode(&issuer)
+                )
+            } else {
+                format!(
+                    "secret={}",
+                    urlencoding::encode(&String::from_utf8_lossy(&self.secret)),
+                )
+            };
 
             Ok(format!(
                 "otpauth://totp/{}{}?{}",
