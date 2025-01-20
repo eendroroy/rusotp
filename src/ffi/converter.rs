@@ -1,6 +1,6 @@
+use crate::{Algorithm, AlgorithmTrait, HOTP, TOTP};
 use std::ffi::CStr;
 use std::os::raw::c_char;
-use crate::{Algorithm, AlgorithmTrait, HOTP, TOTP};
 
 pub(crate) unsafe fn to_string(ptr: *const c_char) -> String {
     CStr::from_ptr(ptr).to_str().unwrap().to_string()
