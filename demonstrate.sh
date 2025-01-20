@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+echo "Running tests"
+cargo test
+echo
+
+echo "Building lib"
+cargo build --release
+echo
+
+echo "Running examples hotp"
+cargo run --example hotp
+echo
+
+echo "Running examples totp"
+cargo run --example totp
+echo
+
 echo "Generating header"
 cbindgen --config c_examples/cbindgen.toml --crate rusotp --output c_examples/rusotp.h
 echo
