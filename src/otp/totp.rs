@@ -42,6 +42,17 @@ impl TOTP {
     /// # Errors
     ///
     /// This function returns an error if the secret is empty, the length is less than 1, or the radix is not between 2 and 36.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::TOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let otp = totp.now().unwrap();
+    /// println!("Generated OTP: {}", otp);
+    /// ```
     pub fn new(
         algorithm: Algorithm,
         secret: &str,
@@ -71,6 +82,17 @@ impl TOTP {
     /// # Returns
     ///
     /// A `Result` containing the generated OTP as a `String` if successful, or a `String` with the error message if the generation fails.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::TOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let otp = totp.now().unwrap();
+    /// println!("Generated OTP: {}", otp);
+    /// ```
     pub fn now(&self) -> Result<String, String> {
         otp(
             &self.algorithm,
@@ -90,6 +112,17 @@ impl TOTP {
     /// # Returns
     ///
     /// A `Result` containing the generated OTP as a `String` if successful, or a `String` with the error message if the generation fails.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::TOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let otp = totp.at_timestamp(1622548800).unwrap();
+    /// println!("Generated OTP: {}", otp);
+    /// ```
     pub fn at_timestamp(&self, timestamp: u64) -> Result<String, String> {
         otp(
             &self.algorithm,
@@ -117,6 +150,18 @@ impl TOTP {
     /// # Errors
     ///
     /// This function returns an error if the length of the provided OTP does not match the expected length or if the drift behind is greater than or equal to the timestamp.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::TOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let otp = totp.at_timestamp(1622548800).unwrap();
+    /// let verified = totp.verify(&otp, 1622548800, None, 30, 30).unwrap();
+    /// assert_eq!(verified, Some(1622548800));
+    /// ```
     pub fn verify(
         &self,
         otp: &str,
@@ -170,6 +215,17 @@ impl TOTP {
     /// # Errors
     ///
     /// This function returns an error if the interval is less than 30, the length is not 6, the radix is not 10, or the algorithm is not SHA-1.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::TOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let uri = totp.provisioning_uri("ExampleIssuer", "example@example.com").unwrap();
+    /// println!("Provisioning URI: {}", uri);
+    /// ```
     pub fn provisioning_uri(&self, issuer: &str, name: &str) -> Result<String, String> {
         if self.interval < 30 {
             Err(INTERVAL_INVALID.to_string())
@@ -212,15 +268,6 @@ impl TOTP {
         }
     }
 
-    /// Converts a timestamp to a time code based on the interval.
-    ///
-    /// # Arguments
-    ///
-    /// * `timestamp` - A timestamp value.
-    ///
-    /// # Returns
-    ///
-    /// A `u64` representing the time code.
     fn time_code(&self, timestamp: u64) -> u64 {
         timestamp / self.interval as u64
     }

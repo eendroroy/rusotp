@@ -13,6 +13,17 @@ use crate::otp::otp::otp;
 /// * `secret` - The shared secret key used for HOTP generation.
 /// * `length` - The length of the generated OTP.
 /// * `radix` - The radix (base) used for the OTP representation.
+///
+/// # Example
+///
+/// ```
+/// use rusotp::HOTP;
+/// use rusotp::Algorithm;
+///
+/// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10).unwrap();
+/// let otp = hotp.generate(1).unwrap();
+/// println!("Generated OTP: {}", otp);
+/// ```
 #[derive(Debug)]
 pub struct HOTP {
     algorithm: Algorithm,
@@ -38,6 +49,15 @@ impl HOTP {
     /// # Errors
     ///
     /// This function returns an error if the secret is empty, the length is less than 1, or the radix is not between 2 and 36.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::HOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10).unwrap();
+    /// ```
     pub fn new(algorithm: Algorithm, secret: &str, length: u8, radix: u8) -> Result<HOTP, String> {
         if secret.len() < 1 {
             Err(SECRET_EMPTY.to_string())
@@ -64,6 +84,17 @@ impl HOTP {
     /// # Returns
     ///
     /// A `Result` containing the generated OTP as a `String` if successful, or a `String` with the error message if the generation fails.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::HOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10).unwrap();
+    /// let otp = hotp.generate(1).unwrap();
+    /// println!("Generated OTP: {}", otp);
+    /// ```
     pub fn generate(&self, counter: u64) -> Result<String, String> {
         otp(
             &self.algorithm,
@@ -89,6 +120,18 @@ impl HOTP {
     /// # Errors
     ///
     /// This function returns an error if the length of the provided OTP does not match the expected length.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::HOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10).unwrap();
+    /// let otp = hotp.generate(1).unwrap();
+    /// let verified = hotp.verify(&otp, 1, 0).unwrap();
+    /// assert_eq!(verified, Some(1));
+    /// ```
     pub fn verify(&self, otp: &str, counter: u64, retries: u64) -> Result<Option<u64>, String> {
         if self.length != otp.len() as u8 {
             Err(OTP_LENGTH_NOT_MATCHED.to_string())
@@ -121,6 +164,17 @@ impl HOTP {
     /// # Errors
     ///
     /// This function returns an error if the length is not 6, the radix is not 10, or the algorithm is not SHA-1.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::HOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10).unwrap();
+    /// let uri = hotp.provisioning_uri("rusotp", 1).unwrap();
+    /// println!("Provisioning URI: {}", uri);
+    /// ```
     pub fn provisioning_uri(&self, name: &str, initial_count: u64) -> Result<String, &'static str> {
         if self.length != 6 {
             Err(PROV_OTP_LENGTH_INVALID)
