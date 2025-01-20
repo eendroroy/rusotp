@@ -1,4 +1,4 @@
-name: rusotp
+name: Build and run tests on Ubuntu, Macos and Windows
 
 on:
   push:
