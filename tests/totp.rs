@@ -61,7 +61,7 @@ fn should_fail_with_otp_length_not_matched() {
 }
 
 #[test]
-fn should_fail_if_after_timestamp_is_greater_than_timestamp() {
+fn should_fail_if_after_is_greater_than_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
     let otp = totp.at_timestamp(10000).unwrap();
     let result = totp.verify(&otp, 10000, Some(10000 + 1), DRIFT_AHEAD, DRIFT_BEHIND);
@@ -74,7 +74,7 @@ fn should_fail_if_after_timestamp_is_greater_than_timestamp() {
 }
 
 #[test]
-fn should_fail_if_drift_behind_is_greater_than_timestamp() {
+fn should_fail_if_drift_behind_is_greater_than_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
     let otp = totp.at_timestamp(10000).unwrap();
     let result = totp.verify(&otp, 10000, Some(10000), DRIFT_AHEAD, 10000 + 1);
@@ -95,7 +95,7 @@ fn should_generate_otp_now() {
 }
 
 #[test]
-fn should_generate_otp_now_using_current_timestamp() {
+fn should_generate_otp_now_using_current_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
     let now = totp.now().unwrap();
@@ -129,7 +129,7 @@ fn should_not_verify_after_interval() {
 }
 
 #[test]
-fn should_verify_with_after_timestamp_less_than_timestamp() {
+fn should_verify_with_after_less_than_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
     let now = totp.now().unwrap();
@@ -145,7 +145,7 @@ fn should_verify_with_after_timestamp_less_than_timestamp() {
 }
 
 #[test]
-fn should_verify_with_after_timestamp_less_than_timestamp_and_drift_behind() {
+fn should_verify_with_after_less_than_at_and_drift_behind() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
     let now = totp.now().unwrap();
@@ -161,7 +161,7 @@ fn should_verify_with_after_timestamp_less_than_timestamp_and_drift_behind() {
 }
 
 #[test]
-fn should_not_verify_with_after_timestamp_greater_than_timestamp() {
+fn should_not_verify_with_after_greater_than_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
     let now = totp.now().unwrap();
@@ -174,11 +174,14 @@ fn should_not_verify_with_after_timestamp_greater_than_timestamp() {
     );
 
     assert!(verify.is_err(), "OTP should not be verified");
-    assert_eq!(verify.err().unwrap(), "After timestamp must be less than or equal to timestamp");
+    assert_eq!(
+        verify.err().unwrap(),
+        "After timestamp must be less than or equal to timestamp"
+    );
 }
 
 #[test]
-fn should_verify_without_after_timestamp() {
+fn should_verify_without_after() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
     let now = totp.now().unwrap();
