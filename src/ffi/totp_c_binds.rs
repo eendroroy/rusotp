@@ -38,11 +38,9 @@ pub struct TotpConfig {
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[export_name = "generate_totp_now"]
 pub unsafe extern "C" fn c_generate_totp_now(config: TotpConfig) -> *const c_char {
-    let totp = to_totp(config);
-    match totp.now() {
-        Ok(otp) => std::ffi::CString::new(otp).unwrap().into_raw(),
-        Err(e) => panic!("{}", e),
-    }
+    std::ffi::CString::new(to_totp(config).now().unwrap())
+        .unwrap()
+        .into_raw()
 }
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration and timestamp.
@@ -64,12 +62,13 @@ pub unsafe extern "C" fn c_generate_totp_now(config: TotpConfig) -> *const c_cha
 ///
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[export_name = "generate_totp_at"]
-pub unsafe extern "C" fn c_generate_totp_at(config: TotpConfig, timestamp: c_ulong) -> *const c_char {
-    let totp = to_totp(config);
-    match totp.at_timestamp(timestamp.into()) {
-        Ok(otp) => std::ffi::CString::new(otp).unwrap().into_raw(),
-        Err(e) => panic!("{}", e),
-    }
+pub unsafe extern "C" fn c_generate_totp_at(
+    config: TotpConfig,
+    timestamp: c_ulong,
+) -> *const c_char {
+    std::ffi::CString::new(to_totp(config).at_timestamp(timestamp.into()).unwrap())
+        .unwrap()
+        .into_raw()
 }
 
 /// Verifies a TOTP (Time-based One-Time Password) based on the provided configuration, OTP, timestamp, and drift parameters.

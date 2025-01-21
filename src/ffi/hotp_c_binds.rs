@@ -38,12 +38,9 @@ pub struct HotpConfig {
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[export_name = "generate_hotp"]
 pub unsafe extern "C" fn generate_hotp(config: HotpConfig, counter: c_ulong) -> *const c_char {
-    let hotp = to_hotp(config);
-
-    match hotp.generate(counter.into()) {
-        Ok(otp) => std::ffi::CString::new(otp).unwrap().into_raw(),
-        Err(e) => panic!("{}", e),
-    }
+    std::ffi::CString::new(to_hotp(config).generate(counter.into()).unwrap())
+        .unwrap()
+        .into_raw()
 }
 
 /// Generates a provisioning URI for HOTP (HMAC-based One-Time Password) based on the provided configuration, name, and counter.
