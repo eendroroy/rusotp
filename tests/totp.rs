@@ -69,7 +69,7 @@ fn should_fail_if_after_is_greater_than_at() {
     assert!(result.is_err(), "Expected an error");
     assert_eq!(
         result.err().unwrap(),
-        "After timestamp must be less than or equal to timestamp"
+        "After must be less than or equal to at"
     );
 }
 
@@ -82,7 +82,7 @@ fn should_fail_if_drift_behind_is_greater_than_at() {
     assert!(result.is_err(), "Expected an error");
     assert_eq!(
         result.err().unwrap(),
-        "Drift behind must be less than timestamp"
+        "Drift behind must be less than at"
     );
 }
 
@@ -176,7 +176,7 @@ fn should_not_verify_with_after_greater_than_at() {
     assert!(verify.is_err(), "OTP should not be verified");
     assert_eq!(
         verify.err().unwrap(),
-        "After timestamp must be less than or equal to timestamp"
+        "After must be less than or equal to at"
     );
 }
 

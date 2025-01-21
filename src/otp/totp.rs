@@ -1,5 +1,5 @@
 use crate::messages::{
-    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, INVALID_AFTER_TIMESTAMP, OTP_LENGTH_INVALID,
+    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, INVALID_AFTER, OTP_LENGTH_INVALID,
     OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID,
     SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
@@ -219,7 +219,7 @@ impl TOTP {
         } else if drift_behind >= at {
             Err(DRIFT_BEHIND_INVALID.to_string())
         } else if after.is_some() && after.unwrap() > at {
-            Err(INVALID_AFTER_TIMESTAMP.to_string())
+            Err(INVALID_AFTER.to_string())
         } else {
             let mut start = at - drift_behind;
 
