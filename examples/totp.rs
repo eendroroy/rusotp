@@ -34,7 +34,7 @@ fn main() {
                 timestamp,
                 totp.generate().unwrap(),
                 totp.generate_at(*timestamp).unwrap(),
-                totp.verify(otp, *timestamp, Some(0), 0, 0).unwrap().is_some(),
+                totp.verify_at(otp, *timestamp, Some(0), 0, 0).unwrap().is_some(),
                 totp.provisioning_uri("rusotp", "user@email.mail").unwrap()
             );
         } else {
@@ -46,7 +46,7 @@ fn main() {
                 timestamp,
                 totp.generate().unwrap(),
                 totp.generate_at(*timestamp).unwrap(),
-                totp.verify(otp, *timestamp, Some(0), 0, 0).unwrap().is_some(),
+                totp.verify_at(otp, *timestamp, Some(0), 0, 0).unwrap().is_some(),
             );
         }
     });

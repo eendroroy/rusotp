@@ -108,7 +108,7 @@ pub unsafe extern "C" fn c_verify_totp(
 
     let totp = to_totp(config);
 
-    match totp.verify(
+    match totp.verify_at(
         to_str(otp),
         timestamp.into(),
         Some(after as u64),

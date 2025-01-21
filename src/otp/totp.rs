@@ -133,13 +133,57 @@ impl TOTP {
         )
     }
 
+    /// Verifies an OTP based on the current time and drift values.
+    ///
+    /// # Arguments
+    ///
+    /// * `otp` - The OTP to be verified as a string.
+    /// * `after` - An optional timestamp value after which the OTP is valid.
+    /// * `drift_ahead` - The allowed drift ahead in seconds.
+    /// * `drift_behind` - The allowed drift behind in seconds.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing an `Option<u64>` with the timestamp value if the OTP is verified, or `None` if the OTP is not verified. Returns a `String` with the error message if the verification fails.
+    ///
+    /// # Errors
+    ///
+    /// This function returns an error if the length of the provided OTP does not match the expected length or if the drift behind is greater than or equal to the current timestamp.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::TOTP;
+    /// use rusotp::Algorithm;
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let otp = totp.generate().unwrap();
+    /// let verified = totp.verify(&otp, None, 30, 30).unwrap();
+    /// assert!(verified.is_some());
+    /// ```
+    pub fn verify(
+        &self,
+        otp: &str,
+        after: Option<u64>,
+        drift_ahead: u64,
+        drift_behind: u64,
+    ) -> Result<Option<u64>, String> {
+        self.verify_at(
+            otp,
+            std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
+            after,
+            drift_ahead,
+            drift_behind,
+        )
+    }
+
     /// Verifies an OTP based on the provided timestamp and drift values.
     ///
     /// # Arguments
     ///
     /// * `otp` - The OTP to be verified as a string.
-    /// * `timestamp` - A timestamp value used in the OTP verification.
-    /// * `after_timestamp` - An optional timestamp value after which the OTP is valid.
+    /// * `at` - A timestamp value used in the OTP verification.
+    /// * `after` - An optional timestamp value after which the OTP is valid.
     /// * `drift_ahead` - The allowed drift ahead in seconds.
     /// * `drift_behind` - The allowed drift behind in seconds.
     ///
@@ -159,10 +203,10 @@ impl TOTP {
     ///
     /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
     /// let otp = totp.generate_at(1622548800).unwrap();
-    /// let verified = totp.verify(&otp, 1622548800, None, 30, 30).unwrap();
+    /// let verified = totp.verify_at(&otp, 1622548800, None, 30, 30).unwrap();
     /// assert_eq!(verified, Some(1622548800));
     /// ```
-    pub fn verify(
+    pub fn verify_at(
         &self,
         otp: &str,
         at: u64,
