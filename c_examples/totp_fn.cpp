@@ -29,9 +29,9 @@ int main() {
         TotpConfig config = data[i].config;
         unsigned long timestamp = data[i].timestamp;
 
-        const char *otp_now =  generate_totp_now(config);
-        const char *otp_at = generate_totp_at(config, timestamp);
-        const char *verified = verify_totp(config, otp_at, timestamp, 0, 0, 0) ? "true" : "false";
+        const char *otp_now =  totp_generate(config);
+        const char *otp_at = totp_generate_at(config, timestamp);
+        const char *verified = totp_verify_at(config, otp_at, timestamp, 0, 0, 0) ? "true" : "false";
 
         if (config.length == 6 && config.radix == 10 && config.interval == 30 && strcmp(config.algorithm, "SHA1") == 0) {
             printf(
