@@ -29,8 +29,8 @@ int main() {
         HotpConfig config = data[i].config;
         unsigned long counter = data[i].counter;
 
-        const char *otp = generate_hotp(config, counter);
-        const char *verified = verify_hotp(config, otp, counter, 0) ? "true" : "false";
+        const char *otp = hotp_generate(config, counter);
+        const char *verified = hotp_verify(config, otp, counter, 0) ? "true" : "false";
 
         if (config.radix == 10 && config.length == 6 && strcmp(config.algorithm, "SHA1") == 0) {
             const char *uri = hotp_provisioning_uri(config, "rusotp", counter);
