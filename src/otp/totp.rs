@@ -165,27 +165,27 @@ impl TOTP {
     pub fn verify(
         &self,
         otp: &str,
-        timestamp: u64,
-        after_timestamp: Option<u64>,
+        at: u64,
+        after: Option<u64>,
         drift_ahead: u64,
         drift_behind: u64,
     ) -> Result<Option<u64>, String> {
         if self.length != otp.len() as u8 {
             Err(OTP_LENGTH_NOT_MATCHED.to_string())
-        } else if drift_behind >= timestamp {
+        } else if drift_behind >= at {
             Err(DRIFT_BEHIND_INVALID.to_string())
-        } else if after_timestamp.is_some() && after_timestamp.unwrap() > timestamp {
+        } else if after.is_some() && after.unwrap() > at {
             Err(INVALID_AFTER_TIMESTAMP.to_string())
         } else {
-            let mut start = timestamp - drift_behind;
+            let mut start = at - drift_behind;
 
-            if let Some(after) = after_timestamp {
-                if start < after {
-                    start = after;
+            if let Some(after_value) = after {
+                if start < after_value {
+                    start = after_value;
                 }
             }
 
-            let end = timestamp + drift_ahead;
+            let end = at + drift_ahead;
 
             for i in start..=end {
                 match self.at_timestamp(i) {
