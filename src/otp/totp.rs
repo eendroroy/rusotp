@@ -180,7 +180,7 @@ impl TOTP {
             let mut start = timestamp - drift_behind;
 
             if let Some(after) = after_timestamp {
-                if start <= after {
+                if start < after {
                     start = after;
                 }
             }
