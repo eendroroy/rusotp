@@ -48,3 +48,6 @@ pub(crate) unsafe fn to_totp(config: crate::ffi::totp_c_binds::TotpConfig) -> TO
         Err(e) => panic!("{}", e),
     }
 }
+
+#[cfg(test)]
+mod converter_test;
