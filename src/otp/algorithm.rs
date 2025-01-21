@@ -28,21 +28,11 @@ pub trait AlgorithmTrait {
 /// * `SHA1` - Represents the SHA-1 hashing algorithm.
 /// * `SHA256` - Represents the SHA-256 hashing algorithm.
 /// * `SHA512` - Represents the SHA-512 hashing algorithm.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Algorithm {
     SHA1,
     SHA256,
     SHA512,
-}
-
-impl PartialEq for Algorithm {
-    fn eq(&self, other: &Self) -> bool {
-        self.to_string() == other.to_string()
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        self.to_string() != other.to_string()
-    }
 }
 
 impl AlgorithmTrait for Algorithm {
@@ -121,3 +111,6 @@ impl AlgorithmTrait for Algorithm {
         }
     }
 }
+
+#[cfg(test)]
+mod algorithm_test;
