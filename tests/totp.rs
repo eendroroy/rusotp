@@ -63,7 +63,7 @@ fn should_fail_with_otp_length_not_matched() {
 #[test]
 fn should_fail_if_after_is_greater_than_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
-    let otp = totp.at_timestamp(10000).unwrap();
+    let otp = totp.generate_at(10000).unwrap();
     let result = totp.verify(&otp, 10000, Some(10000 + 1), DRIFT_AHEAD, DRIFT_BEHIND);
 
     assert!(result.is_err(), "Expected an error");
@@ -76,7 +76,7 @@ fn should_fail_if_after_is_greater_than_at() {
 #[test]
 fn should_fail_if_drift_behind_is_greater_than_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
-    let otp = totp.at_timestamp(10000).unwrap();
+    let otp = totp.generate_at(10000).unwrap();
     let result = totp.verify(&otp, 10000, Some(10000), DRIFT_AHEAD, 10000 + 1);
 
     assert!(result.is_err(), "Expected an error");
@@ -89,7 +89,7 @@ fn should_fail_if_drift_behind_is_greater_than_at() {
 #[test]
 fn should_generate_otp_now() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
-    let otp = totp.now().unwrap();
+    let otp = totp.generate().unwrap();
 
     assert_eq!(otp.len(), LENGTH as usize);
 }
@@ -98,9 +98,9 @@ fn should_generate_otp_now() {
 fn should_generate_otp_now_using_current_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
-    let now = totp.now().unwrap();
+    let now = totp.generate().unwrap();
     let at = totp
-        .at_timestamp(std::time::UNIX_EPOCH.elapsed().unwrap().as_secs())
+        .generate_at(std::time::UNIX_EPOCH.elapsed().unwrap().as_secs())
         .unwrap();
 
     assert_eq!(now.len(), LENGTH as usize, "Expected OTP length to be 6");
@@ -112,7 +112,7 @@ fn should_generate_otp_now_using_current_at() {
 fn should_verify_within_interval() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
-    let now = totp.at_timestamp(1).unwrap();
+    let now = totp.generate_at(1).unwrap();
     let verify = totp.verify(&now, 29, Some(AFTER), DRIFT_AHEAD, DRIFT_BEHIND);
 
     assert!(verify.unwrap().is_some(), "OTP should be verified");
@@ -122,7 +122,7 @@ fn should_verify_within_interval() {
 fn should_not_verify_after_interval() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
-    let now = totp.at_timestamp(1).unwrap();
+    let now = totp.generate_at(1).unwrap();
     let verify = totp.verify(&now, 30, Some(AFTER), DRIFT_AHEAD, DRIFT_BEHIND);
 
     assert!(verify.unwrap().is_none(), "OTP should not be verified");
@@ -132,7 +132,7 @@ fn should_not_verify_after_interval() {
 fn should_verify_with_after_less_than_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
-    let now = totp.now().unwrap();
+    let now = totp.generate().unwrap();
     let verify = totp.verify(
         &now,
         std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
@@ -148,7 +148,7 @@ fn should_verify_with_after_less_than_at() {
 fn should_verify_with_after_less_than_at_and_drift_behind() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
-    let now = totp.now().unwrap();
+    let now = totp.generate().unwrap();
     let verify = totp.verify(
         &now,
         std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
@@ -164,7 +164,7 @@ fn should_verify_with_after_less_than_at_and_drift_behind() {
 fn should_not_verify_with_after_greater_than_at() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
-    let now = totp.now().unwrap();
+    let now = totp.generate().unwrap();
     let verify = totp.verify(
         &now,
         std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
@@ -184,7 +184,7 @@ fn should_not_verify_with_after_greater_than_at() {
 fn should_verify_without_after() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
-    let now = totp.now().unwrap();
+    let now = totp.generate().unwrap();
     let verify = totp.verify(
         &now,
         std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
@@ -200,7 +200,7 @@ fn should_verify_without_after() {
 fn should_verify_with_drift_behind() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
-    let now = totp.at_timestamp(90).unwrap();
+    let now = totp.generate_at(90).unwrap();
     let verify = totp.verify(&now, 91, Some(AFTER), DRIFT_AHEAD, 1);
 
     assert!(verify.unwrap().is_some(), "OTP should be verified");
@@ -210,7 +210,7 @@ fn should_verify_with_drift_behind() {
 fn should_verify_with_drift_ahead() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
-    let now = totp.at_timestamp(90).unwrap();
+    let now = totp.generate_at(90).unwrap();
     let verify = totp.verify(&now, 89, Some(AFTER), 1, DRIFT_BEHIND);
 
     assert!(verify.unwrap().is_some(), "OTP should be verified");

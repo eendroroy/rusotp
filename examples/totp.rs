@@ -32,8 +32,8 @@ fn main() {
                 radix,
                 interval,
                 timestamp,
-                totp.now().unwrap(),
-                totp.at_timestamp(*timestamp).unwrap(),
+                totp.generate().unwrap(),
+                totp.generate_at(*timestamp).unwrap(),
                 totp.verify(otp, *timestamp, Some(0), 0, 0).unwrap().is_some(),
                 totp.provisioning_uri("rusotp", "user@email.mail").unwrap()
             );
@@ -44,8 +44,8 @@ fn main() {
                 radix,
                 interval,
                 timestamp,
-                totp.now().unwrap(),
-                totp.at_timestamp(*timestamp).unwrap(),
+                totp.generate().unwrap(),
+                totp.generate_at(*timestamp).unwrap(),
                 totp.verify(otp, *timestamp, Some(0), 0, 0).unwrap().is_some(),
             );
         }

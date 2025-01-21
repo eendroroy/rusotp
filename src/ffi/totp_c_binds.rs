@@ -38,7 +38,7 @@ pub struct TotpConfig {
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[export_name = "generate_totp_now"]
 pub unsafe extern "C" fn c_generate_totp_now(config: TotpConfig) -> *const c_char {
-    std::ffi::CString::new(to_totp(config).now().unwrap())
+    std::ffi::CString::new(to_totp(config).generate().unwrap())
         .unwrap()
         .into_raw()
 }
@@ -66,7 +66,7 @@ pub unsafe extern "C" fn c_generate_totp_at(
     config: TotpConfig,
     timestamp: c_ulong,
 ) -> *const c_char {
-    std::ffi::CString::new(to_totp(config).at_timestamp(timestamp.into()).unwrap())
+    std::ffi::CString::new(to_totp(config).generate_at(timestamp.into()).unwrap())
         .unwrap()
         .into_raw()
 }

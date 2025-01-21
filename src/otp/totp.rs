@@ -50,7 +50,7 @@ impl TOTP {
     /// use rusotp::Algorithm;
     ///
     /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
-    /// let otp = totp.now().unwrap();
+    /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
     pub fn new(
@@ -90,10 +90,10 @@ impl TOTP {
     /// use rusotp::Algorithm;
     ///
     /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
-    /// let otp = totp.now().unwrap();
+    /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
-    pub fn now(&self) -> Result<String, String> {
+    pub fn generate(&self) -> Result<String, String> {
         otp(
             &self.algorithm,
             self.secret.clone(),
@@ -120,10 +120,10 @@ impl TOTP {
     /// use rusotp::Algorithm;
     ///
     /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
-    /// let otp = totp.at_timestamp(1622548800).unwrap();
+    /// let otp = totp.generate_at(1622548800).unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
-    pub fn at_timestamp(&self, timestamp: u64) -> Result<String, String> {
+    pub fn generate_at(&self, timestamp: u64) -> Result<String, String> {
         otp(
             &self.algorithm,
             self.secret.clone(),
@@ -158,7 +158,7 @@ impl TOTP {
     /// use rusotp::Algorithm;
     ///
     /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
-    /// let otp = totp.at_timestamp(1622548800).unwrap();
+    /// let otp = totp.generate_at(1622548800).unwrap();
     /// let verified = totp.verify(&otp, 1622548800, None, 30, 30).unwrap();
     /// assert_eq!(verified, Some(1622548800));
     /// ```
@@ -188,7 +188,7 @@ impl TOTP {
             let end = at + drift_ahead;
 
             for i in start..=end {
-                match self.at_timestamp(i) {
+                match self.generate_at(i) {
                     Ok(generated_otp) => {
                         if otp == generated_otp {
                             return Ok(Some(i));
