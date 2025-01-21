@@ -15,7 +15,7 @@ use crate::otp::otp::otp;
 /// * `length` - The length of the generated OTP.
 /// * `radix` - The radix (base) used for the OTP representation.
 /// * `interval` - The time interval in seconds for TOTP generation.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct TOTP {
     algorithm: Algorithm,
     secret: Vec<u8>,

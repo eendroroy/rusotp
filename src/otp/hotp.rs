@@ -24,7 +24,7 @@ use crate::otp::otp::otp;
 /// let otp = hotp.generate(1).unwrap();
 /// println!("Generated OTP: {}", otp);
 /// ```
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct HOTP {
     algorithm: Algorithm,
     secret: Vec<u8>,
