@@ -3,7 +3,7 @@ use rusotp::{Algorithm, HOTP};
 const SECRET: &str = "12345678901234567890";
 
 #[test]
-fn otp_should_be_generated() {
+fn otp_should_match_with_rfc_samples() {
     vec![
         (0, "755224"),
         (1, "287082"),

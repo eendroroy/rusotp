@@ -5,7 +5,7 @@ const SECRET_SHA256: &str = "12345678901234567890123456789012";
 const SECRET_SHA512: &str = "1234567890123456789012345678901234567890123456789012345678901234";
 
 #[test]
-fn otp_should_be_generated() {
+fn otp_should_match_with_rfc_samples() {
     vec![
         (SECRET_SHA1, 59, "94287082", Algorithm::SHA1),
         (SECRET_SHA256, 59, "46119246", Algorithm::SHA256),
