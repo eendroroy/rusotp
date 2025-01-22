@@ -1,6 +1,6 @@
 [package]
 name = "rusotp"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["indrajit"]
 edition = "2021"
 rust-version = "1.60.0"
@@ -9,7 +9,7 @@ documentation = "https://docs.rs/rusotp"
 readme = "README.md"
 homepage = "https://eendroroy.github.io/rusotp"
 repository = "https://github.com/eendroroy/rusotp"
-license-file = "LICENSE"
+license = "AGPL-3.0"
 keywords = ["otp", "hotp", "totp", "RFC4226", "RFC6238"]
 categories = ["authentication", "algorithms"]
 exclude = ["/tests", "/examples", "/c_examples", "/c_examples.sh"]

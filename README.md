@@ -18,7 +18,7 @@ To use the `rusotp` library, follow these steps:
 
     ```toml
     [dependencies]
-    rusotp = "0.1"
+    rusotp = "0.2.0"
     ```
 
 2. Import the necessary components in your Rust code:
