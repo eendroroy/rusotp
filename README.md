@@ -7,10 +7,59 @@ OTP generation and validation library.
 * Supports alphanumeric OTP generation
 * Supports `HmacSha1`, `HmacSha256`, and `HmacSha512` digests
 
-**Note:** `HmacSha1` support is provided for RFC compliance. 
+**Note:** `HmacSha1` support is provided for RFC compliance.
 It is recommended to use `HmacSha256` or `HmacSha512` for better security.
 
-## Usage
+## Usage HOTP
+
+To use the `rusotp` library for HOTP, follow these steps:
+
+1. Add `rusotp` to your `Cargo.toml`:
+
+    ```toml
+    [dependencies]
+    rusotp = "0.2.0"
+    ```
+
+2. Import the necessary components in your Rust code:
+
+    ```rust
+    use rusotp::{Algorithm, HOTP};
+    ```
+
+3. Create a new HOTP instance and generate an OTP:
+
+    ```rust
+    const ALGORITHM: Algorithm = Algorithm::SHA256;
+    const SECRET: &str = "12345678901234567890";
+    const LENGTH: u8 = 6;
+    const COUNTER: u64 = 1;
+
+    let hotp = HOTP::new(ALGORITHM, SECRET, LENGTH, 10).unwrap();
+    let otp = hotp.generate(COUNTER).unwrap();
+    println!("Generated OTP: {}", otp);
+    ```
+
+4. Verify an OTP:
+
+    ```rust
+    let is_valid = hotp.verify("287082", COUNTER, 0).unwrap();
+    println!("Is OTP valid? {}", is_valid);
+    ```
+
+5. Generate a provisioning URI for use with OTP apps like Google Authenticator:
+
+    ```rust
+    const ISSUER: &str = "MyService";
+    const NAME: &str = "user@example.com";
+
+    let uri = hotp.provisioning_uri(ISSUER, NAME, COUNTER).unwrap();
+    println!("Provisioning URI: {}", uri);
+    ```
+
+For more examples and detailed usage, refer to the [documentation](https://docs.rs/rusotp).
+
+## Usage TOTP
 
 To use the `rusotp` library, follow these steps:
 
