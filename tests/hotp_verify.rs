@@ -17,10 +17,10 @@ fn should_fail_with_otp_length_not_matched() {
 
 #[test]
 fn wrong_otp_should_not_get_verified() {
-    let algorithms = vec![Algorithm::SHA1, Algorithm::SHA256, Algorithm::SHA512];
-    let lengths = vec![6, 8, 4];
-    let radixes = vec![10, 16, 24, 36];
-    let counters = vec![10, 16, 24, 36];
+    let algorithms = [Algorithm::SHA1, Algorithm::SHA256, Algorithm::SHA512];
+    let lengths = [6, 8, 4];
+    let radixes = [10, 16, 24, 36];
+    let counters = [10, 16, 24, 36];
 
     iproduct!(algorithms.iter(), lengths.iter(), radixes.iter(), counters.iter())
         .map(|(algorithm, length, radix, counter)| (algorithm, length, radix, counter))
@@ -36,11 +36,11 @@ fn wrong_otp_should_not_get_verified() {
 
 #[test]
 fn otp_get_verified_with_retries() {
-    let algorithms = vec![Algorithm::SHA1, Algorithm::SHA256, Algorithm::SHA512];
-    let lengths = vec![6, 8, 4];
-    let radixes = vec![10, 16, 24, 36];
-    let counters = vec![10, 16, 24, 36];
-    let retries = vec![1, 2, 3];
+    let algorithms = [Algorithm::SHA1, Algorithm::SHA256, Algorithm::SHA512];
+    let lengths = [6, 8, 4];
+    let radixes = [10, 16, 24, 36];
+    let counters = [10, 16, 24, 36];
+    let retries = [1, 2, 3];
 
     iproduct!(algorithms.iter(), lengths.iter(), radixes.iter(), counters.iter(), retries.iter(),)
         .map(|(algorithm, length, radix, counter, retry)| (algorithm, length, radix, counter, retry))

@@ -38,7 +38,7 @@ pub struct HotpConfig {
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[no_mangle]
 pub unsafe extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulong) -> *const c_char {
-    std::ffi::CString::new(to_hotp(config).generate(counter.into()).unwrap())
+    std::ffi::CString::new(to_hotp(config).generate(counter).unwrap())
         .unwrap()
         .into_raw()
 }
@@ -74,7 +74,7 @@ pub unsafe extern "C" fn hotp_provisioning_uri(
 
     let hotp = to_hotp(config);
 
-    match hotp.provisioning_uri(CStr::from_ptr(name).to_str().unwrap(), counter.into()) {
+    match hotp.provisioning_uri(CStr::from_ptr(name).to_str().unwrap(), counter) {
         Ok(uri) => std::ffi::CString::new(uri).unwrap().into_raw(),
         Err(e) => panic!("{}", e),
     }
@@ -113,7 +113,7 @@ pub unsafe extern "C" fn hotp_verify(
 
     let hotp = to_hotp(config);
 
-    match hotp.verify(to_str(otp), counter.into(), retries.into()) {
+    match hotp.verify(to_str(otp), counter, retries) {
         Ok(verified) => verified.is_some(),
         Err(e) => {
             panic!("{}", e)

@@ -3,7 +3,7 @@ use crate::messages::{
     SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
-use crate::otp::otp::otp;
+use crate::otp::base::otp;
 
 /// Represents an HOTP (HMAC-based One-Time Password) generator.
 ///
@@ -59,11 +59,11 @@ impl HOTP {
     /// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10).unwrap();
     /// ```
     pub fn new(algorithm: Algorithm, secret: &str, length: u8, radix: u8) -> Result<HOTP, String> {
-        if secret.len() < 1 {
+        if secret.is_empty() {
             Err(SECRET_EMPTY.to_string())
         } else if length < 1 {
             Err(OTP_LENGTH_INVALID.to_string())
-        } else if radix < 2 || radix > 36 {
+        } else if !(2..=36).contains(&radix) {
             Err(RADIX_INVALID.to_string())
         } else {
             Ok(Self {

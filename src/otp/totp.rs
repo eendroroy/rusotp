@@ -3,7 +3,7 @@ use crate::messages::{
     PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
-use crate::otp::otp::otp;
+use crate::otp::base::otp;
 
 /// Represents a TOTP (Time-based One-Time Password) generator.
 ///
@@ -53,11 +53,11 @@ impl TOTP {
     /// println!("Generated OTP: {}", otp);
     /// ```
     pub fn new(algorithm: Algorithm, secret: &str, length: u8, radix: u8, interval: u8) -> Result<TOTP, String> {
-        if secret.len() < 1 {
+        if secret.is_empty() {
             Err(SECRET_EMPTY.to_string())
         } else if length < 1 {
             Err(OTP_LENGTH_INVALID.to_string())
-        } else if radix < 2 || radix > 36 {
+        } else if !(2..=36).contains(&radix) {
             Err(RADIX_INVALID.to_string())
         } else {
             Ok(Self {
@@ -262,7 +262,7 @@ impl TOTP {
             Err(UNSUPPORTED_ALGORITHM.to_string())
         } else {
             let issuer_str = if !issuer.is_empty() {
-                format!("{}{}", urlencoding::encode(&issuer.to_owned()), urlencoding::encode(":"))
+                format!("{}{}", urlencoding::encode(issuer), urlencoding::encode(":"))
             } else {
                 String::new()
             };
@@ -271,7 +271,7 @@ impl TOTP {
                 format!(
                     "secret={}&issuer={}",
                     urlencoding::encode(&String::from_utf8_lossy(&self.secret)),
-                    urlencoding::encode(&issuer)
+                    urlencoding::encode(issuer)
                 )
             } else {
                 format!("secret={}", urlencoding::encode(&String::from_utf8_lossy(&self.secret)),)
