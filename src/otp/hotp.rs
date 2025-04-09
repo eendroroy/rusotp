@@ -1,6 +1,6 @@
 use crate::messages::{
-    OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID,
-    RADIX_INVALID, SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
+    OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID,
+    SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
@@ -96,13 +96,7 @@ impl HOTP {
     /// println!("Generated OTP: {}", otp);
     /// ```
     pub fn generate(&self, counter: u64) -> Result<String, String> {
-        otp(
-            &self.algorithm,
-            self.secret.clone(),
-            self.length,
-            self.radix,
-            counter,
-        )
+        otp(&self.algorithm, self.secret.clone(), self.length, self.radix, counter)
     }
 
     /// Verifies an OTP based on the provided counter value and retries.
@@ -189,11 +183,7 @@ impl HOTP {
                 initial_count
             );
 
-            Ok(format!(
-                "otpauth://hotp/{}?{}",
-                urlencoding::encode(name),
-                query
-            ))
+            Ok(format!("otpauth://hotp/{}?{}", urlencoding::encode(name), query))
         }
     }
 }

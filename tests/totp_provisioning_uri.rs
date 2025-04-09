@@ -15,10 +15,7 @@ fn provisioning_uri_should_be_correct() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_ok(), "Expected a result");
-    assert_eq!(
-        result.unwrap(),
-        "otpauth://totp/rusotp%3Auser%40email.mail?secret=12345678901234567890&issuer=rusotp"
-    );
+    assert_eq!(result.unwrap(), "otpauth://totp/rusotp%3Auser%40email.mail?secret=12345678901234567890&issuer=rusotp");
 }
 
 #[test]
@@ -28,10 +25,7 @@ fn provisioning_uri_should_be_correct_if_issuer_is_empty() {
     let result = totp.provisioning_uri("", NAME);
 
     assert!(result.is_ok(), "Expected a result");
-    assert_eq!(
-        result.unwrap(),
-        "otpauth://totp/user%40email.mail?secret=12345678901234567890"
-    );
+    assert_eq!(result.unwrap(), "otpauth://totp/user%40email.mail?secret=12345678901234567890");
 }
 
 #[test]
@@ -101,8 +95,5 @@ fn provisioning_uri_should_fail_with_interval_less_than_30() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(
-        result.err().unwrap(),
-        "Interval must be greater than or equal to 30"
-    );
+    assert_eq!(result.err().unwrap(), "Interval must be greater than or equal to 30");
 }

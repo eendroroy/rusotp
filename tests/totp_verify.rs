@@ -15,10 +15,7 @@ fn should_fail_with_otp_length_not_matched() {
     let result = totp.verify_at("12345", 10, Some(AFTER), DRIFT_AHEAD, DRIFT_BEHIND);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(
-        result.err().unwrap(),
-        "OTP length does not match the length of the configuration"
-    );
+    assert_eq!(result.err().unwrap(), "OTP length does not match the length of the configuration");
 }
 
 #[test]
@@ -28,10 +25,7 @@ fn should_fail_if_after_is_greater_than_at() {
     let result = totp.verify_at(&otp, 10000, Some(10000 + 1), DRIFT_AHEAD, DRIFT_BEHIND);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(
-        result.err().unwrap(),
-        "After must be less than or equal to at"
-    );
+    assert_eq!(result.err().unwrap(), "After must be less than or equal to at");
 }
 
 #[test]
@@ -110,10 +104,7 @@ fn should_not_verify_with_after_greater_than_at() {
     );
 
     assert!(verify.is_err(), "OTP should not be verified");
-    assert_eq!(
-        verify.err().unwrap(),
-        "After must be less than or equal to at"
-    );
+    assert_eq!(verify.err().unwrap(), "After must be less than or equal to at");
 }
 
 #[test]
@@ -121,13 +112,8 @@ fn should_verify_without_after() {
     let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
 
     let now = totp.generate().unwrap();
-    let verify = totp.verify_at(
-        &now,
-        std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
-        None,
-        DRIFT_AHEAD,
-        DRIFT_BEHIND,
-    );
+    let verify =
+        totp.verify_at(&now, std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(), None, DRIFT_AHEAD, DRIFT_BEHIND);
 
     assert!(verify.unwrap().is_some(), "OTP should be verified");
 }

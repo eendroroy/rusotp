@@ -62,10 +62,7 @@ pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> *const c_char {
 ///
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[no_mangle]
-pub unsafe extern "C" fn totp_generate_at(
-    config: TotpConfig,
-    timestamp: c_ulong,
-) -> *const c_char {
+pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulong) -> *const c_char {
     std::ffi::CString::new(to_totp(config).generate_at(timestamp.into()).unwrap())
         .unwrap()
         .into_raw()
@@ -106,12 +103,7 @@ pub unsafe extern "C" fn totp_verify(
 
     let totp = to_totp(config);
 
-    match totp.verify(
-        to_str(otp),
-        Some(after as u64),
-        drift_ahead as u64,
-        drift_behind as u64,
-    ) {
+    match totp.verify(to_str(otp), Some(after as u64), drift_ahead as u64, drift_behind as u64) {
         Ok(verified) => verified.is_some(),
         Err(e) => panic!("{}", e),
     }
@@ -154,13 +146,7 @@ pub unsafe extern "C" fn totp_verify_at(
 
     let totp = to_totp(config);
 
-    match totp.verify_at(
-        to_str(otp),
-        timestamp.into(),
-        Some(after as u64),
-        drift_ahead as u64,
-        drift_behind as u64,
-    ) {
+    match totp.verify_at(to_str(otp), timestamp.into(), Some(after as u64), drift_ahead as u64, drift_behind as u64) {
         Ok(verified) => verified.is_some(),
         Err(e) => panic!("{}", e),
     }

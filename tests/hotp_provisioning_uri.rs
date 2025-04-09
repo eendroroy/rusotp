@@ -12,10 +12,7 @@ fn provisioning_uri_should_be_correct() {
     let result = hotp_tool.provisioning_uri("test", 0);
 
     assert!(result.is_ok(), "Expected a result");
-    assert_eq!(
-        result.unwrap(),
-        "otpauth://hotp/test?secret=12345678901234567890&counter=0"
-    );
+    assert_eq!(result.unwrap(), "otpauth://hotp/test?secret=12345678901234567890&counter=0");
 }
 
 #[test]

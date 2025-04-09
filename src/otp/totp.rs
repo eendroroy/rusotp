@@ -1,7 +1,6 @@
 use crate::messages::{
-    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, INVALID_AFTER, OTP_LENGTH_INVALID,
-    OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID,
-    SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
+    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, INVALID_AFTER, OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED,
+    PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
 use crate::otp::otp::otp;
@@ -53,13 +52,7 @@ impl TOTP {
     /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
-    pub fn new(
-        algorithm: Algorithm,
-        secret: &str,
-        length: u8,
-        radix: u8,
-        interval: u8,
-    ) -> Result<TOTP, String> {
+    pub fn new(algorithm: Algorithm, secret: &str, length: u8, radix: u8, interval: u8) -> Result<TOTP, String> {
         if secret.len() < 1 {
             Err(SECRET_EMPTY.to_string())
         } else if length < 1 {
@@ -124,13 +117,7 @@ impl TOTP {
     /// println!("Generated OTP: {}", otp);
     /// ```
     pub fn generate_at(&self, timestamp: u64) -> Result<String, String> {
-        otp(
-            &self.algorithm,
-            self.secret.clone(),
-            self.length,
-            self.radix,
-            self.time_code(timestamp),
-        )
+        otp(&self.algorithm, self.secret.clone(), self.length, self.radix, self.time_code(timestamp))
     }
 
     /// Verifies an OTP based on the current time and drift values.
@@ -168,13 +155,7 @@ impl TOTP {
         drift_ahead: u64,
         drift_behind: u64,
     ) -> Result<Option<u64>, String> {
-        self.verify_at(
-            otp,
-            std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
-            after,
-            drift_ahead,
-            drift_behind,
-        )
+        self.verify_at(otp, std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(), after, drift_ahead, drift_behind)
     }
 
     /// Verifies an OTP based on the provided timestamp and drift values.
@@ -281,11 +262,7 @@ impl TOTP {
             Err(UNSUPPORTED_ALGORITHM.to_string())
         } else {
             let issuer_str = if !issuer.is_empty() {
-                format!(
-                    "{}{}",
-                    urlencoding::encode(&issuer.to_owned()),
-                    urlencoding::encode(":")
-                )
+                format!("{}{}", urlencoding::encode(&issuer.to_owned()), urlencoding::encode(":"))
             } else {
                 String::new()
             };
@@ -297,18 +274,10 @@ impl TOTP {
                     urlencoding::encode(&issuer)
                 )
             } else {
-                format!(
-                    "secret={}",
-                    urlencoding::encode(&String::from_utf8_lossy(&self.secret)),
-                )
+                format!("secret={}", urlencoding::encode(&String::from_utf8_lossy(&self.secret)),)
             };
 
-            Ok(format!(
-                "otpauth://totp/{}{}?{}",
-                issuer_str,
-                urlencoding::encode(name),
-                query
-            ))
+            Ok(format!("otpauth://totp/{}{}?{}", issuer_str, urlencoding::encode(name), query))
         }
     }
 

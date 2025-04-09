@@ -1,8 +1,8 @@
-use std::any::Any;
+use crate::{Algorithm, AlgorithmTrait};
 use hmac::Mac;
 use sha1::Sha1;
 use sha2::{Sha256, Sha512};
-use crate::{Algorithm, AlgorithmTrait};
+use std::any::Any;
 
 #[test]
 fn to_string_should_properly_convert_algorithm_to_string() {
@@ -56,4 +56,3 @@ fn hash_should_be_generated_using_sha512() {
     mac.update(&data.to_be_bytes());
     assert_eq!(result, mac.finalize().into_bytes().to_vec());
 }
-

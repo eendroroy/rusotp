@@ -20,31 +20,30 @@ fn main() {
         (Algorithm::SHA256, 4, 36, 4, "ROTO"),
     ];
 
-    data.iter()
-        .for_each(|(algorithm, length, radix, counter, otp)| {
-            let hotp = match rusotp::HOTP::new(*algorithm, secret, *length, *radix) {
-                Ok(hotp) => hotp,
-                Err(e) => panic!("{}", e),
-            };
-            if radix == &10 && length == &6 && algorithm == &Algorithm::SHA1 {
-                println!(
-                    "LENGTH: {}, RADIX: {}, COUNTER: {} \tHOTP : {} \tVERIFIED : {} \tURI : {}",
-                    length,
-                    radix,
-                    counter,
-                    hotp.generate(*counter).unwrap(),
-                    hotp.verify(otp, *counter, 0).unwrap().is_some(),
-                    hotp.provisioning_uri("IAM", *counter).unwrap(),
-                );
-            } else {
-                println!(
-                    "LENGTH: {}, RADIX: {}, COUNTER: {} \tHOTP : {} \tVERIFIED : {}",
-                    length,
-                    radix,
-                    counter,
-                    hotp.generate(*counter).unwrap(),
-                    hotp.verify(otp, *counter, 0).unwrap().is_some(),
-                );
-            }
-        });
+    data.iter().for_each(|(algorithm, length, radix, counter, otp)| {
+        let hotp = match rusotp::HOTP::new(*algorithm, secret, *length, *radix) {
+            Ok(hotp) => hotp,
+            Err(e) => panic!("{}", e),
+        };
+        if radix == &10 && length == &6 && algorithm == &Algorithm::SHA1 {
+            println!(
+                "LENGTH: {}, RADIX: {}, COUNTER: {} \tHOTP : {} \tVERIFIED : {} \tURI : {}",
+                length,
+                radix,
+                counter,
+                hotp.generate(*counter).unwrap(),
+                hotp.verify(otp, *counter, 0).unwrap().is_some(),
+                hotp.provisioning_uri("IAM", *counter).unwrap(),
+            );
+        } else {
+            println!(
+                "LENGTH: {}, RADIX: {}, COUNTER: {} \tHOTP : {} \tVERIFIED : {}",
+                length,
+                radix,
+                counter,
+                hotp.generate(*counter).unwrap(),
+                hotp.verify(otp, *counter, 0).unwrap().is_some(),
+            );
+        }
+    });
 }
