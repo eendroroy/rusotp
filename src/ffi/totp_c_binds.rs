@@ -1,5 +1,6 @@
 use crate::ffi::converter::{to_str, to_totp};
-use std::os::raw::{c_char, c_ulong, c_ushort};
+use std::ffi::c_ulonglong;
+use std::os::raw::{c_char, c_ushort};
 
 /// Configuration for TOTP (Time-based One-Time Password).
 ///
@@ -62,7 +63,7 @@ pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> *const c_char {
 ///
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[no_mangle]
-pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulong) -> *const c_char {
+pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulonglong) -> *const c_char {
     std::ffi::CString::new(to_totp(config).generate_at(timestamp).unwrap())
         .unwrap()
         .into_raw()
@@ -93,9 +94,9 @@ pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulong
 pub unsafe extern "C" fn totp_verify(
     config: TotpConfig,
     otp: *const c_char,
-    after: c_ulong,
-    drift_ahead: c_ulong,
-    drift_behind: c_ulong,
+    after: c_ulonglong,
+    drift_ahead: c_ulonglong,
+    drift_behind: c_ulonglong,
 ) -> bool {
     if otp.is_null() {
         panic!("OTP is null");
@@ -135,10 +136,10 @@ pub unsafe extern "C" fn totp_verify(
 pub unsafe extern "C" fn totp_verify_at(
     config: TotpConfig,
     otp: *const c_char,
-    timestamp: c_ulong,
-    after: c_ulong,
-    drift_ahead: c_ulong,
-    drift_behind: c_ulong,
+    timestamp: c_ulonglong,
+    after: c_ulonglong,
+    drift_ahead: c_ulonglong,
+    drift_behind: c_ulonglong,
 ) -> bool {
     if otp.is_null() {
         panic!("OTP is null");

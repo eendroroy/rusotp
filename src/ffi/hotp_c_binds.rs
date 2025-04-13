@@ -1,6 +1,6 @@
 use crate::ffi::converter::{to_hotp, to_str};
-use std::ffi::CStr;
-use std::os::raw::{c_char, c_ulong, c_ushort};
+use std::ffi::{c_ulonglong, CStr};
+use std::os::raw::{c_char, c_ushort};
 
 /// Configuration for HOTP (HMAC-based One-Time Password).
 ///
@@ -37,7 +37,7 @@ pub struct HotpConfig {
 ///
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 #[no_mangle]
-pub unsafe extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulong) -> *const c_char {
+pub unsafe extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulonglong) -> *const c_char {
     std::ffi::CString::new(to_hotp(config).generate(counter).unwrap())
         .unwrap()
         .into_raw()
@@ -66,7 +66,7 @@ pub unsafe extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulong) -> 
 pub unsafe extern "C" fn hotp_provisioning_uri(
     config: HotpConfig,
     name: *const c_char,
-    counter: c_ulong,
+    counter: c_ulonglong,
 ) -> *const c_char {
     if name.is_null() {
         panic!("Name is null");
@@ -104,8 +104,8 @@ pub unsafe extern "C" fn hotp_provisioning_uri(
 pub unsafe extern "C" fn hotp_verify(
     config: HotpConfig,
     otp: *const c_char,
-    counter: c_ulong,
-    retries: c_ulong,
+    counter: c_ulonglong,
+    retries: c_ulonglong,
 ) -> bool {
     if otp.is_null() {
         panic!("OTP is null");
