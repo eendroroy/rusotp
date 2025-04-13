@@ -18,7 +18,7 @@ To use the `rusotp` library for HOTP, follow these steps:
 
     ```toml
     [dependencies]
-    rusotp = "0.3.0"
+    rusotp = "0.3.1"
     ```
 
 2. Import the necessary components in your Rust code:
