@@ -67,7 +67,7 @@ To use the `rusotp` library, follow these steps:
 
     ```toml
     [dependencies]
-    rusotp = "0.3.2"
+    rusotp = "0.3.3"
     ```
 
 2. Import the necessary components in your Rust code:
