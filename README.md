@@ -10,104 +10,71 @@ OTP generation and validation library.
 **Note:** `HmacSha1` support is provided for RFC compliance.
 It is recommended to use `HmacSha256` or `HmacSha512` for better security.
 
-## Usage HOTP
+## installation
 
-To use the `rusotp` library for HOTP, follow these steps:
+Add `rusotp` to your `Cargo.toml`:
 
-1. Add `rusotp` to your `Cargo.toml`:
+```toml
+[dependencies]
+rusotp = "0.3.4"
+```
 
-    ```toml
-    [dependencies]
-    rusotp = "0.3.4"
-    ```
+## HOTP Usage
 
-2. Import the necessary components in your Rust code:
+```rust
+use rusotp::{Algorithm, HOTP};
 
-    ```rust
-    use rusotp::{Algorithm, HOTP};
-    ```
+const ALGORITHM: Algorithm = Algorithm::SHA256;
+const SECRET: &str = "12345678901234567890";
+const LENGTH: u8 = 6;
+const COUNTER: u64 = 1;
 
-3. Create a new HOTP instance and generate an OTP:
+// Generate an OTP
+let hotp = HOTP::new(ALGORITHM, SECRET, LENGTH, 10).unwrap();
+let otp = hotp.generate(COUNTER).unwrap();
+println!("Generated OTP: {}", otp);
 
-    ```rust
-    const ALGORITHM: Algorithm = Algorithm::SHA256;
-    const SECRET: &str = "12345678901234567890";
-    const LENGTH: u8 = 6;
-    const COUNTER: u64 = 1;
+// Verify an OTP
+let is_valid = hotp.verify("287082", COUNTER, 0).unwrap();
+println!("Is OTP valid? {}", is_valid);
 
-    let hotp = HOTP::new(ALGORITHM, SECRET, LENGTH, 10).unwrap();
-    let otp = hotp.generate(COUNTER).unwrap();
-    println!("Generated OTP: {}", otp);
-    ```
+// Generate provisioning URI
+const ISSUER: &str = "MyService";
+const NAME: &str = "user@example.com";
+let uri = hotp.provisioning_uri(ISSUER, NAME, COUNTER).unwrap();
+println!("Provisioning URI: {}", uri);    
+```
 
-4. Verify an OTP:
+## TOTP Usage
 
-    ```rust
-    let is_valid = hotp.verify("287082", COUNTER, 0).unwrap();
-    println!("Is OTP valid? {}", is_valid);
-    ```
+```rust
+use rusotp::{Algorithm, TOTP};
 
-5. Generate a provisioning URI for use with OTP apps like Google Authenticator:
+const ALGORITHM: Algorithm = Algorithm::SHA256;
+const SECRET: &str = "12345678901234567890";
+const LENGTH: u8 = 6;
+const RADIX: u8 = 10;
+const INTERVAL: u8 = 30;
 
-    ```rust
-    const ISSUER: &str = "MyService";
-    const NAME: &str = "user@example.com";
+// Generate an OTP
+let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
+let otp = totp.generate().unwrap();
+println!("Generated OTP: {}", otp);
 
-    let uri = hotp.provisioning_uri(ISSUER, NAME, COUNTER).unwrap();
-    println!("Provisioning URI: {}", uri);
-    ```
+// Verify an OTP
+let is_valid = totp.verify( & otp);
+println!("Is OTP valid? {}", is_valid);
 
-For more examples and detailed usage, refer to the [documentation](https://docs.rs/rusotp).
+// Generate provisioning URI
+const ISSUER: &str = "MyService";
+const NAME: &str = "user@example.com";
+let uri = totp.provisioning_uri(ISSUER, NAME).unwrap();
+println!("Provisioning URI: {}", uri);
+```
 
-## Usage TOTP
+## Documentation
 
-To use the `rusotp` library, follow these steps:
-
-1. Add `rusotp` to your `Cargo.toml`:
-
-    ```toml
-    [dependencies]
-    rusotp = "0.3.4"
-    ```
-
-2. Import the necessary components in your Rust code:
-
-    ```rust
-    use rusotp::{Algorithm, TOTP};
-    ```
-
-3. Create a new TOTP instance and generate an OTP:
-
-    ```rust
-    const ALGORITHM: Algorithm = Algorithm::SHA256;
-    const SECRET: &str = "12345678901234567890";
-    const LENGTH: u8 = 6;
-    const RADIX: u8 = 10;
-    const INTERVAL: u8 = 30;
-
-    let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
-    let otp = totp.generate().unwrap();
-    println!("Generated OTP: {}", otp);
-    ```
-
-4. Verify an OTP:
-
-    ```rust
-    let is_valid = totp.verify(&otp);
-    println!("Is OTP valid? {}", is_valid);
-    ```
-
-5. Generate a provisioning URI for use with OTP apps like Google Authenticator:
-
-    ```rust
-    const ISSUER: &str = "MyService";
-    const NAME: &str = "user@example.com";
-
-    let uri = totp.provisioning_uri(ISSUER, NAME).unwrap();
-    println!("Provisioning URI: {}", uri);
-    ```
-
-For more examples and detailed usage, refer to the [documentation](https://docs.rs/rusotp).
+See the [docs.rs/rusotp](https://docs.rs/rusotp) for more examples and API details.
 
 ## Contributing
 
@@ -123,3 +90,8 @@ We welcome contributions to the [rusotp](https://github.com/eendroroy/rusotp) pr
     5. Open a Pull Request
 
 Please make sure your contributions adhere to our [Code of Conduct](http://contributor-covenant.org).
+
+## License
+
+This project is licensed under the [GNU AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html).
+See the [LICENSE](./LICENSE) file for more details.
