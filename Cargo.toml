@@ -12,12 +12,10 @@ repository = "https://github.com/eendroroy/rusotp"
 license = "AGPL-3.0"
 keywords = ["otp", "hotp", "totp", "RFC4226", "RFC6238"]
 categories = ["authentication", "algorithms"]
-exclude = ["/tests", "/examples", "/c_examples", "/c_examples.sh"]
 
 [lib]
 name = "rusotp"
 path = "src/lib.rs"
-edition = "2021"
 crate-type = ["staticlib", "lib", "cdylib"]
 
 [dependencies]
