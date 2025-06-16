@@ -1,4 +1,4 @@
-use crate::{Algorithm, HOTP};
+use crate::{Algorithm, Radix, HOTP};
 use std::any::Any;
 
 #[test]
@@ -37,7 +37,7 @@ fn to_hotp_should_convert_hotp_config_to_hotp() {
     };
     unsafe {
         let hotp = super::to_hotp(hotp_config);
-        let hotp_orig = HOTP::new(Algorithm::SHA1, "Hello", 6, 10);
+        let hotp_orig = HOTP::new(Algorithm::SHA1, "Hello", 6, Radix(10));
         assert_eq!(hotp, hotp_orig.unwrap());
     }
 }
@@ -104,7 +104,7 @@ fn to_totp_should_convert_totp_config_to_totp() {
     };
     unsafe {
         let totp = super::to_totp(totp_config);
-        let totp_orig = crate::TOTP::new(Algorithm::SHA1, "Hello", 6, 10, 30);
+        let totp_orig = crate::TOTP::new(Algorithm::SHA1, "Hello", 6, Radix(10), 30);
         assert_eq!(totp, totp_orig.unwrap());
     }
 }

@@ -1,9 +1,9 @@
-use rusotp::{Algorithm, TOTP};
+use rusotp::{Algorithm, Radix, TOTP};
 
 const ALGORITHM: Algorithm = Algorithm::SHA256;
 const SECRET: &str = "12345678901234567890";
 const LENGTH: u8 = 6;
-const RADIX: u8 = 10;
+const RADIX: Radix = Radix(10);
 const INTERVAL: u8 = 30;
 const ISSUER: &str = "rusotp";
 const NAME: &str = "user@email.mail";
@@ -70,7 +70,7 @@ fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
 
 #[test]
 fn provisioning_uri_should_fail_with_radix_less_than_10() {
-    let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, 9, INTERVAL).unwrap();
+    let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, Radix(9), INTERVAL).unwrap();
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 
@@ -80,7 +80,7 @@ fn provisioning_uri_should_fail_with_radix_less_than_10() {
 
 #[test]
 fn provisioning_uri_should_fail_with_radix_more_than_10() {
-    let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, 11, INTERVAL).unwrap();
+    let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, Radix(11), INTERVAL).unwrap();
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 

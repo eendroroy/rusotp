@@ -1,4 +1,4 @@
-use crate::{Algorithm, AlgorithmTrait, HOTP, TOTP};
+use crate::{Algorithm, AlgorithmTrait, Radix, HOTP, TOTP};
 use std::ffi::CStr;
 use std::os::raw::c_char;
 
@@ -22,7 +22,7 @@ pub(crate) unsafe fn to_hotp(config: crate::ffi::hotp_c_binds::HotpConfig) -> HO
         Algorithm::from_string(to_string(config.algorithm)),
         to_str(config.secret),
         config.length as u8,
-        config.radix as u8,
+        Radix::new(config.radix as u8).unwrap(), // TODO
     ) {
         Ok(hotp) => hotp,
         Err(e) => panic!("{}", e),
@@ -41,7 +41,7 @@ pub(crate) unsafe fn to_totp(config: crate::ffi::totp_c_binds::TotpConfig) -> TO
         Algorithm::from_string(to_string(config.algorithm)),
         to_str(config.secret),
         config.length as u8,
-        config.radix as u8,
+        Radix::new(config.radix as u8).unwrap(), // TODO
         config.interval as u8,
     ) {
         Ok(totp) => totp,

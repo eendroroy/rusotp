@@ -1,10 +1,10 @@
-use itertools::{Itertools, iproduct};
-use rusotp::{Algorithm, HOTP};
+use itertools::{iproduct};
+use rusotp::{Algorithm, Radix, HOTP};
 
 const ALGORITHM: Algorithm = Algorithm::SHA256;
 const SECRET: &str = "12345678901234567890";
 const LENGTH: u8 = 6;
-const RADIX: u8 = 10;
+const RADIX: Radix = Radix(10);
 
 #[test]
 fn should_fail_with_otp_length_not_matched() {
@@ -19,12 +19,11 @@ fn should_fail_with_otp_length_not_matched() {
 fn wrong_otp_should_not_get_verified() {
     let algorithms = [Algorithm::SHA1, Algorithm::SHA256, Algorithm::SHA512];
     let lengths = [6, 8, 4];
-    let radixes = [10, 16, 24, 36];
+    let radixes = [Radix(10), Radix(16), Radix(24), Radix(36)];
     let counters = [10, 16, 24, 36];
 
     iproduct!(algorithms.iter(), lengths.iter(), radixes.iter(), counters.iter())
         .map(|(algorithm, length, radix, counter)| (algorithm, length, radix, counter))
-        .unique()
         .for_each(|(algorithm, length, radix, counter)| {
             let hotp = HOTP::new(*algorithm, SECRET, *length, *radix).unwrap();
             let otp = hotp.generate(*counter).unwrap();
@@ -38,13 +37,12 @@ fn wrong_otp_should_not_get_verified() {
 fn otp_get_verified_with_retries() {
     let algorithms = [Algorithm::SHA1, Algorithm::SHA256, Algorithm::SHA512];
     let lengths = [6, 8, 4];
-    let radixes = [10, 16, 24, 36];
+    let radixes = [Radix(10), Radix(16), Radix(24), Radix(36)];
     let counters = [10, 16, 24, 36];
     let retries = [1, 2, 3];
 
     iproduct!(algorithms.iter(), lengths.iter(), radixes.iter(), counters.iter(), retries.iter(),)
         .map(|(algorithm, length, radix, counter, retry)| (algorithm, length, radix, counter, retry))
-        .unique()
         .for_each(|(algorithm, length, radix, counter, retry)| {
             let hotp = HOTP::new(*algorithm, SECRET, *length, *radix).unwrap();
             let otp = hotp.generate(*counter).unwrap();

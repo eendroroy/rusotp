@@ -22,54 +22,61 @@ rusotp = "0.3.4"
 ## HOTP Usage
 
 ```rust
-use rusotp::{Algorithm, HOTP};
+use rusotp::{Algorithm, Radix, HOTP};
 
-const ALGORITHM: Algorithm = Algorithm::SHA256;
+const ALGORITHM: Algorithm = Algorithm::SHA1;
 const SECRET: &str = "12345678901234567890";
 const LENGTH: u8 = 6;
 const COUNTER: u64 = 1;
 
-// Generate an OTP
-let hotp = HOTP::new(ALGORITHM, SECRET, LENGTH, 10).unwrap();
-let otp = hotp.generate(COUNTER).unwrap();
-println!("Generated OTP: {}", otp);
+fn main() {
+    let radix = Radix::new(10).unwrap();
 
-// Verify an OTP
-let is_valid = hotp.verify("287082", COUNTER, 0).unwrap();
-println!("Is OTP valid? {}", is_valid);
+    // Generate an OTP
+    let hotp = HOTP::new(ALGORITHM, SECRET, LENGTH, radix).unwrap();
+    let otp = hotp.generate(COUNTER).unwrap();
+    println!("Generated OTP: {}", otp);
 
-// Generate provisioning URI
-const ISSUER: &str = "MyService";
-const NAME: &str = "user@example.com";
-let uri = hotp.provisioning_uri(ISSUER, NAME, COUNTER).unwrap();
-println!("Provisioning URI: {}", uri);    
+    // Verify an OTP
+    let is_valid = hotp.verify("287082", COUNTER, 0).unwrap();
+    println!("Is OTP valid? {}", is_valid.is_some());
+
+    // Generate provisioning URI
+    const ISSUER: &str = "MyService";
+    let uri = hotp.provisioning_uri(ISSUER, COUNTER).unwrap();
+    println!("Provisioning URI: {}", uri);
+}
 ```
 
 ## TOTP Usage
 
 ```rust
-use rusotp::{Algorithm, TOTP};
+use rusotp::{Algorithm, Radix, TOTP};
 
-const ALGORITHM: Algorithm = Algorithm::SHA256;
+const ALGORITHM: Algorithm = Algorithm::SHA1;
 const SECRET: &str = "12345678901234567890";
 const LENGTH: u8 = 6;
-const RADIX: u8 = 10;
 const INTERVAL: u8 = 30;
 
-// Generate an OTP
-let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, RADIX, INTERVAL).unwrap();
-let otp = totp.generate().unwrap();
-println!("Generated OTP: {}", otp);
+fn main() {
+    let radix = Radix::new(10).unwrap();
 
-// Verify an OTP
-let is_valid = totp.verify( & otp);
-println!("Is OTP valid? {}", is_valid);
+    // Generate an OTP
+    let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, radix, INTERVAL).unwrap();
+    let otp = totp.generate().unwrap();
+    println!("Generated OTP: {}", otp);
 
-// Generate provisioning URI
-const ISSUER: &str = "MyService";
-const NAME: &str = "user@example.com";
-let uri = totp.provisioning_uri(ISSUER, NAME).unwrap();
-println!("Provisioning URI: {}", uri);
+    // Verify an OTP
+    let is_valid = totp.verify(&otp, None, 0, 0).unwrap();
+    println!("Is OTP valid? {}", is_valid.is_some());
+
+    // Generate provisioning URI
+    const ISSUER: &str = "MyService";
+    const NAME: &str = "user@example.com";
+    let uri = totp.provisioning_uri(ISSUER, NAME).unwrap();
+    println!("Provisioning URI: {}", uri);
+}
+
 ```
 
 ## Documentation

@@ -1,9 +1,9 @@
-use rusotp::{Algorithm, HOTP};
+use rusotp::{Algorithm, Radix, HOTP};
 
 const ALGORITHM: Algorithm = Algorithm::SHA256;
 const SECRET: &str = "12345678901234567890";
 const LENGTH: u8 = 6;
-const RADIX: u8 = 10;
+const RADIX: Radix = Radix(10);
 
 #[test]
 fn provisioning_uri_should_be_correct() {
@@ -57,7 +57,7 @@ fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
 
 #[test]
 fn provisioning_uri_should_fail_with_radix_less_than_10() {
-    let hotp_tool = HOTP::new(ALGORITHM, SECRET, LENGTH, 9).unwrap();
+    let hotp_tool = HOTP::new(ALGORITHM, SECRET, LENGTH, Radix(9)).unwrap();
 
     let result = hotp_tool.provisioning_uri("test", 0);
 
@@ -67,7 +67,7 @@ fn provisioning_uri_should_fail_with_radix_less_than_10() {
 
 #[test]
 fn provisioning_uri_should_fail_with_radix_more_than_10() {
-    let hotp_tool = HOTP::new(ALGORITHM, SECRET, LENGTH, 11).unwrap();
+    let hotp_tool = HOTP::new(ALGORITHM, SECRET, LENGTH, Radix(11)).unwrap();
 
     let result = hotp_tool.provisioning_uri("test", 0);
 

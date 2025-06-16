@@ -1,9 +1,9 @@
-use rusotp::{Algorithm, TOTP};
+use rusotp::{Algorithm, Radix, TOTP};
 
 const ALGORITHM: Algorithm = Algorithm::SHA256;
 const SECRET: &str = "12345678901234567890";
 const LENGTH: u8 = 6;
-const RADIX: u8 = 10;
+const RADIX: Radix = Radix(10);
 const INTERVAL: u8 = 30;
 const AFTER: u64 = 0;
 const DRIFT_AHEAD: u64 = 0;

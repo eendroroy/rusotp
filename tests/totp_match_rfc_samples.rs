@@ -1,4 +1,4 @@
-use rusotp::{Algorithm, TOTP};
+use rusotp::{Algorithm, Radix, TOTP};
 
 const SECRET_SHA1: &str = "12345678901234567890";
 const SECRET_SHA256: &str = "12345678901234567890123456789012";
@@ -6,6 +6,8 @@ const SECRET_SHA512: &str = "123456789012345678901234567890123456789012345678901
 
 #[test]
 fn otp_should_match_with_rfc_samples() {
+    let radix = Radix(10);
+    
     vec![
         (SECRET_SHA1, 59, "94287082", Algorithm::SHA1),
         (SECRET_SHA256, 59, "46119246", Algorithm::SHA256),
@@ -28,7 +30,7 @@ fn otp_should_match_with_rfc_samples() {
     ]
     .iter()
     .for_each(|(secret, timestamp, otp, algorithm)| {
-        let totp = TOTP::new(*algorithm, secret, 8, 10, 30).unwrap();
+        let totp = TOTP::new(*algorithm, secret, 8, radix, 30).unwrap();
         let result = totp.generate_at(*timestamp);
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), *otp);

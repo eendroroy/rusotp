@@ -1,9 +1,10 @@
 use crate::messages::{
     DRIFT_BEHIND_INVALID, INTERVAL_INVALID, INVALID_AFTER, OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED,
-    PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, RADIX_INVALID, SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
+    PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
 };
 use crate::otp::algorithm::Algorithm;
 use crate::otp::base::otp;
+use crate::Radix;
 
 /// Represents a TOTP (Time-based One-Time Password) generator.
 ///
@@ -19,7 +20,7 @@ pub struct TOTP {
     algorithm: Algorithm,
     secret: Vec<u8>,
     length: u8,
-    radix: u8,
+    radix: Radix,
     interval: u8,
 }
 
@@ -45,20 +46,20 @@ impl TOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::TOTP;
+    /// use rusotp::{Radix, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let radix = Radix(10);
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix, 30).unwrap();
     /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
-    pub fn new(algorithm: Algorithm, secret: &str, length: u8, radix: u8, interval: u8) -> Result<TOTP, String> {
+    pub fn new(algorithm: Algorithm, secret: &str, length: u8, radix: Radix, interval: u8) -> Result<TOTP, String> {
         if secret.is_empty() {
             Err(SECRET_EMPTY.to_string())
         } else if length < 1 {
             Err(OTP_LENGTH_INVALID.to_string())
-        } else if !(2..=36).contains(&radix) {
-            Err(RADIX_INVALID.to_string())
         } else {
             Ok(Self {
                 algorithm,
@@ -79,10 +80,12 @@ impl TOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::TOTP;
+    /// use rusotp::{Radix, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let radix = Radix(10);
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix, 30).unwrap();
     /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
@@ -91,7 +94,7 @@ impl TOTP {
             &self.algorithm,
             self.secret.clone(),
             self.length,
-            self.radix,
+            self.radix.get(),
             self.time_code(std::time::UNIX_EPOCH.elapsed().unwrap().as_secs()),
         )
     }
@@ -109,15 +112,17 @@ impl TOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::TOTP;
+    /// use rusotp::{Radix, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let radix = Radix::new(10).unwrap();
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix, 30).unwrap();
     /// let otp = totp.generate_at(1622548800).unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
     pub fn generate_at(&self, timestamp: u64) -> Result<String, String> {
-        otp(&self.algorithm, self.secret.clone(), self.length, self.radix, self.time_code(timestamp))
+        otp(&self.algorithm, self.secret.clone(), self.length, self.radix.get(), self.time_code(timestamp))
     }
 
     /// Verifies an OTP based on the current time and drift values.
@@ -140,10 +145,12 @@ impl TOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::TOTP;
+    /// use rusotp::{Radix, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let radix = Radix(10);
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix, 30).unwrap();
     /// let otp = totp.generate().unwrap();
     /// let verified = totp.verify(&otp, None, 30, 30).unwrap();
     /// assert!(verified.is_some());
@@ -179,10 +186,12 @@ impl TOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::TOTP;
+    /// use rusotp::{Radix, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let radix = Radix(10);
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix, 30).unwrap();
     /// let otp = totp.generate_at(1622548800).unwrap();
     /// let verified = totp.verify_at(&otp, 1622548800, None, 30, 30).unwrap();
     /// assert_eq!(verified, Some(1622548800));
@@ -244,10 +253,12 @@ impl TOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::TOTP;
+    /// use rusotp::{Radix, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, 10, 30).unwrap();
+    /// let radix = Radix(10);
+    ///
+    /// let totp = TOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix, 30).unwrap();
     /// let uri = totp.provisioning_uri("ExampleIssuer", "example@example.com").unwrap();
     /// println!("Provisioning URI: {}", uri);
     /// ```
@@ -256,7 +267,7 @@ impl TOTP {
             Err(INTERVAL_INVALID.to_string())
         } else if self.length != 6 {
             Err(PROV_OTP_LENGTH_INVALID.to_string())
-        } else if self.radix != 10 {
+        } else if self.radix.get() != 10 {
             Err(PROV_OTP_RADIX_INVALID.to_string())
         } else if self.algorithm != Algorithm::SHA1 {
             Err(UNSUPPORTED_ALGORITHM.to_string())
