@@ -1,10 +1,7 @@
-use crate::messages::{
-    OTP_LENGTH_INVALID, OTP_LENGTH_NOT_MATCHED, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID,
-    SECRET_EMPTY, UNSUPPORTED_ALGORITHM,
-};
+use crate::messages::{OTP_LENGTH_INVALID, PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, UNSUPPORTED_ALGORITHM};
 use crate::otp::algorithm::Algorithm;
 use crate::otp::base::otp;
-use crate::Radix;
+use crate::{Radix, Secret};
 
 /// Represents an HOTP (HMAC-based One-Time Password) generator.
 ///
@@ -18,19 +15,20 @@ use crate::Radix;
 /// # Example
 ///
 /// ```
-/// use rusotp::{Radix, HOTP};
+/// use rusotp::{Radix, Secret, HOTP};
 /// use rusotp::Algorithm;
 ///
+/// let secret = Secret::new("12345678901234567890").unwrap();
 /// let radix = Radix(10);
 ///
-/// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix).unwrap();
+/// let hotp = HOTP::new(Algorithm::SHA1, secret, 6, radix).unwrap();
 /// let otp = hotp.generate(1).unwrap();
 /// println!("Generated OTP: {}", otp);
 /// ```
 #[derive(Debug, PartialEq)]
 pub struct HOTP {
     algorithm: Algorithm,
-    secret: Vec<u8>,
+    secret: Secret,
     length: u8,
     radix: Radix,
 }
@@ -56,22 +54,21 @@ impl HOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::{Radix, HOTP};
+    /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
+    /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix(10);
     ///
-    /// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix).unwrap();
+    /// let hotp = HOTP::new(Algorithm::SHA1, secret, 6, radix).unwrap();
     /// ```
-    pub fn new(algorithm: Algorithm, secret: &str, length: u8, radix: Radix) -> Result<HOTP, String> {
-        if secret.is_empty() {
-            Err(SECRET_EMPTY.to_string())
-        } else if length < 1 {
+    pub fn new(algorithm: Algorithm, secret: Secret, length: u8, radix: Radix) -> Result<HOTP, String> {
+        if length < 1 {
             Err(OTP_LENGTH_INVALID.to_string())
         } else {
             Ok(Self {
                 algorithm,
-                secret: Vec::from(secret),
+                secret,
                 length,
                 radix,
             })
@@ -91,17 +88,18 @@ impl HOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::{Radix, HOTP};
+    /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
+    /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix(10);
     ///
-    /// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix).unwrap();
+    /// let hotp = HOTP::new(Algorithm::SHA1, secret, 6, radix).unwrap();
     /// let otp = hotp.generate(1).unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
     pub fn generate(&self, counter: u64) -> Result<String, String> {
-        otp(&self.algorithm, self.secret.clone(), self.length, self.radix.get(), counter)
+        otp(&self.algorithm, self.secret.clone().get(), self.length, self.radix.get(), counter)
     }
 
     /// Verifies an OTP based on the provided counter value and retries.
@@ -123,19 +121,20 @@ impl HOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::{Radix, HOTP};
+    /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
+    /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix(10);
     ///
-    /// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix).unwrap();
+    /// let hotp = HOTP::new(Algorithm::SHA1, secret, 6, radix).unwrap();
     /// let otp = hotp.generate(1).unwrap();
     /// let verified = hotp.verify(&otp, 1, 0).unwrap();
     /// assert_eq!(verified, Some(1));
     /// ```
     pub fn verify(&self, otp: &str, counter: u64, retries: u64) -> Result<Option<u64>, String> {
         if self.length != otp.len() as u8 {
-            Err(OTP_LENGTH_NOT_MATCHED.to_string())
+            Ok(None)
         } else {
             for i in counter..=(counter + retries) {
                 match self.generate(i) {
@@ -169,12 +168,13 @@ impl HOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::{Radix, HOTP};
+    /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
+    /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix(10);
     ///
-    /// let hotp = HOTP::new(Algorithm::SHA1, "12345678901234567890", 6, radix).unwrap();
+    /// let hotp = HOTP::new(Algorithm::SHA1, secret, 6, radix).unwrap();
     /// let uri = hotp.provisioning_uri("rusotp", 1).unwrap();
     /// println!("Provisioning URI: {}", uri);
     /// ```
@@ -188,7 +188,7 @@ impl HOTP {
         } else {
             let query = format!(
                 "secret={}&counter={}",
-                urlencoding::encode(&String::from_utf8_lossy(&self.secret)),
+                urlencoding::encode(&String::from_utf8_lossy(&self.secret.clone().get())),
                 initial_count
             );
 

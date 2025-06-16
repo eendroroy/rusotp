@@ -1,10 +1,10 @@
-use rusotp::{Algorithm, Radix, HOTP};
-
-const SECRET: &str = "12345678901234567890";
+use rusotp::{Algorithm, Radix, Secret, HOTP};
 
 #[test]
 fn otp_should_match_with_rfc_samples() {
+    let secret = Secret::new("12345678901234567890").unwrap();
     let radix = Radix(10);
+
     vec![
         (0, "755224"),
         (1, "287082"),
@@ -19,7 +19,7 @@ fn otp_should_match_with_rfc_samples() {
     ]
     .iter()
     .for_each(|(counter, otp)| {
-        let hotp = HOTP::new(Algorithm::SHA1, SECRET, 6, radix).unwrap();
+        let hotp = HOTP::new(Algorithm::SHA1, secret.clone(), 6, radix).unwrap();
         let result = hotp.generate(*counter);
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), *otp);

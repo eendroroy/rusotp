@@ -22,18 +22,18 @@ rusotp = "0.3.4"
 ## HOTP Usage
 
 ```rust
-use rusotp::{Algorithm, Radix, HOTP};
+use rusotp::{Algorithm, Radix, Secret, HOTP};
 
 const ALGORITHM: Algorithm = Algorithm::SHA1;
-const SECRET: &str = "12345678901234567890";
 const LENGTH: u8 = 6;
 const COUNTER: u64 = 1;
 
 fn main() {
+    let secret = Secret::new("12345678901234567890").unwrap();
     let radix = Radix::new(10).unwrap();
 
     // Generate an OTP
-    let hotp = HOTP::new(ALGORITHM, SECRET, LENGTH, radix).unwrap();
+    let hotp = HOTP::new(ALGORITHM, secret, LENGTH, radix).unwrap();
     let otp = hotp.generate(COUNTER).unwrap();
     println!("Generated OTP: {}", otp);
 
@@ -51,18 +51,18 @@ fn main() {
 ## TOTP Usage
 
 ```rust
-use rusotp::{Algorithm, Radix, TOTP};
+use rusotp::{Algorithm, Radix, Secret, TOTP};
 
 const ALGORITHM: Algorithm = Algorithm::SHA1;
-const SECRET: &str = "12345678901234567890";
 const LENGTH: u8 = 6;
 const INTERVAL: u8 = 30;
 
 fn main() {
     let radix = Radix::new(10).unwrap();
+    let secret = Secret::new("12345678901234567890").unwrap();
 
     // Generate an OTP
-    let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, radix, INTERVAL).unwrap();
+    let totp = TOTP::new(ALGORITHM, secret, LENGTH, radix, INTERVAL).unwrap();
     let otp = totp.generate().unwrap();
     println!("Generated OTP: {}", otp);
 
@@ -76,7 +76,6 @@ fn main() {
     let uri = totp.provisioning_uri(ISSUER, NAME).unwrap();
     println!("Provisioning URI: {}", uri);
 }
-
 ```
 
 ## Documentation

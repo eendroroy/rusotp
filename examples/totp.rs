@@ -1,7 +1,7 @@
-use rusotp::{Algorithm, Radix};
+use rusotp::{Algorithm, Radix, Secret};
 
 fn main() {
-    let secret = "12345678901234567890";
+    let secret = Secret::new("12345678901234567890").unwrap();
 
     let data = vec![
         (6, Radix(10), 10, 10000, "959738"),
@@ -21,7 +21,7 @@ fn main() {
     ];
 
     data.iter().for_each(|(length, radix, interval, timestamp, otp)| {
-        let totp = match rusotp::TOTP::new(Algorithm::SHA1, secret, *length, *radix, *interval) {
+        let totp = match rusotp::TOTP::new(Algorithm::SHA1, secret.clone(), *length, *radix, *interval) {
             Ok(hotp) => hotp,
             Err(e) => panic!("{}", e),
         };

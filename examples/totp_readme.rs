@@ -1,15 +1,15 @@
-use rusotp::{Algorithm, Radix, TOTP};
+use rusotp::{Algorithm, Radix, Secret, TOTP};
 
 const ALGORITHM: Algorithm = Algorithm::SHA1;
-const SECRET: &str = "12345678901234567890";
 const LENGTH: u8 = 6;
 const INTERVAL: u8 = 30;
 
 fn main() {
     let radix = Radix::new(10).unwrap();
+    let secret = Secret::new("12345678901234567890").unwrap();
 
     // Generate an OTP
-    let totp = TOTP::new(ALGORITHM, SECRET, LENGTH, radix, INTERVAL).unwrap();
+    let totp = TOTP::new(ALGORITHM, secret, LENGTH, radix, INTERVAL).unwrap();
     let otp = totp.generate().unwrap();
     println!("Generated OTP: {}", otp);
 

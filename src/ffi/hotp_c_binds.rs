@@ -1,5 +1,5 @@
 use crate::ffi::converter::{to_hotp, to_str};
-use std::ffi::{CStr, c_ulonglong};
+use std::ffi::{c_ulonglong, CStr};
 use std::os::raw::{c_char, c_ushort};
 
 /// Configuration for HOTP (HMAC-based One-Time Password).

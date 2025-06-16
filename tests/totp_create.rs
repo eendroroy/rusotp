@@ -1,21 +1,8 @@
-use rusotp::{Algorithm, Radix, TOTP};
-
-const ALGORITHM: Algorithm = Algorithm::SHA256;
-const SECRET: &str = "12345678901234567890";
-const LENGTH: u8 = 6;
-const RADIX: Radix = Radix(10);
-const INTERVAL: u8 = 30;
-
-#[test]
-fn should_fail_with_empty_secret() {
-    let result = TOTP::new(ALGORITHM, "", LENGTH, RADIX, INTERVAL);
-    assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "Secret must not be empty");
-}
+use rusotp::{Algorithm, Radix, Secret, TOTP};
 
 #[test]
 fn should_fail_with_otp_length_less_than_1() {
-    let result = TOTP::new(ALGORITHM, SECRET, 0, RADIX, INTERVAL);
+    let result = TOTP::new(Algorithm::SHA256, Secret::new("12345678901234567890").unwrap(), 0, Radix(10), 30);
     assert!(result.is_err(), "Expected an error");
     assert_eq!(result.err().unwrap(), "OTP length must be greater than or equal to 1");
 }
