@@ -188,7 +188,7 @@ impl HOTP {
     pub fn provisioning_uri(&self, name: &str, initial_count: u64) -> Result<String, &'static str> {
         if self.length.get() != 6 {
             Err(PROV_OTP_LENGTH_INVALID)
-        } else if self.radix.clone().get() != 10 {
+        } else if self.radix.get() != 10 {
             Err(PROV_OTP_RADIX_INVALID)
         } else if self.algorithm != Algorithm::SHA1 {
             Err(UNSUPPORTED_ALGORITHM)
