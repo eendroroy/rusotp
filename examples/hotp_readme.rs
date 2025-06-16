@@ -1,7 +1,7 @@
 use rusotp::{Algorithm, Radix, Secret, HOTP};
+use std::num::NonZeroU8;
 
 const ALGORITHM: Algorithm = Algorithm::SHA1;
-const LENGTH: u8 = 6;
 const COUNTER: u64 = 1;
 
 fn main() {
@@ -9,7 +9,7 @@ fn main() {
     let radix = Radix::new(10).unwrap();
 
     // Generate an OTP
-    let hotp = HOTP::new(ALGORITHM, secret, LENGTH, radix).unwrap();
+    let hotp = HOTP::new(ALGORITHM, secret, NonZeroU8::new(6).unwrap(), radix);
     let otp = hotp.generate(COUNTER).unwrap();
     println!("Generated OTP: {}", otp);
 

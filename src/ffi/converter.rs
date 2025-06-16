@@ -1,5 +1,6 @@
 use crate::{Algorithm, AlgorithmTrait, Radix, Secret, HOTP, TOTP};
 use std::ffi::CStr;
+use std::num::NonZeroU8;
 use std::os::raw::c_char;
 
 pub(crate) unsafe fn to_string(ptr: *const c_char) -> String {
@@ -18,15 +19,12 @@ pub(crate) unsafe fn to_hotp(config: crate::ffi::hotp_c_binds::HotpConfig) -> HO
         panic!("Algorithm is null");
     }
 
-    match HOTP::new(
+    HOTP::new(
         Algorithm::from_string(to_string(config.algorithm)),
-        Secret::new(to_str(config.secret)).unwrap(),
-        config.length as u8,
-        Radix::new(config.radix as u8).unwrap(), // TODO
-    ) {
-        Ok(hotp) => hotp,
-        Err(e) => panic!("{}", e),
-    }
+        Secret::new(to_str(config.secret)).unwrap(),  // TODO
+        NonZeroU8::new(config.length as u8).unwrap(), // TODO
+        Radix::new(config.radix as u8).unwrap(),      // TODO
+    )
 }
 
 pub(crate) unsafe fn to_totp(config: crate::ffi::totp_c_binds::TotpConfig) -> TOTP {

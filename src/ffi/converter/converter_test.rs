@@ -1,5 +1,6 @@
 use crate::{Algorithm, Radix, Secret, HOTP};
 use std::any::Any;
+use std::num::NonZeroU8;
 
 #[test]
 fn to_string_should_convert_cstr_to_string() {
@@ -37,8 +38,9 @@ fn to_hotp_should_convert_hotp_config_to_hotp() {
     };
     unsafe {
         let hotp = super::to_hotp(hotp_config);
-        let hotp_orig = HOTP::new(Algorithm::SHA1, Secret::new("Hello").unwrap(), 6, Radix(10));
-        assert_eq!(hotp, hotp_orig.unwrap());
+        let hotp_orig =
+            HOTP::new(Algorithm::SHA1, Secret::new("Hello").unwrap(), NonZeroU8::new(6).unwrap(), Radix(10));
+        assert_eq!(hotp, hotp_orig);
     }
 }
 

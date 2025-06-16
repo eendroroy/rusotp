@@ -122,4 +122,4 @@ pub unsafe extern "C" fn hotp_verify(
 }
 
 #[cfg(test)]
-mod htop_c_bind_tests;
+mod hotp_c_bind_tests;

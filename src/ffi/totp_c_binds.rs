@@ -192,3 +192,6 @@ pub unsafe extern "C" fn totp_provisioning_uri(
         Err(e) => panic!("{}", e),
     }
 }
+
+#[cfg(test)]
+mod totp_c_bind_tests;
