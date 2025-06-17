@@ -1,4 +1,5 @@
 use rusotp::{Algorithm, Radix, Secret};
+use std::num::NonZero;
 
 fn main() {
     let secret = Secret::new("12345678901234567890").unwrap();
@@ -21,7 +22,13 @@ fn main() {
     ];
 
     data.iter().for_each(|(length, radix, interval, timestamp, otp)| {
-        let totp = match rusotp::TOTP::new(Algorithm::SHA1, secret.clone(), *length, *radix, *interval) {
+        let totp = match rusotp::TOTP::new(
+            Algorithm::SHA1,
+            secret.clone(),
+            NonZero::new(*length).unwrap(),
+            *radix,
+            NonZero::new(*interval).unwrap(),
+        ) {
             Ok(hotp) => hotp,
             Err(e) => panic!("{}", e),
         };

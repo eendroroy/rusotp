@@ -1,6 +1,6 @@
 use crate::{Algorithm, Radix, Secret, HOTP};
 use std::any::Any;
-use std::num::NonZeroU8;
+use std::num::{NonZeroU64, NonZeroU8};
 
 #[test]
 fn to_string_should_convert_cstr_to_string() {
@@ -106,7 +106,13 @@ fn to_totp_should_convert_totp_config_to_totp() {
     };
     unsafe {
         let totp = super::to_totp(totp_config);
-        let totp_orig = crate::TOTP::new(Algorithm::SHA1, Secret::new("Hello").unwrap(), 6, Radix(10), 30);
+        let totp_orig = crate::TOTP::new(
+            Algorithm::SHA1,
+            Secret::new("Hello").unwrap(),
+            NonZeroU8::new(6).unwrap(),
+            Radix(10),
+            NonZeroU64::new(30).unwrap(),
+        );
         assert_eq!(totp, totp_orig.unwrap());
     }
 }

@@ -1,8 +1,6 @@
 use crate::otp::algorithm::Algorithm;
 use crate::otp::base::otp;
-use crate::{
-    OtpGenericError, OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError, UnsupportedRadixError,
-};
+use crate::{OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError, UnsupportedRadixError};
 use std::num::NonZeroU8;
 
 /// Represents an HOTP (HMAC-based One-Time Password) generator.
@@ -102,7 +100,7 @@ impl HOTP {
     /// let otp = hotp.generate(1).unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
-    pub fn generate(&self, counter: u64) -> Result<String, String> {
+    pub fn generate(&self, counter: u64) -> OtpResult<String> {
         otp(&self.algorithm, self.secret.clone().get(), self.length.get(), self.radix.get(), counter)
     }
 
@@ -149,7 +147,7 @@ impl HOTP {
                             return Ok(Some(i));
                         }
                     }
-                    Err(e) => return Err(Box::new(OtpGenericError(e))),
+                    Err(e) => return Err(e),
                 }
             }
             Ok(None)

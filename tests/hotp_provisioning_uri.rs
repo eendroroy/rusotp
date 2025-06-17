@@ -1,4 +1,6 @@
-use rusotp::{Algorithm, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError, UnsupportedRadixError, HOTP};
+use rusotp::{
+    Algorithm, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError, UnsupportedRadixError, HOTP,
+};
 use std::num::NonZeroU8;
 
 const ALGORITHM: Algorithm = Algorithm::SHA256;

@@ -50,7 +50,7 @@ impl Display for UnsupportedLengthError {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct UnsupportedIntervalError(pub u8);
+pub struct UnsupportedIntervalError(pub u64);
 
 impl OtpError for UnsupportedIntervalError {}
 

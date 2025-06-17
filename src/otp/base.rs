@@ -1,14 +1,9 @@
 use crate::otp::algorithm::{Algorithm, AlgorithmTrait};
+use crate::{OtpGenericError, OtpResult};
 use num_bigint::BigUint;
 use std::ops::Rem;
 
-pub(crate) fn otp(
-    algorithm: &Algorithm,
-    secret: Vec<u8>,
-    length: u8,
-    radix: u8,
-    counter: u64,
-) -> Result<String, String> {
+pub(crate) fn otp(algorithm: &Algorithm, secret: Vec<u8>, length: u8, radix: u8, counter: u64) -> OtpResult<String> {
     match otp_bin_code(algorithm, secret, counter) {
         Ok(otp_bin_code) => Ok(format!(
             "{:0>width$}",
@@ -16,7 +11,7 @@ pub(crate) fn otp(
             width = length as usize
         )
         .to_uppercase()),
-        Err(e) => Err(e),
+        Err(e) => Err(Box::new(OtpGenericError(e.to_string()))),
     }
 }
 

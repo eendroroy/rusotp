@@ -1,4 +1,5 @@
 use rusotp::{Algorithm, Radix, Secret, TOTP};
+use std::num::NonZero;
 
 #[test]
 fn otp_should_match_with_rfc_samples() {
@@ -30,7 +31,8 @@ fn otp_should_match_with_rfc_samples() {
     ]
     .iter()
     .for_each(|(secret, timestamp, otp, algorithm)| {
-        let totp = TOTP::new(*algorithm, secret.clone(), 8, radix, 30).unwrap();
+        let totp =
+            TOTP::new(*algorithm, secret.clone(), NonZero::new(8).unwrap(), radix, NonZero::new(30).unwrap()).unwrap();
         let result = totp.generate_at(*timestamp);
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), *otp);

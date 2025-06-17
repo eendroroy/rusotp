@@ -1,13 +1,21 @@
 use rusotp::{Algorithm, Radix, Secret, TOTP};
+use std::num::NonZero;
 
 const ALGORITHM: Algorithm = Algorithm::SHA256;
 const LENGTH: u8 = 6;
-const RADIX: Radix = Radix(10);
-const INTERVAL: u8 = 30;
+const RADIX: u8 = 10;
+const INTERVAL: u64 = 30;
 
 #[test]
 fn should_generate_otp_now() {
-    let totp = TOTP::new(ALGORITHM, Secret::new("12345678901234567890").unwrap(), LENGTH, RADIX, INTERVAL).unwrap();
+    let totp = TOTP::new(
+        ALGORITHM,
+        Secret::new("12345678901234567890").unwrap(),
+        NonZero::new(LENGTH).unwrap(),
+        Radix::new(RADIX).unwrap(),
+        NonZero::new(INTERVAL).unwrap(),
+    )
+    .unwrap();
     let otp = totp.generate().unwrap();
 
     assert_eq!(otp.len(), LENGTH as usize);
@@ -15,7 +23,14 @@ fn should_generate_otp_now() {
 
 #[test]
 fn should_generate_otp_now_using_current_at() {
-    let totp = TOTP::new(ALGORITHM, Secret::new("12345678901234567890").unwrap(), LENGTH, RADIX, INTERVAL).unwrap();
+    let totp = TOTP::new(
+        ALGORITHM,
+        Secret::new("12345678901234567890").unwrap(),
+        NonZero::new(LENGTH).unwrap(),
+        Radix::new(RADIX).unwrap(),
+        NonZero::new(INTERVAL).unwrap(),
+    )
+    .unwrap();
 
     let now = totp.generate().unwrap();
     let at = totp

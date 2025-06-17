@@ -1,10 +1,10 @@
-use crate::messages::OTP_LENGTH_INVALID;
 use crate::otp::algorithm::Algorithm;
 use crate::otp::base::otp;
 use crate::{
-    AfterError, DriftBehindError, OtpGenericError, Radix, Secret, OtpResult, UnsupportedAlgorithmError,
-    UnsupportedIntervalError, UnsupportedLengthError, UnsupportedRadixError,
+    AfterError, DriftBehindError, OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedIntervalError,
+    UnsupportedLengthError, UnsupportedRadixError,
 };
+use std::num::{NonZeroU64, NonZeroU8};
 
 /// Represents a TOTP (Time-based One-Time Password) generator.
 ///
@@ -19,9 +19,9 @@ use crate::{
 pub struct TOTP {
     algorithm: Algorithm,
     secret: Secret,
-    length: u8,
+    length: NonZeroU8,
     radix: Radix,
-    interval: u8,
+    interval: NonZeroU64,
 }
 
 impl TOTP {
@@ -46,28 +46,33 @@ impl TOTP {
     /// # Example
     ///
     /// ```
+    /// use std::num::{NonZeroU64, NonZeroU8};
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix(10);
+    /// let length = NonZeroU8::new(6).unwrap();
+    /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret , 6, radix, 30).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret , length, radix, interval).unwrap();
     /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
-    pub fn new(algorithm: Algorithm, secret: Secret, length: u8, radix: Radix, interval: u8) -> Result<TOTP, String> {
-        if length < 1 {
-            Err(OTP_LENGTH_INVALID.to_string())
-        } else {
-            Ok(Self {
-                algorithm,
-                secret,
-                length,
-                radix,
-                interval,
-            })
-        }
+    pub fn new(
+        algorithm: Algorithm,
+        secret: Secret,
+        length: NonZeroU8,
+        radix: Radix,
+        interval: NonZeroU64,
+    ) -> OtpResult<TOTP> {
+        Ok(Self {
+            algorithm,
+            secret,
+            length,
+            radix,
+            interval,
+        })
     }
 
     /// Generates an OTP based on the current time.
@@ -79,21 +84,24 @@ impl TOTP {
     /// # Example
     ///
     /// ```
+    /// use std::num::{NonZeroU64, NonZeroU8};
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix(10);
+    /// let length = NonZeroU8::new(6).unwrap();
+    /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, 6, radix, 30).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
     /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
-    pub fn generate(&self) -> Result<String, String> {
+    pub fn generate(&self) -> OtpResult<String> {
         otp(
             &self.algorithm,
             self.secret.clone().get(),
-            self.length,
+            self.length.get(),
             self.radix.get(),
             self.time_code(std::time::UNIX_EPOCH.elapsed().unwrap().as_secs()),
         )
@@ -112,18 +120,21 @@ impl TOTP {
     /// # Example
     ///
     /// ```
+    /// use std::num::{NonZeroU64, NonZeroU8};
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
+    /// let length = NonZeroU8::new(6).unwrap();
+    /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, 6, radix, 30).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
     /// let otp = totp.generate_at(1622548800).unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
-    pub fn generate_at(&self, timestamp: u64) -> Result<String, String> {
-        otp(&self.algorithm, self.secret.clone().get(), self.length, self.radix.get(), self.time_code(timestamp))
+    pub fn generate_at(&self, timestamp: u64) -> OtpResult<String> {
+        otp(&self.algorithm, self.secret.clone().get(), self.length.get(), self.radix.get(), self.time_code(timestamp))
     }
 
     /// Verifies an OTP based on the current time and drift values.
@@ -146,24 +157,21 @@ impl TOTP {
     /// # Example
     ///
     /// ```
+    /// use std::num::{NonZeroU64, NonZeroU8};
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix(10);
+    /// let length = NonZeroU8::new(6).unwrap();
+    /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, 6, radix, 30).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
     /// let otp = totp.generate().unwrap();
     /// let verified = totp.verify(&otp, None, 30, 30).unwrap();
     /// assert!(verified.is_some());
     /// ```
-    pub fn verify(
-        &self,
-        otp: &str,
-        after: Option<u64>,
-        drift_ahead: u64,
-        drift_behind: u64,
-    ) -> OtpResult<Option<u64>> {
+    pub fn verify(&self, otp: &str, after: Option<u64>, drift_ahead: u64, drift_behind: u64) -> OtpResult<Option<u64>> {
         self.verify_at(otp, std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(), after, drift_ahead, drift_behind)
     }
 
@@ -188,13 +196,16 @@ impl TOTP {
     /// # Example
     ///
     /// ```
+    /// use std::num::{NonZeroU64, NonZeroU8};
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix(10);
+    /// let length = NonZeroU8::new(6).unwrap();
+    /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, 6, radix, 30).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
     /// let otp = totp.generate_at(1622548800).unwrap();
     /// let verified = totp.verify_at(&otp, 1622548800, None, 30, 30).unwrap();
     /// assert_eq!(verified, Some(1622548800));
@@ -207,7 +218,7 @@ impl TOTP {
         drift_ahead: u64,
         drift_behind: u64,
     ) -> OtpResult<Option<u64>> {
-        if self.length != otp.len() as u8 {
+        if self.length.get() != otp.len() as u8 {
             Ok(None)
         } else if drift_behind >= at {
             Err(Box::new(DriftBehindError(drift_behind, at)))
@@ -232,7 +243,7 @@ impl TOTP {
                             return Ok(Some(i));
                         }
                     }
-                    Err(e) => return Err(Box::new(OtpGenericError(e))),
+                    Err(e) => return Err(e),
                 }
             }
             Ok(None)
@@ -257,21 +268,24 @@ impl TOTP {
     /// # Example
     ///
     /// ```
+    /// use std::num::{NonZeroU64, NonZeroU8};
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     /// let radix = Radix(10);
+    /// let length = NonZeroU8::new(6).unwrap();
+    /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, 6, radix, 30).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
     /// let uri = totp.provisioning_uri("ExampleIssuer", "example@example.com").unwrap();
     /// println!("Provisioning URI: {}", uri);
     /// ```
     pub fn provisioning_uri(&self, issuer: &str, name: &str) -> OtpResult<String> {
-        if self.interval < 30 {
-            Err(Box::new(UnsupportedIntervalError(self.interval)))
-        } else if self.length != 6 {
-            Err(Box::new(UnsupportedLengthError(self.length)))
+        if self.interval.get() < 30 {
+            Err(Box::new(UnsupportedIntervalError(self.interval.get())))
+        } else if self.length.get() != 6 {
+            Err(Box::new(UnsupportedLengthError(self.length.get())))
         } else if self.radix.get() != 10 {
             Err(Box::new(UnsupportedRadixError(self.radix.get())))
         } else if self.algorithm != Algorithm::SHA1 {
@@ -298,6 +312,6 @@ impl TOTP {
     }
 
     fn time_code(&self, timestamp: u64) -> u64 {
-        timestamp / self.interval as u64
+        timestamp / self.interval.get()
     }
 }
