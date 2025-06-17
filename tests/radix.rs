@@ -11,7 +11,7 @@ fn should_create_radix() {
 #[test]
 fn should_fail_to_create_radix() {
     [1, 37, 100].iter().for_each(|value| {
-        assert!(!Radix::new(*value).is_ok());
+        assert!(Radix::new(*value).is_err());
         assert_eq!(Radix::new(*value).err().unwrap(), RadixError(*value));
     })
 }

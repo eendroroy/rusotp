@@ -1,7 +1,8 @@
-use crate::messages::{PROV_OTP_LENGTH_INVALID, PROV_OTP_RADIX_INVALID, UNSUPPORTED_ALGORITHM};
 use crate::otp::algorithm::Algorithm;
 use crate::otp::base::otp;
-use crate::{Radix, Secret};
+use crate::{
+    OtpGenericError, OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError, UnsupportedRadixError,
+};
 use std::num::NonZeroU8;
 
 /// Represents an HOTP (HMAC-based One-Time Password) generator.
@@ -137,7 +138,7 @@ impl HOTP {
     /// let verified = hotp.verify(&otp, 1, 0).unwrap();
     /// assert_eq!(verified, Some(1));
     /// ```
-    pub fn verify(&self, otp: &str, counter: u64, retries: u64) -> Result<Option<u64>, String> {
+    pub fn verify(&self, otp: &str, counter: u64, retries: u64) -> OtpResult<Option<u64>> {
         if self.length.get() != otp.len() as u8 {
             Ok(None)
         } else {
@@ -148,7 +149,7 @@ impl HOTP {
                             return Ok(Some(i));
                         }
                     }
-                    Err(e) => panic!("{}", e),
+                    Err(e) => return Err(Box::new(OtpGenericError(e))),
                 }
             }
             Ok(None)
@@ -185,13 +186,13 @@ impl HOTP {
     /// let uri = hotp.provisioning_uri("rusotp", 1).unwrap();
     /// println!("Provisioning URI: {}", uri);
     /// ```
-    pub fn provisioning_uri(&self, name: &str, initial_count: u64) -> Result<String, &'static str> {
+    pub fn provisioning_uri(&self, name: &str, initial_count: u64) -> OtpResult<String> {
         if self.length.get() != 6 {
-            Err(PROV_OTP_LENGTH_INVALID)
+            Err(Box::new(UnsupportedLengthError(self.length.get())))
         } else if self.radix.get() != 10 {
-            Err(PROV_OTP_RADIX_INVALID)
+            Err(Box::new(UnsupportedRadixError(self.radix.get())))
         } else if self.algorithm != Algorithm::SHA1 {
-            Err(UNSUPPORTED_ALGORITHM)
+            Err(Box::new(UnsupportedAlgorithmError(self.algorithm)))
         } else {
             let query = format!(
                 "secret={}&counter={}",

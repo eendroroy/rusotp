@@ -8,6 +8,6 @@ fn should_create_secret() {
 
 #[test]
 fn should_fail_to_create_secret() {
-    assert!(!Secret::new("").is_ok());
+    assert!(Secret::new("").is_err());
     assert_eq!(Secret::new("").err().unwrap(), SecretError);
 }

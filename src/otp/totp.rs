@@ -1,10 +1,10 @@
-use crate::messages::{
-    DRIFT_BEHIND_INVALID, INTERVAL_INVALID, INVALID_AFTER, OTP_LENGTH_INVALID, PROV_OTP_LENGTH_INVALID,
-    PROV_OTP_RADIX_INVALID, UNSUPPORTED_ALGORITHM,
-};
+use crate::messages::OTP_LENGTH_INVALID;
 use crate::otp::algorithm::Algorithm;
 use crate::otp::base::otp;
-use crate::{Radix, Secret};
+use crate::{
+    AfterError, DriftBehindError, OtpGenericError, Radix, Secret, OtpResult, UnsupportedAlgorithmError,
+    UnsupportedIntervalError, UnsupportedLengthError, UnsupportedRadixError,
+};
 
 /// Represents a TOTP (Time-based One-Time Password) generator.
 ///
@@ -163,7 +163,7 @@ impl TOTP {
         after: Option<u64>,
         drift_ahead: u64,
         drift_behind: u64,
-    ) -> Result<Option<u64>, String> {
+    ) -> OtpResult<Option<u64>> {
         self.verify_at(otp, std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(), after, drift_ahead, drift_behind)
     }
 
@@ -206,17 +206,18 @@ impl TOTP {
         after: Option<u64>,
         drift_ahead: u64,
         drift_behind: u64,
-    ) -> Result<Option<u64>, String> {
+    ) -> OtpResult<Option<u64>> {
         if self.length != otp.len() as u8 {
             Ok(None)
         } else if drift_behind >= at {
-            Err(DRIFT_BEHIND_INVALID.to_string())
-        } else if after.is_some() && after.unwrap() > at {
-            Err(INVALID_AFTER.to_string())
+            Err(Box::new(DriftBehindError(drift_behind, at)))
         } else {
             let mut start = at - drift_behind;
 
             if let Some(after_value) = after {
+                if after_value > at {
+                    return Err(Box::new(AfterError(after.unwrap(), at)));
+                }
                 if start < after_value {
                     start = after_value;
                 }
@@ -231,7 +232,7 @@ impl TOTP {
                             return Ok(Some(i));
                         }
                     }
-                    Err(e) => return Err(e),
+                    Err(e) => return Err(Box::new(OtpGenericError(e))),
                 }
             }
             Ok(None)
@@ -266,15 +267,15 @@ impl TOTP {
     /// let uri = totp.provisioning_uri("ExampleIssuer", "example@example.com").unwrap();
     /// println!("Provisioning URI: {}", uri);
     /// ```
-    pub fn provisioning_uri(&self, issuer: &str, name: &str) -> Result<String, String> {
+    pub fn provisioning_uri(&self, issuer: &str, name: &str) -> OtpResult<String> {
         if self.interval < 30 {
-            Err(INTERVAL_INVALID.to_string())
+            Err(Box::new(UnsupportedIntervalError(self.interval)))
         } else if self.length != 6 {
-            Err(PROV_OTP_LENGTH_INVALID.to_string())
+            Err(Box::new(UnsupportedLengthError(self.length)))
         } else if self.radix.get() != 10 {
-            Err(PROV_OTP_RADIX_INVALID.to_string())
+            Err(Box::new(UnsupportedRadixError(self.radix.get())))
         } else if self.algorithm != Algorithm::SHA1 {
-            Err(UNSUPPORTED_ALGORITHM.to_string())
+            Err(Box::new(UnsupportedAlgorithmError(self.algorithm)))
         } else {
             let issuer_str = if !issuer.is_empty() {
                 format!("{}{}", urlencoding::encode(issuer), urlencoding::encode(":"))

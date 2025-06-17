@@ -1,4 +1,4 @@
-use rusotp::{Algorithm, Radix, Secret, TOTP};
+use rusotp::{AfterError, Algorithm, DriftBehindError, Radix, Secret, TOTP};
 
 const ALGORITHM: Algorithm = Algorithm::SHA256;
 const LENGTH: u8 = 6;
@@ -24,7 +24,7 @@ fn should_fail_if_after_is_greater_than_at() {
     let result = totp.verify_at(&otp, 10000, Some(10000 + 1), DRIFT_AHEAD, DRIFT_BEHIND);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "After must be less than or equal to at");
+    assert_eq!(result.err().unwrap().to_string(), AfterError(10000 + 1, 10000).to_string());
 }
 
 #[test]
@@ -34,7 +34,7 @@ fn should_fail_if_drift_behind_is_greater_than_at() {
     let result = totp.verify_at(&otp, 10000, Some(10000), DRIFT_AHEAD, 10000 + 1);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "Drift behind must be less than at");
+    assert_eq!(result.err().unwrap().to_string(), DriftBehindError(10000 + 1, 10000).to_string());
 }
 
 #[test]
@@ -94,16 +94,12 @@ fn should_not_verify_with_after_greater_than_at() {
     let totp = TOTP::new(ALGORITHM, Secret::new("12345678901234567890").unwrap(), LENGTH, RADIX, INTERVAL).unwrap();
 
     let now = totp.generate().unwrap();
-    let verify = totp.verify_at(
-        &now,
-        std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
-        Some(std::time::UNIX_EPOCH.elapsed().unwrap().as_secs() + 100),
-        DRIFT_AHEAD,
-        DRIFT_BEHIND,
-    );
+    let at = std::time::UNIX_EPOCH.elapsed().unwrap().as_secs();
+    let after = std::time::UNIX_EPOCH.elapsed().unwrap().as_secs() + 100;
+    let verify = totp.verify_at(&now, at, Some(after), DRIFT_AHEAD, DRIFT_BEHIND);
 
     assert!(verify.is_err(), "OTP should not be verified");
-    assert_eq!(verify.err().unwrap(), "After must be less than or equal to at");
+    assert_eq!(verify.err().unwrap().to_string(), AfterError(after, at).to_string());
 }
 
 #[test]

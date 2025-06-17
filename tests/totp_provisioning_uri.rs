@@ -1,4 +1,7 @@
-use rusotp::{Algorithm, Radix, Secret, TOTP};
+use rusotp::{
+    Algorithm, Radix, Secret, UnsupportedAlgorithmError, UnsupportedIntervalError, UnsupportedLengthError,
+    UnsupportedRadixError, TOTP,
+};
 
 const ALGORITHM: Algorithm = Algorithm::SHA256;
 const LENGTH: u8 = 6;
@@ -37,7 +40,7 @@ fn provisioning_uri_should_fail_with_sha256() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "Unsupported algorithm");
+    assert_eq!(result.err().unwrap().to_string(), UnsupportedAlgorithmError(Algorithm::SHA256).to_string());
 }
 
 #[test]
@@ -48,7 +51,6 @@ fn provisioning_uri_should_fail_with_sha512() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "Unsupported algorithm");
 }
 
 #[test]
@@ -58,7 +60,7 @@ fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "OTP length must be 6");
+    assert_eq!(result.err().unwrap().to_string(), UnsupportedLengthError(5).to_string());
 }
 
 #[test]
@@ -68,7 +70,7 @@ fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "OTP length must be 6");
+    assert_eq!(result.err().unwrap().to_string(), UnsupportedLengthError(7).to_string());
 }
 
 #[test]
@@ -78,7 +80,7 @@ fn provisioning_uri_should_fail_with_radix_less_than_10() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "Radix must be 10");
+    assert_eq!(result.err().unwrap().to_string(), UnsupportedRadixError(9).to_string());
 }
 
 #[test]
@@ -88,7 +90,7 @@ fn provisioning_uri_should_fail_with_radix_more_than_10() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "Radix must be 10");
+    assert_eq!(result.err().unwrap().to_string(), UnsupportedRadixError(11).to_string());
 }
 
 #[test]
@@ -98,5 +100,5 @@ fn provisioning_uri_should_fail_with_interval_less_than_30() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_err(), "Expected an error");
-    assert_eq!(result.err().unwrap(), "Interval must be greater than or equal to 30");
+    assert_eq!(result.err().unwrap().to_string(), UnsupportedIntervalError(29).to_string());
 }

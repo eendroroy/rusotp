@@ -17,7 +17,7 @@ fn test_totp_generate() {
     let otp_ptr = unsafe { totp_generate(config) };
     assert!(!otp_ptr.is_null());
     unsafe {
-        CString::from_raw(otp_ptr as *mut i8);
+        let _ = CString::from_raw(otp_ptr as *mut i8);
     }
 }
 
@@ -58,6 +58,6 @@ fn test_totp_provisioning_uri() {
     let uri_ptr = unsafe { totp_provisioning_uri(config, issuer.as_ptr(), name.as_ptr()) };
     assert!(!uri_ptr.is_null());
     unsafe {
-        CString::from_raw(uri_ptr as *mut i8);
+        let _ = CString::from_raw(uri_ptr as *mut i8);
     }
 }
