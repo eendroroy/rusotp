@@ -8,6 +8,7 @@ impl std::fmt::Display for RadixError {
     }
 }
 
+/// A specialized `Result` type for operations that may return a `RadixError`.
 pub type RadixResult<T> = Result<T, RadixError>;
 
 /// Numeric radix (base) between 2 and 36.

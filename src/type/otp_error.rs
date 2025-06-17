@@ -1,10 +1,17 @@
+//! Error types and result alias for OTP (One-Time Password) operations.
+
 use crate::{Algorithm, AlgorithmTrait};
 use std::fmt::{Debug, Display};
 
+/// Trait for all OTP-related errors.
+///
+/// Implementors must also implement `Display` and `Debug`.
 pub trait OtpError: Display + Debug {}
 
+/// Result type alias for OTP operations.
 pub type OtpResult<T> = Result<T, Box<dyn OtpError>>;
 
+/// Generic OTP error with a message.
 #[derive(Debug, Clone, PartialEq)]
 pub struct OtpGenericError(pub String);
 
@@ -16,6 +23,7 @@ impl Display for OtpGenericError {
     }
 }
 
+/// Error indicating that a value exceeds the allowed drift.
 #[derive(Debug, Clone, PartialEq)]
 pub struct DriftBehindError(pub u64, pub u64);
 
@@ -27,6 +35,7 @@ impl Display for DriftBehindError {
     }
 }
 
+/// Error indicating that a value exceeds allowed point.
 #[derive(Debug, Clone, PartialEq)]
 pub struct AfterError(pub u64, pub u64);
 
@@ -38,6 +47,7 @@ impl Display for AfterError {
     }
 }
 
+/// Error for unsupported OTP code length.
 #[derive(Debug, Clone, PartialEq)]
 pub struct UnsupportedLengthError(pub u8);
 
@@ -49,6 +59,7 @@ impl Display for UnsupportedLengthError {
     }
 }
 
+/// Error for unsupported OTP interval.
 #[derive(Debug, Clone, PartialEq)]
 pub struct UnsupportedIntervalError(pub u64);
 
@@ -60,6 +71,7 @@ impl Display for UnsupportedIntervalError {
     }
 }
 
+/// Error for unsupported radix in OTP.
 #[derive(Debug, Clone, PartialEq)]
 pub struct UnsupportedRadixError(pub u8);
 
@@ -71,6 +83,7 @@ impl Display for UnsupportedRadixError {
     }
 }
 
+/// Error for unsupported algorithm in OTP.
 #[derive(Debug, Clone, PartialEq)]
 pub struct UnsupportedAlgorithmError(pub Algorithm);
 

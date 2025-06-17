@@ -3,7 +3,6 @@
 pub struct SecretError;
 
 impl std::fmt::Display for SecretError {
-    /// Formats the error message for display.
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "must not be empty")
     }
