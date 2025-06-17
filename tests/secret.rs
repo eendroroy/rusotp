@@ -9,5 +9,5 @@ fn should_create_secret() {
 #[test]
 fn should_fail_to_create_secret() {
     assert!(Secret::new("").is_err());
-    assert_eq!(Secret::new("").err().unwrap(), SecretError);
+    assert_eq!(Secret::new("").err().unwrap().to_string(), SecretError.to_string());
 }
