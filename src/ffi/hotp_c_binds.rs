@@ -36,16 +36,16 @@ pub struct HotpConfig {
 /// # Safety
 ///
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
-/// 
+///
 /// # Example
 /// ```cpp
 /// #include <stdio.h>
 /// #include "contrib/rusotp.hpp"
-/// 
+///
 /// int main() {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
 ///     unsigned long counter = 2;
-/// 
+///
 ///     const char *otp = hotp_generate(config, counter);
 ///     printf("HOTP : %s\n", otp);
 ///
@@ -79,22 +79,22 @@ pub unsafe extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulonglong)
 /// # Safety
 ///
 /// This function is unsafe because it dereferences raw pointers.
-/// 
+///
 /// # Example
 /// ```cpp
 /// #include <stdio.h>
 /// #include "contrib/rusotp.hpp"
-/// 
+///
 /// int main() {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
 ///     unsigned long counter = 2;
-/// 
+///
 ///     const char *otp = hotp_generate(config, counter);
 ///     printf("HOTP : %s\n", otp);
-/// 
+///
 ///     const char *verified = hotp_verify(config, otp, counter, 0) ? "true" : "false";
 ///     printf("VERIFIED : %s\n", verified);
-/// 
+///
 ///     return 0;
 /// }
 /// ```
@@ -138,19 +138,19 @@ pub unsafe extern "C" fn hotp_verify(
 /// # Safety
 ///
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
-/// 
+///
 /// # Example
 /// ```cpp
 /// #include <stdio.h>
 /// #include "contrib/rusotp.hpp"
-/// 
+///
 /// int main() {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
 ///     unsigned long counter = 2;
-/// 
+///
 ///     const char *uri = hotp_provisioning_uri(config, "rusotp", counter);
 ///     printf("URI : %s\n", uri);
-/// 
+///
 ///     return 0;
 /// }
 /// ```

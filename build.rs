@@ -26,8 +26,7 @@ fn main() {
     );
 
     println!(
-        "cargo:rustc-env=INLINE_C_RS_LDFLAGS={shared_object_dir}/{lib}",
+        "cargo:rustc-env=INLINE_C_RS_LDFLAGS={shared_object_dir}/librusotp.dylib",
         shared_object_dir = shared_object_dir,
-        lib = "librusotp.dylib",
     );
 }
