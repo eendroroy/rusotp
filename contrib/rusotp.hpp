@@ -1,5 +1,22 @@
-use crate::ffi::converter::{to_str, to_totp};
-use std::ffi::{c_char, c_ulonglong, c_ushort};
+#include <cstdarg>
+#include <cstdint>
+#include <cstdlib>
+#include <ostream>
+#include <new>
+
+/// Configuration for HOTP (HMAC-based One-Time Password).
+///
+/// # Fields
+/// - `algorithm`: A pointer to a C string representing the hashing algorithm (e.g., "SHA1").
+/// - `secret`: A pointer to a C string representing the shared secret key.
+/// - `length`: The length of the generated OTP.
+/// - `radix`: The base (radix) for the OTP (e.g., 10 for decimal).
+struct HotpConfig {
+  const char *algorithm;
+  const char *secret;
+  unsigned short length;
+  unsigned short radix;
+};
 
 /// Configuration for TOTP (Time-based One-Time Password).
 ///
@@ -9,15 +26,135 @@ use std::ffi::{c_char, c_ulonglong, c_ushort};
 /// - `length`: The length of the generated OTP.
 /// - `radix`: The base (radix) for the OTP (e.g., 10 for decimal).
 /// - `interval`: The time interval in seconds for the TOTP generation.
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct TotpConfig {
-    pub algorithm: *const c_char,
-    pub secret: *const c_char,
-    pub length: c_ushort,
-    pub radix: c_ushort,
-    pub interval: c_ulonglong,
-}
+struct TotpConfig {
+  const char *algorithm;
+  const char *secret;
+  unsigned short length;
+  unsigned short radix;
+  unsigned long long interval;
+};
+
+extern "C" {
+
+/// Generates an HOTP (HMAC-based One-Time Password) based on the provided configuration and counter.
+///
+/// # Arguments
+///
+/// * `config` - A `HotpConfig` struct containing the configuration for the HOTP generation.
+/// * `counter` - A counter value used in the HOTP generation.
+///
+/// # Returns
+///
+/// A pointer to a C string containing the generated HOTP. The caller is responsible for freeing the memory.
+///
+/// # Panics
+///
+/// This function will panic if the HOTP generation fails.
+///
+/// # Safety
+///
+/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+///
+/// # Example
+/// ```cpp
+/// #include <stdio.h>
+/// #include "contrib/rusotp.hpp"
+///
+/// int main() {
+///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
+///     unsigned long counter = 2;
+///
+///     const char *otp = hotp_generate(config, counter);
+///     printf("HOTP : %s\n", otp);
+///
+///     return 0;
+/// }
+/// ```
+const char *hotp_generate(HotpConfig config,
+                          unsigned long long counter);
+
+/// Verifies an HOTP (HMAC-based One-Time Password) based on the provided configuration, OTP, counter, and retries.
+///
+/// # Arguments
+///
+/// * `config` - A `HotpConfig` struct containing the configuration for the HOTP verification.
+/// * `otp` - A pointer to a C string representing the OTP to be verified.
+/// * `counter` - A counter value used in the HOTP verification.
+/// * `retries` - The number of retries allowed for the HOTP verification.
+///
+/// # Returns
+///
+/// A boolean value indicating whether the OTP is verified (`true`) or not (`false`).
+///
+/// # Panics
+///
+/// This function will panic if the OTP is null or if the HOTP verification fails.
+///
+/// # Safety
+///
+/// This function is unsafe because it dereferences raw pointers.
+///
+/// # Example
+/// ```cpp
+/// #include <stdio.h>
+/// #include "contrib/rusotp.hpp"
+///
+/// int main() {
+///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
+///     unsigned long counter = 2;
+///
+///     const char *otp = hotp_generate(config, counter);
+///     printf("HOTP : %s\n", otp);
+///
+///     const char *verified = hotp_verify(config, otp, counter, 0) ? "true" : "false";
+///     printf("VERIFIED : %s\n", verified);
+///
+///     return 0;
+/// }
+/// ```
+bool hotp_verify(HotpConfig config,
+                 const char *otp,
+                 unsigned long long counter,
+                 unsigned long long retries);
+
+/// Generates a provisioning URI for HOTP (HMAC-based One-Time Password) based on the provided configuration, name, and counter.
+///
+/// # Arguments
+///
+/// * `config` - A `HotpConfig` struct containing the configuration for the HOTP generation.
+/// * `name` - A pointer to a C string representing the name of the user or account.
+/// * `counter` - A counter value used in the HOTP generation.
+///
+/// # Returns
+///
+/// A pointer to a C string containing the provisioning URI. The caller is responsible for freeing the memory.
+///
+/// # Panics
+///
+/// This function will panic if the name is null or if the URI generation fails.
+///
+/// # Safety
+///
+/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+///
+/// # Example
+/// ```cpp
+/// #include <stdio.h>
+/// #include "contrib/rusotp.hpp"
+///
+/// int main() {
+///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
+///     unsigned long counter = 2;
+///
+///     const char *uri = hotp_provisioning_uri(config, "rusotp", counter);
+///     printf("URI : %s\n", uri);
+///
+///     return 0;
+/// }
+/// ```
+const char *hotp_provisioning_uri(HotpConfig config,
+                                  const char *name,
+                                  unsigned long long counter);
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration for the current time.
 ///
@@ -51,12 +188,7 @@ pub struct TotpConfig {
 ///     return 0;
 /// }
 ///```
-#[no_mangle]
-pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> *const c_char {
-    std::ffi::CString::new(to_totp(config).generate().unwrap())
-        .unwrap()
-        .into_raw()
-}
+const char *totp_generate(TotpConfig config);
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration and timestamp.
 ///
@@ -92,12 +224,8 @@ pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> *const c_char {
 ///     return 0;
 /// }
 ///```
-#[no_mangle]
-pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulonglong) -> *const c_char {
-    std::ffi::CString::new(to_totp(config).generate_at(timestamp).unwrap())
-        .unwrap()
-        .into_raw()
-}
+const char *totp_generate_at(TotpConfig config,
+                             unsigned long long timestamp);
 
 /// Verifies a TOTP (Time-based One-Time Password) based on the provided configuration, OTP, and drift parameters.
 ///
@@ -138,25 +266,11 @@ pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulong
 ///     return 0;
 /// }
 ///```
-#[no_mangle]
-pub unsafe extern "C" fn totp_verify(
-    config: TotpConfig,
-    otp: *const c_char,
-    after: c_ulonglong,
-    drift_ahead: c_ulonglong,
-    drift_behind: c_ulonglong,
-) -> bool {
-    if otp.is_null() {
-        panic!("OTP is null");
-    }
-
-    let totp = to_totp(config);
-
-    match totp.verify(to_str(otp), Some(after), drift_ahead, drift_behind) {
-        Ok(verified) => verified.is_some(),
-        Err(e) => panic!("{}", e),
-    }
-}
+bool totp_verify(TotpConfig config,
+                 const char *otp,
+                 unsigned long long after,
+                 unsigned long long drift_ahead,
+                 unsigned long long drift_behind);
 
 /// Verifies a TOTP (Time-based One-Time Password) based on the provided configuration, OTP, timestamp, and drift parameters.
 ///
@@ -198,26 +312,12 @@ pub unsafe extern "C" fn totp_verify(
 ///     return 0;
 /// }
 ///```
-#[no_mangle]
-pub unsafe extern "C" fn totp_verify_at(
-    config: TotpConfig,
-    otp: *const c_char,
-    timestamp: c_ulonglong,
-    after: c_ulonglong,
-    drift_ahead: c_ulonglong,
-    drift_behind: c_ulonglong,
-) -> bool {
-    if otp.is_null() {
-        panic!("OTP is null");
-    }
-
-    let totp = to_totp(config);
-
-    match totp.verify_at(to_str(otp), timestamp, Some(after), drift_ahead, drift_behind) {
-        Ok(verified) => verified.is_some(),
-        Err(e) => panic!("{}", e),
-    }
-}
+bool totp_verify_at(TotpConfig config,
+                    const char *otp,
+                    unsigned long long timestamp,
+                    unsigned long long after,
+                    unsigned long long drift_ahead,
+                    unsigned long long drift_behind);
 
 /// Generates a provisioning URI for TOTP (Time-based One-Time Password) based on the provided configuration, issuer, and name.
 ///
@@ -254,26 +354,8 @@ pub unsafe extern "C" fn totp_verify_at(
 ///     return 0;
 /// }
 ///```
-#[no_mangle]
-pub unsafe extern "C" fn totp_provisioning_uri(
-    config: TotpConfig,
-    issuer: *const c_char,
-    name: *const c_char,
-) -> *const c_char {
-    if issuer.is_null() {
-        panic!("Issuer is null");
-    }
-    if name.is_null() {
-        panic!("Name is null");
-    }
+const char *totp_provisioning_uri(TotpConfig config,
+                                  const char *issuer,
+                                  const char *name);
 
-    let totp = to_totp(config);
-
-    match totp.provisioning_uri(to_str(issuer), to_str(name)) {
-        Ok(uri) => std::ffi::CString::new(uri).unwrap().into_raw(),
-        Err(e) => panic!("{}", e),
-    }
-}
-
-#[cfg(test)]
-mod totp_c_bind_tests;
+}  // extern "C"

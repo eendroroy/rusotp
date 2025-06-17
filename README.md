@@ -80,6 +80,61 @@ fn main() {
 }
 ```
 
+## C bindings
+
+#### HOTP
+
+```c
+#include <stdio.h>
+#include "rusotp.hpp"
+int main() {
+    HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
+    unsigned long counter = 2;
+    
+    // Generate an OTP
+    const char *otp = hotp_generate(config, counter);
+    printf("HOTP : %s\n", otp);
+    
+    // Verify an OTP
+    const char *verified = hotp_verify(config, otp, counter, 0) ? "true" : "false";
+    printf("VERIFIED : %s\n", verified);
+    
+    // Generate provisioning URI
+    const char *uri = hotp_provisioning_uri(config, "rusotp", counter);
+    printf("URI : %s\n", uri);
+    
+    return 0;
+}
+```
+
+#### TOTP
+
+```c
+#include <stdio.h>
+#include "rusotp.hpp"
+int main() {
+    TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
+    unsigned long timestamp = 10000;
+    
+    const char *otp_now =  totp_generate(config);
+    printf("NOW: %s\n", otp_now);
+    
+    const char *verified = totp_verify(config, otp_now, 0, 0, 0) ? "true" : "false";
+    printf("VERIFIED : %s\n", verified);
+    
+    const char *otp_at = totp_generate_at(config, timestamp);
+    printf("AT: %s\n", otp_at);
+    
+    const char *verified_at = totp_verify_at(config, otp_at, timestamp, 0, 0, 0) ? "true" : "false";
+    printf("VERIFIED : %s\n", verified_at);
+    
+    const char *provisioning_uri = totp_provisioning_uri(config, "rusotp", "user@email.mail");
+    printf("URI : %s\n", provisioning_uri);
+    
+    return 0;
+}
+```
+
 ## Documentation
 
 See the [docs.rs/rusotp](https://docs.rs/rusotp) for more examples and API details.

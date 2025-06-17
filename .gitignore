@@ -4,5 +4,4 @@ Cargo.lock
 **/*.rs.bk
 *.pdb
 .idea/
-c_examples/*.out
-c_examples/*.h
+*.out

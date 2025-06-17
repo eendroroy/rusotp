@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "rusotp.h"
+#include "rusotp.hpp"
 
 int main() {
     const char* secret = "12345678901234567890";

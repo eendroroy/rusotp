@@ -28,6 +28,10 @@ sha1 = "=0.10.6"
 [dev-dependencies]
 criterion = { version = "=0.6.0", features = ["html_reports"] }
 itertools = "=0.14.0"
+inline-c = "=0.1.8"
+
+[build-dependencies]
+cbindgen = "=0.29.0"
 
 [[bench]]
 name = "hotp"

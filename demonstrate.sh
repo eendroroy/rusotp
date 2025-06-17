@@ -1,39 +1,23 @@
 #!/usr/bin/env bash
 
-echo "Running tests"
-cargo test
+echo " ===========> Building ..."
+cargo build
 echo
 
-echo "Building lib"
-cargo build --release
+echo " ===========> Compiling hotp_fn.cpp ..."
+g++ contrib/hotp_fn.cpp -Ltarget/debug -lrusotp -o contrib/hotp_fn.out
 echo
 
-echo "Running examples hotp"
-cargo run --example hotp
+echo " ===========> Compiling totp_fn.cpp ..."
+g++ contrib/totp_fn.cpp -Ltarget/debug -lrusotp -o contrib/totp_fn.out
 echo
 
-echo "Running examples totp"
-cargo run --example totp
+echo " ===========> Running hotp_fn.out ..."
+echo
+./contrib/hotp_fn.out
 echo
 
-echo "Generating header"
-cbindgen --config c_examples/cbindgen.toml --crate rusotp --output c_examples/rusotp.h
+echo " ===========> Running totp_fn.out ..."
 echo
-
-echo "Compiling hotp_fn.cpp"
-g++ c_examples/hotp_fn.cpp -Ltarget/release -lrusotp -o c_examples/hotp_fn.out
-echo
-
-echo "Compiling totp_fn.cpp"
-g++ c_examples/totp_fn.cpp -Ltarget/release -lrusotp -o c_examples/totp_fn.out
-echo
-
-echo "Running hotp_fn.out"
-echo
-./c_examples/hotp_fn.out
-echo
-
-echo "Running totp_fn.out"
-echo
-./c_examples/totp_fn.out
+./contrib/totp_fn.out
 echo
