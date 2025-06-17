@@ -35,7 +35,7 @@ int main() {
 
         if (config.length == 6 && config.radix == 10 && config.interval == 30 && strcmp(config.algorithm, "SHA1") == 0) {
             printf(
-                "LENGTH: %d, RADIX: %d, INTERVAL: %d, TIMESTAMP: %lu \tNOW: %s \tTOTP : %s \tVERIFIED : %s\tURI : %s\n",
+                "LENGTH: %d, RADIX: %d, INTERVAL: %lld, TIMESTAMP: %lu \tNOW: %s \tTOTP : %s \tVERIFIED : %s\tURI : %s\n",
                 config.length,
                 config.radix,
                 config.interval,
@@ -46,7 +46,7 @@ int main() {
                 totp_provisioning_uri(config, "rusotp", "user@email.mail"));
         } else {
             printf(
-                "LENGTH: %d, RADIX: %d, INTERVAL: %d, TIMESTAMP: %lu \t NOW: %s \tTOTP : %s \tVERIFIED : %s\n",
+                "LENGTH: %d, RADIX: %d, INTERVAL: %lld, TIMESTAMP: %lu \t NOW: %s \tTOTP : %s \tVERIFIED : %s\n",
                 config.length,
                 config.radix,
                 config.interval,

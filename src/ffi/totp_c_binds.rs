@@ -1,5 +1,5 @@
 use crate::ffi::converter::{to_str, to_totp};
-use std::ffi::{c_char, c_longlong, c_ulonglong, c_ushort};
+use std::ffi::{c_char, c_ulonglong, c_ushort};
 
 /// Configuration for TOTP (Time-based One-Time Password).
 ///
@@ -16,7 +16,7 @@ pub struct TotpConfig {
     pub secret: *const c_char,
     pub length: c_ushort,
     pub radix: c_ushort,
-    pub interval: c_longlong,
+    pub interval: c_ulonglong,
 }
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration for the current time.
