@@ -40,7 +40,7 @@ pub struct HotpConfig {
 /// # Example
 /// ```cpp
 /// #include <stdio.h>
-/// #include "contrib/rusotp.hpp"
+/// #include "rusotp.hpp"
 ///
 /// int main() {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
@@ -83,7 +83,7 @@ pub unsafe extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulonglong)
 /// # Example
 /// ```cpp
 /// #include <stdio.h>
-/// #include "contrib/rusotp.hpp"
+/// #include "rusotp.hpp"
 ///
 /// int main() {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
@@ -142,7 +142,7 @@ pub unsafe extern "C" fn hotp_verify(
 /// # Example
 /// ```cpp
 /// #include <stdio.h>
-/// #include "contrib/rusotp.hpp"
+/// #include "rusotp.hpp"
 ///
 /// int main() {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};

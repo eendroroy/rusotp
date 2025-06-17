@@ -58,7 +58,7 @@ extern "C" {
 /// # Example
 /// ```cpp
 /// #include <stdio.h>
-/// #include "contrib/rusotp.hpp"
+/// #include "rusotp.hpp"
 ///
 /// int main() {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
@@ -97,7 +97,7 @@ const char *hotp_generate(HotpConfig config,
 /// # Example
 /// ```cpp
 /// #include <stdio.h>
-/// #include "contrib/rusotp.hpp"
+/// #include "rusotp.hpp"
 ///
 /// int main() {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
@@ -140,7 +140,7 @@ bool hotp_verify(HotpConfig config,
 /// # Example
 /// ```cpp
 /// #include <stdio.h>
-/// #include "contrib/rusotp.hpp"
+/// #include "rusotp.hpp"
 ///
 /// int main() {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
