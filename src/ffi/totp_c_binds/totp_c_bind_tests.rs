@@ -14,7 +14,7 @@ fn make_config() -> TotpConfig {
 #[test]
 fn test_totp_generate() {
     let config = make_config();
-    let otp_ptr = unsafe { totp_generate(config) };
+    let otp_ptr = totp_generate(config);
     assert!(otp_ptr.success);
     assert_eq!(to_str(otp_ptr.data).len(), 6);
 }
@@ -22,7 +22,7 @@ fn test_totp_generate() {
 #[test]
 fn test_totp_generate_at() {
     let config = make_config();
-    let otp_ptr = unsafe { totp_generate_at(config, 1000) };
+    let otp_ptr = totp_generate_at(config, 1000);
     assert!(otp_ptr.success);
     assert!(!otp_ptr.data.is_null());
 }
@@ -30,8 +30,8 @@ fn test_totp_generate_at() {
 #[test]
 fn test_totp_verify() {
     let config = make_config();
-    let otp_ptr = unsafe { totp_generate(config) };
-    let result = unsafe { totp_verify(config, otp_ptr.data, 0, 0, 0) };
+    let otp_ptr = totp_generate(config);
+    let result = totp_verify(config, otp_ptr.data, 0, 0, 0);
     assert!(result.success);
     assert!(result.data);
 }
@@ -39,8 +39,8 @@ fn test_totp_verify() {
 #[test]
 fn test_totp_verify_at() {
     let config = make_config();
-    let otp_ptr = unsafe { totp_generate_at(config, 100) };
-    let result = unsafe { totp_verify_at(config, otp_ptr.data, 100, 0, 0, 0) };
+    let otp_ptr = totp_generate_at(config, 100);
+    let result = totp_verify_at(config, otp_ptr.data, 100, 0, 0, 0);
     assert!(result.success);
     assert!(result.data);
 }

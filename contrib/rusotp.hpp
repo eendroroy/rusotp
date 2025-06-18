@@ -69,15 +69,7 @@ extern "C" {
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the generated HOTP. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the HOTP generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 /// ```
@@ -115,15 +107,7 @@ StringResult hotp_generate(HotpConfig config,
 ///
 /// # Returns
 ///
-/// A boolean value indicating whether the OTP is verified (`true`) or not (`false`).
-///
-/// # Panics
-///
-/// This function will panic if the OTP is null or if the HOTP verification fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
+/// A `BoolResult` containing success status and data if success.
 ///
 /// # Example
 /// ```
@@ -165,15 +149,7 @@ BoolResult hotp_verify(HotpConfig config,
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the provisioning URI. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the name is null or if the URI generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 /// ```
@@ -209,15 +185,7 @@ StringResult hotp_provisioning_uri(HotpConfig config,
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the generated TOTP. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the TOTP generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 ///
@@ -252,15 +220,7 @@ StringResult totp_generate(TotpConfig config);
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the generated TOTP. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the TOTP generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 ///
@@ -300,15 +260,7 @@ StringResult totp_generate_at(TotpConfig config,
 ///
 /// # Returns
 ///
-/// A boolean value indicating whether the OTP is verified (`true`) or not (`false`).
-///
-/// # Panics
-///
-/// This function will panic if the OTP is null or if the TOTP verification fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
+/// A `BoolResult` containing success status and data if success.
 ///
 /// # Example
 ///
@@ -354,15 +306,7 @@ BoolResult totp_verify(TotpConfig config,
 ///
 /// # Returns
 ///
-/// A boolean value indicating whether the OTP is verified (`true`) or not (`false`).
-///
-/// # Panics
-///
-/// This function will panic if the OTP is null or if the TOTP verification fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
+/// A `BoolResult` containing success status and data if success.
 ///
 /// # Example
 ///
@@ -405,15 +349,7 @@ BoolResult totp_verify_at(TotpConfig config,
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the provisioning URI. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the issuer or name is null or if the URI generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 ///

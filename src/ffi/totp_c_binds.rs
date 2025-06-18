@@ -13,15 +13,7 @@ use std::ffi::{c_char, c_ulonglong};
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the generated TOTP. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the TOTP generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 ///
@@ -46,7 +38,7 @@ use std::ffi::{c_char, c_ulonglong};
 /// # }
 ///```
 #[no_mangle]
-pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> StringResult {
+pub extern "C" fn totp_generate(config: TotpConfig) -> StringResult {
     match to_totp(config).generate() {
         Ok(otp) => success_string_result(&otp),
         Err(e) => error_string_result(&e.to_string()),
@@ -62,15 +54,7 @@ pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> StringResult {
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the generated TOTP. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the TOTP generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 ///
@@ -96,7 +80,7 @@ pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> StringResult {
 /// # }
 ///```
 #[no_mangle]
-pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulonglong) -> StringResult {
+pub extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulonglong) -> StringResult {
     match to_totp(config).generate_at(timestamp) {
         Ok(otp) => success_string_result(&otp),
         Err(e) => error_string_result(&e.to_string()),
@@ -115,15 +99,7 @@ pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulong
 ///
 /// # Returns
 ///
-/// A boolean value indicating whether the OTP is verified (`true`) or not (`false`).
-///
-/// # Panics
-///
-/// This function will panic if the OTP is null or if the TOTP verification fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
+/// A `BoolResult` containing success status and data if success.
 ///
 /// # Example
 ///
@@ -151,7 +127,7 @@ pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulong
 /// # }
 ///```
 #[no_mangle]
-pub unsafe extern "C" fn totp_verify(
+pub extern "C" fn totp_verify(
     config: TotpConfig,
     otp: *const c_char,
     after: c_ulonglong,
@@ -183,15 +159,7 @@ pub unsafe extern "C" fn totp_verify(
 ///
 /// # Returns
 ///
-/// A boolean value indicating whether the OTP is verified (`true`) or not (`false`).
-///
-/// # Panics
-///
-/// This function will panic if the OTP is null or if the TOTP verification fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
+/// A `BoolResult` containing success status and data if success.
 ///
 /// # Example
 ///
@@ -218,7 +186,7 @@ pub unsafe extern "C" fn totp_verify(
 /// # }
 ///```
 #[no_mangle]
-pub unsafe extern "C" fn totp_verify_at(
+pub extern "C" fn totp_verify_at(
     config: TotpConfig,
     otp: *const c_char,
     timestamp: c_ulonglong,
@@ -246,15 +214,7 @@ pub unsafe extern "C" fn totp_verify_at(
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the provisioning URI. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the issuer or name is null or if the URI generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 ///

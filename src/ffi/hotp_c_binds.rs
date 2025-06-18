@@ -15,15 +15,7 @@ use std::os::raw::c_char;
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the generated HOTP. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the HOTP generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 /// ```
@@ -48,7 +40,7 @@ use std::os::raw::c_char;
 /// # }
 /// ```
 #[no_mangle]
-pub unsafe extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulonglong) -> StringResult {
+pub extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulonglong) -> StringResult {
     match to_hotp(config).generate(counter) {
         Ok(c) => success_string_result(c.as_str()),
         Err(e) => error_string_result(e.to_string().as_str()),
@@ -66,15 +58,7 @@ pub unsafe extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulonglong)
 ///
 /// # Returns
 ///
-/// A boolean value indicating whether the OTP is verified (`true`) or not (`false`).
-///
-/// # Panics
-///
-/// This function will panic if the OTP is null or if the HOTP verification fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers.
+/// A `BoolResult` containing success status and data if success.
 ///
 /// # Example
 /// ```
@@ -102,7 +86,7 @@ pub unsafe extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulonglong)
 /// # }
 /// ```
 #[no_mangle]
-pub unsafe extern "C" fn hotp_verify(
+pub extern "C" fn hotp_verify(
     config: HotpConfig,
     otp: *const c_char,
     counter: c_ulonglong,
@@ -128,15 +112,7 @@ pub unsafe extern "C" fn hotp_verify(
 ///
 /// # Returns
 ///
-/// A pointer to a C string containing the provisioning URI. The caller is responsible for freeing the memory.
-///
-/// # Panics
-///
-/// This function will panic if the name is null or if the URI generation fails.
-///
-/// # Safety
-///
-/// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
+/// A `StringResult` containing success status and data if success.
 ///
 /// # Example
 /// ```
@@ -161,11 +137,7 @@ pub unsafe extern "C" fn hotp_verify(
 /// # }
 /// ```
 #[no_mangle]
-pub unsafe extern "C" fn hotp_provisioning_uri(
-    config: HotpConfig,
-    name: *const c_char,
-    counter: c_ulonglong,
-) -> StringResult {
+pub extern "C" fn hotp_provisioning_uri(config: HotpConfig, name: *const c_char, counter: c_ulonglong) -> StringResult {
     if name.is_null() {
         error_string_result("Name is null")
     } else {
