@@ -38,8 +38,12 @@ fn to_hotp_should_convert_hotp_config_to_hotp() {
     };
     unsafe {
         let hotp = super::to_hotp(hotp_config);
-        let hotp_orig =
-            HOTP::new(Algorithm::SHA1, Secret::new("Hello").unwrap(), NonZeroU8::new(6).unwrap(), Radix(10));
+        let hotp_orig = HOTP::new(
+            Algorithm::SHA1,
+            Secret::new("Hello").unwrap(),
+            NonZeroU8::new(6).unwrap(),
+            Radix::new(10).unwrap(),
+        );
         assert_eq!(hotp, hotp_orig);
     }
 }
@@ -110,7 +114,7 @@ fn to_totp_should_convert_totp_config_to_totp() {
             Algorithm::SHA1,
             Secret::new("Hello").unwrap(),
             NonZeroU8::new(6).unwrap(),
-            Radix(10),
+            Radix::new(10).unwrap(),
             NonZeroU64::new(30).unwrap(),
         );
         assert_eq!(totp, totp_orig.unwrap());

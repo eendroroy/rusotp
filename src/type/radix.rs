@@ -13,7 +13,7 @@ pub type RadixResult<T> = Result<T, RadixError>;
 
 /// Numeric radix (base) between 2 and 36.
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Radix(pub u8);
+pub struct Radix(u8);
 
 impl Default for Radix {
     fn default() -> Self {

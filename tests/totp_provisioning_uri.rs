@@ -6,7 +6,7 @@ use std::num::NonZero;
 
 const ALGORITHM: Algorithm = Algorithm::SHA256;
 const LENGTH: u8 = 6;
-const RADIX: Radix = Radix(10);
+const RADIX: u8 = 10;
 const INTERVAL: u64 = 30;
 const ISSUER: &str = "rusotp";
 const NAME: &str = "user@email.mail";
@@ -17,7 +17,7 @@ fn provisioning_uri_should_be_correct() {
         Algorithm::SHA1,
         Secret::new("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
-        RADIX,
+        Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
     )
     .unwrap();
@@ -34,7 +34,7 @@ fn provisioning_uri_should_be_correct_if_issuer_is_empty() {
         Algorithm::SHA1,
         Secret::new("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
-        RADIX,
+        Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
     )
     .unwrap();
@@ -51,7 +51,7 @@ fn provisioning_uri_should_fail_with_sha256() {
         Algorithm::SHA256,
         Secret::new("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
-        RADIX,
+        Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
     )
     .unwrap();
@@ -68,7 +68,7 @@ fn provisioning_uri_should_fail_with_sha512() {
         Algorithm::SHA512,
         Secret::new("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
-        RADIX,
+        Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
     )
     .unwrap();
@@ -84,7 +84,7 @@ fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
         ALGORITHM,
         Secret::new("12345678901234567890").unwrap(),
         NonZero::new(5).unwrap(),
-        RADIX,
+        Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
     )
     .unwrap();
@@ -101,7 +101,7 @@ fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
         ALGORITHM,
         Secret::new("12345678901234567890").unwrap(),
         NonZero::new(7).unwrap(),
-        RADIX,
+        Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
     )
     .unwrap();
@@ -118,7 +118,7 @@ fn provisioning_uri_should_fail_with_radix_less_than_10() {
         ALGORITHM,
         Secret::new("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
-        Radix(9),
+        Radix::new(9).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
     )
     .unwrap();
@@ -135,7 +135,7 @@ fn provisioning_uri_should_fail_with_radix_more_than_10() {
         ALGORITHM,
         Secret::new("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
-        Radix(11),
+        Radix::new(11).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
     )
     .unwrap();
@@ -152,7 +152,7 @@ fn provisioning_uri_should_fail_with_interval_less_than_30() {
         ALGORITHM,
         Secret::new("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
-        RADIX,
+        Radix::new(RADIX).unwrap(),
         NonZero::new(29).unwrap(),
     )
     .unwrap();

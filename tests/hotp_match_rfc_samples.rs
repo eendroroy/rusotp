@@ -4,7 +4,7 @@ use std::num::NonZeroU8;
 #[test]
 fn otp_should_match_with_rfc_samples() {
     let secret = Secret::new("12345678901234567890").unwrap();
-    let radix = Radix(10);
+    let radix = Radix::new(10).unwrap();
     let length = NonZeroU8::new(6).unwrap();
 
     vec![

@@ -3,7 +3,7 @@ use std::num::NonZero;
 
 #[test]
 fn otp_should_match_with_rfc_samples() {
-    let radix = Radix(10);
+    let radix = Radix::new(10).unwrap();
     let secret_sha1: Secret = Secret::new("12345678901234567890").unwrap();
     let secret_sha256: Secret = Secret::new("12345678901234567890123456789012").unwrap();
     let secret_sha512: Secret =
