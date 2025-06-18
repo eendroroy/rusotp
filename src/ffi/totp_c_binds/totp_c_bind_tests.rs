@@ -15,30 +15,34 @@ fn make_config() -> TotpConfig {
 fn test_totp_generate() {
     let config = make_config();
     let otp_ptr = unsafe { totp_generate(config) };
-    assert!(!otp_ptr.is_null());
+    assert!(otp_ptr.success);
+    assert_eq!(to_str(otp_ptr.data).len(), 6);
 }
 
 #[test]
 fn test_totp_generate_at() {
     let config = make_config();
     let otp_ptr = unsafe { totp_generate_at(config, 1000) };
-    assert!(!otp_ptr.is_null());
+    assert!(otp_ptr.success);
+    assert!(!otp_ptr.data.is_null());
 }
 
 #[test]
 fn test_totp_verify() {
     let config = make_config();
     let otp_ptr = unsafe { totp_generate(config) };
-    let result = unsafe { totp_verify(config, otp_ptr, 0, 0, 0) };
-    assert!(result);
+    let result = unsafe { totp_verify(config, otp_ptr.data, 0, 0, 0) };
+    assert!(result.success);
+    assert!(result.data);
 }
 
 #[test]
 fn test_totp_verify_at() {
     let config = make_config();
     let otp_ptr = unsafe { totp_generate_at(config, 100) };
-    let result = unsafe { totp_verify_at(config, otp_ptr, 100, 0, 0, 0) };
-    assert!(result);
+    let result = unsafe { totp_verify_at(config, otp_ptr.data, 100, 0, 0, 0) };
+    assert!(result.success);
+    assert!(result.data);
 }
 
 #[test]
@@ -46,6 +50,8 @@ fn test_totp_provisioning_uri() {
     let config = make_config();
     let issuer = CString::new("TestIssuer").unwrap();
     let name = CString::new("TestUser").unwrap();
-    let uri_ptr = unsafe { totp_provisioning_uri(config, issuer.as_ptr(), name.as_ptr()) };
-    assert!(!uri_ptr.is_null());
+    let uri_ptr = totp_provisioning_uri(config, issuer.as_ptr(), name.as_ptr());
+    assert!(uri_ptr.success);
+    assert!(uri_ptr.error.is_null());
+    assert_eq!(to_str(uri_ptr.data), "otpauth://totp/TestIssuer%3ATestUser?secret=JBSWY3DPEHPK3PXP&issuer=TestIssuer");
 }

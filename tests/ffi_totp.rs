@@ -9,8 +9,8 @@ fn test_totp_generate_now_success() {
          int main() {
              TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
 
-             const char *otp_now =  totp_generate(config);
-             printf("%s", otp_now);
+             StringResult otp_now =  totp_generate(config);
+             printf("%s", otp_now.data);
 
              return 0;
          }
@@ -28,8 +28,8 @@ fn test_totp_generate_at_success() {
              TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
              unsigned long timestamp = 10000;
 
-             const char *otp =  totp_generate_at(config, timestamp);
-             printf("%s", otp);
+             StringResult otp =  totp_generate_at(config, timestamp);
+             printf("%s", otp.data);
 
              return 0;
          }
@@ -45,8 +45,8 @@ fn test_totp_verify() {
         #include "contrib/rusotp.hpp"
         int main() {
             TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
-            const char *otp_now =  totp_generate(config);
-            const char *verified = totp_verify(config, otp_now, 0, 0, 0) ? "true" : "false";
+            StringResult otp_now =  totp_generate(config);
+            const char * verified = totp_verify(config, otp_now.data, 0, 0, 0).data ? "true" : "false";
             printf("%s", verified);
             return 0;
         }
@@ -63,8 +63,8 @@ fn test_totp_verify_at() {
         int main() {
             TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
             unsigned long timestamp = 10000;
-            const char *otp =  totp_generate_at(config, timestamp);
-            const char *verified = totp_verify_at(config, otp, timestamp, 0, 0, 0) ? "true" : "false";
+            StringResult otp =  totp_generate_at(config, timestamp);
+            const char *verified = totp_verify_at(config, otp.data, timestamp, 0, 0, 0).data ? "true" : "false";
             printf("%s", verified);
             return 0;
         }
@@ -80,8 +80,8 @@ fn test_hotp_provisioning_uri() {
         #include "contrib/rusotp.hpp"
         int main() {
             TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
-            const char *provisioning_uri = totp_provisioning_uri(config, "rusotp", "user@email.mail");
-            printf("%s", provisioning_uri);
+            StringResult provisioning_uri = totp_provisioning_uri(config, "rusotp", "user@email.mail");
+            printf("%s", provisioning_uri.data);
             return 0;
         }
     }

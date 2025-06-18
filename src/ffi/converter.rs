@@ -4,15 +4,19 @@ use std::ffi::CStr;
 use std::num::{NonZeroU64, NonZeroU8};
 use std::os::raw::c_char;
 
-pub(crate) unsafe fn to_string(ptr: *const c_char) -> String {
-    CStr::from_ptr(ptr).to_str().unwrap().to_string()
+pub(crate) fn to_cstr(str: &str) -> *mut c_char {
+    std::ffi::CString::new(str).unwrap().into_raw()
 }
 
-pub(crate) unsafe fn to_str(ptr: *const c_char) -> &'static str {
-    CStr::from_ptr(ptr).to_str().unwrap()
+pub(crate) fn to_string(ptr: *const c_char) -> String {
+    unsafe { CStr::from_ptr(ptr).to_str().unwrap().to_string() }
 }
 
-pub(crate) unsafe fn to_hotp(config: HotpConfig) -> HOTP {
+pub(crate) fn to_str(ptr: *const c_char) -> &'static str {
+    unsafe { CStr::from_ptr(ptr).to_str().unwrap() }
+}
+
+pub(crate) fn to_hotp(config: HotpConfig) -> HOTP {
     if config.secret.is_null() {
         panic!("Secret is null");
     }
@@ -28,7 +32,7 @@ pub(crate) unsafe fn to_hotp(config: HotpConfig) -> HOTP {
     )
 }
 
-pub(crate) unsafe fn to_totp(config: TotpConfig) -> TOTP {
+pub(crate) fn to_totp(config: TotpConfig) -> TOTP {
     if config.secret.is_null() {
         panic!("Secret is null");
     }

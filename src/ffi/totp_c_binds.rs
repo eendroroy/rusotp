@@ -1,6 +1,9 @@
 use crate::ffi::converter::{to_str, to_totp};
+use crate::ffi::{
+    error_bool_result, error_string_result, success_bool_result, success_string_result, BoolResult, StringResult,
+    TotpConfig,
+};
 use std::ffi::{c_char, c_ulonglong};
-use crate::ffi::TotpConfig;
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration for the current time.
 ///
@@ -28,17 +31,18 @@ use crate::ffi::TotpConfig;
 /// int main() {
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
 ///
-///     const char *otp_now =  totp_generate(config);
-///     printf("NOW: %s\n", otp_now);
+///     StringResult otp_now =  totp_generate(config);
+///     printf("NOW: %s\n", otp_now.data);
 ///
 ///     return 0;
 /// }
 ///```
 #[no_mangle]
-pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> *const c_char {
-    std::ffi::CString::new(to_totp(config).generate().unwrap())
-        .unwrap()
-        .into_raw()
+pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> StringResult {
+    match to_totp(config).generate() {
+        Ok(otp) => success_string_result(&otp),
+        Err(e) => error_string_result(&e.to_string()),
+    }
 }
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration and timestamp.
@@ -69,17 +73,18 @@ pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> *const c_char {
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
 ///     unsigned long timestamp = 10000;
 ///
-///     const char *otp_at = totp_generate_at(config, timestamp);
-///     printf("AT: %s\n", otp_at);
+///     StringResult otp_at = totp_generate_at(config, timestamp);
+///     printf("AT: %s\n", otp_at.data);
 ///
 ///     return 0;
 /// }
 ///```
 #[no_mangle]
-pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulonglong) -> *const c_char {
-    std::ffi::CString::new(to_totp(config).generate_at(timestamp).unwrap())
-        .unwrap()
-        .into_raw()
+pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulonglong) -> StringResult {
+    match to_totp(config).generate_at(timestamp) {
+        Ok(otp) => success_string_result(&otp),
+        Err(e) => error_string_result(&e.to_string()),
+    }
 }
 
 /// Verifies a TOTP (Time-based One-Time Password) based on the provided configuration, OTP, and drift parameters.
@@ -112,10 +117,10 @@ pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulong
 /// int main() {
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
 ///
-///     const char *otp_now =  totp_generate(config);
-///     printf("NOW: %s\n", otp_now);
+///     StringResult otp_now =  totp_generate(config);
+///     printf("NOW: %s\n", otp_now.data);
 ///
-///     const char *verified = totp_verify(config, otp_now, 0, 0, 0) ? "true" : "false";
+///     const char *verified = totp_verify(config, otp_now.data, 0, 0, 0).data ? "true" : "false";
 ///     printf("VERIFIED : %s\n", verified);
 ///
 ///     return 0;
@@ -128,16 +133,16 @@ pub unsafe extern "C" fn totp_verify(
     after: c_ulonglong,
     drift_ahead: c_ulonglong,
     drift_behind: c_ulonglong,
-) -> bool {
+) -> BoolResult {
     if otp.is_null() {
-        panic!("OTP is null");
+        error_bool_result("OTP is null");
     }
 
     let totp = to_totp(config);
 
     match totp.verify(to_str(otp), Some(after), drift_ahead, drift_behind) {
-        Ok(verified) => verified.is_some(),
-        Err(e) => panic!("{}", e),
+        Ok(verified) => success_bool_result(verified.is_some()),
+        Err(e) => error_bool_result(e.to_string().as_str()),
     }
 }
 
@@ -173,9 +178,8 @@ pub unsafe extern "C" fn totp_verify(
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
 ///     unsigned long timestamp = 10000;
 ///
-///     const char *otp_at = totp_generate_at(config, timestamp);
-///
-///     const char *verified = totp_verify_at(config, otp_at, timestamp, 0, 0, 0) ? "true" : "false";
+///     StringResult otp_at = totp_generate_at(config, timestamp);
+///     const char *verified = totp_verify_at(config, otp_at.data, timestamp, 0, 0, 0).data ? "true" : "false";
 ///     printf("VERIFIED : %s\n", verified);
 ///
 ///     return 0;
@@ -189,16 +193,14 @@ pub unsafe extern "C" fn totp_verify_at(
     after: c_ulonglong,
     drift_ahead: c_ulonglong,
     drift_behind: c_ulonglong,
-) -> bool {
+) -> BoolResult {
     if otp.is_null() {
-        panic!("OTP is null");
-    }
-
-    let totp = to_totp(config);
-
-    match totp.verify_at(to_str(otp), timestamp, Some(after), drift_ahead, drift_behind) {
-        Ok(verified) => verified.is_some(),
-        Err(e) => panic!("{}", e),
+        error_bool_result("OTP is null")
+    } else {
+        match to_totp(config).verify_at(to_str(otp), timestamp, Some(after), drift_ahead, drift_behind) {
+            Ok(verified) => success_bool_result(verified.is_some()),
+            Err(e) => error_bool_result(e.to_string().as_str()),
+        }
     }
 }
 
@@ -229,32 +231,28 @@ pub unsafe extern "C" fn totp_verify_at(
 ///
 /// int main() {
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
-///     unsigned long timestamp = 10000;
 ///
-///     const char *provisioning_uri = totp_provisioning_uri(config, "rusotp", "user@email.mail");
-///     printf("URI : %s\n", provisioning_uri);
+///     StringResult provisioning_uri = totp_provisioning_uri(config, "rusotp", "user@email.mail");
+///     printf("URI : %s\n", provisioning_uri.data);
 ///
 ///     return 0;
 /// }
 ///```
 #[no_mangle]
-pub unsafe extern "C" fn totp_provisioning_uri(
+pub extern "C" fn totp_provisioning_uri(
     config: TotpConfig,
     issuer: *const c_char,
     name: *const c_char,
-) -> *const c_char {
+) -> StringResult {
     if issuer.is_null() {
-        panic!("Issuer is null");
-    }
-    if name.is_null() {
-        panic!("Name is null");
-    }
-
-    let totp = to_totp(config);
-
-    match totp.provisioning_uri(to_str(issuer), to_str(name)) {
-        Ok(uri) => std::ffi::CString::new(uri).unwrap().into_raw(),
-        Err(e) => panic!("{}", e),
+        error_string_result("Issuer is null")
+    } else if name.is_null() {
+        error_string_result("Name is null")
+    } else {
+        match to_totp(config).provisioning_uri(to_str(issuer), to_str(name)) {
+            Ok(uri) => success_string_result(uri.as_str()),
+            Err(e) => error_string_result(e.to_string().as_str()),
+        }
     }
 }
 

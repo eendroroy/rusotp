@@ -1,23 +1,25 @@
 #!/usr/bin/env bash
 
+function run() {
+    echo " ===========> Running ${1} ..."
+    echo
+    g++ contrib/"${1}".cpp -Ltarget/debug -lrusotp -o target/"${1}".out
+    ./target/"${1}".out
+    echo
+}
+
 echo " ===========> Building ..."
 cargo build
 echo
 
-echo " ===========> Compiling hotp_fn.cpp ..."
-g++ contrib/hotp_fn.cpp -Ltarget/debug -lrusotp -o contrib/hotp_fn.out
+run totp_generate
+run totp_verify
+run totp_generate_at
+run totp_verify_at
+run totp_provisioning_uri
+
+echo
 echo
 
-echo " ===========> Compiling totp_fn.cpp ..."
-g++ contrib/totp_fn.cpp -Ltarget/debug -lrusotp -o contrib/totp_fn.out
-echo
-
-echo " ===========> Running hotp_fn.out ..."
-echo
-./contrib/hotp_fn.out
-echo
-
-echo " ===========> Running totp_fn.out ..."
-echo
-./contrib/totp_fn.out
-echo
+run hotp_fn
+run totp_fn

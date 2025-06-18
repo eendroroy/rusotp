@@ -18,6 +18,12 @@ struct HotpConfig {
   unsigned short radix;
 };
 
+struct StringResult {
+  bool success;
+  const char *data;
+  const char *error;
+};
+
 /// Configuration for TOTP (Time-based One-Time Password).
 ///
 /// # Fields
@@ -32,6 +38,12 @@ struct TotpConfig {
   unsigned short length;
   unsigned short radix;
   unsigned long long interval;
+};
+
+struct BoolResult {
+  bool success;
+  bool data;
+  const char *error;
 };
 
 extern "C" {
@@ -182,13 +194,13 @@ const char *hotp_provisioning_uri(HotpConfig config,
 /// int main() {
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
 ///
-///     const char *otp_now =  totp_generate(config);
-///     printf("NOW: %s\n", otp_now);
+///     StringResult otp_now =  totp_generate(config);
+///     printf("NOW: %s\n", otp_now.data);
 ///
 ///     return 0;
 /// }
 ///```
-const char *totp_generate(TotpConfig config);
+StringResult totp_generate(TotpConfig config);
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration and timestamp.
 ///
@@ -218,14 +230,14 @@ const char *totp_generate(TotpConfig config);
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
 ///     unsigned long timestamp = 10000;
 ///
-///     const char *otp_at = totp_generate_at(config, timestamp);
-///     printf("AT: %s\n", otp_at);
+///     StringResult otp_at = totp_generate_at(config, timestamp);
+///     printf("AT: %s\n", otp_at.data);
 ///
 ///     return 0;
 /// }
 ///```
-const char *totp_generate_at(TotpConfig config,
-                             unsigned long long timestamp);
+StringResult totp_generate_at(TotpConfig config,
+                              unsigned long long timestamp);
 
 /// Verifies a TOTP (Time-based One-Time Password) based on the provided configuration, OTP, and drift parameters.
 ///
@@ -257,20 +269,20 @@ const char *totp_generate_at(TotpConfig config,
 /// int main() {
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
 ///
-///     const char *otp_now =  totp_generate(config);
-///     printf("NOW: %s\n", otp_now);
+///     StringResult otp_now =  totp_generate(config);
+///     printf("NOW: %s\n", otp_now.data);
 ///
-///     const char *verified = totp_verify(config, otp_now, 0, 0, 0) ? "true" : "false";
+///     const char *verified = totp_verify(config, otp_now.data, 0, 0, 0).data ? "true" : "false";
 ///     printf("VERIFIED : %s\n", verified);
 ///
 ///     return 0;
 /// }
 ///```
-bool totp_verify(TotpConfig config,
-                 const char *otp,
-                 unsigned long long after,
-                 unsigned long long drift_ahead,
-                 unsigned long long drift_behind);
+BoolResult totp_verify(TotpConfig config,
+                       const char *otp,
+                       unsigned long long after,
+                       unsigned long long drift_ahead,
+                       unsigned long long drift_behind);
 
 /// Verifies a TOTP (Time-based One-Time Password) based on the provided configuration, OTP, timestamp, and drift parameters.
 ///
@@ -304,20 +316,19 @@ bool totp_verify(TotpConfig config,
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
 ///     unsigned long timestamp = 10000;
 ///
-///     const char *otp_at = totp_generate_at(config, timestamp);
-///
-///     const char *verified = totp_verify_at(config, otp_at, timestamp, 0, 0, 0) ? "true" : "false";
+///     StringResult otp_at = totp_generate_at(config, timestamp);
+///     const char *verified = totp_verify_at(config, otp_at.data, timestamp, 0, 0, 0).data ? "true" : "false";
 ///     printf("VERIFIED : %s\n", verified);
 ///
 ///     return 0;
 /// }
 ///```
-bool totp_verify_at(TotpConfig config,
-                    const char *otp,
-                    unsigned long long timestamp,
-                    unsigned long long after,
-                    unsigned long long drift_ahead,
-                    unsigned long long drift_behind);
+BoolResult totp_verify_at(TotpConfig config,
+                          const char *otp,
+                          unsigned long long timestamp,
+                          unsigned long long after,
+                          unsigned long long drift_ahead,
+                          unsigned long long drift_behind);
 
 /// Generates a provisioning URI for TOTP (Time-based One-Time Password) based on the provided configuration, issuer, and name.
 ///
@@ -346,16 +357,15 @@ bool totp_verify_at(TotpConfig config,
 ///
 /// int main() {
 ///     TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
-///     unsigned long timestamp = 10000;
 ///
-///     const char *provisioning_uri = totp_provisioning_uri(config, "rusotp", "user@email.mail");
-///     printf("URI : %s\n", provisioning_uri);
+///     StringResult provisioning_uri = totp_provisioning_uri(config, "rusotp", "user@email.mail");
+///     printf("URI : %s\n", provisioning_uri.data);
 ///
 ///     return 0;
 /// }
 ///```
-const char *totp_provisioning_uri(TotpConfig config,
-                                  const char *issuer,
-                                  const char *name);
+StringResult totp_provisioning_uri(TotpConfig config,
+                                   const char *issuer,
+                                   const char *name);
 
 }  // extern "C"

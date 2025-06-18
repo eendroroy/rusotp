@@ -29,9 +29,9 @@ int main() {
         TotpConfig config = data[i].config;
         unsigned long timestamp = data[i].timestamp;
 
-        const char *otp_now =  totp_generate(config);
-        const char *otp_at = totp_generate_at(config, timestamp);
-        const char *verified = totp_verify_at(config, otp_at, timestamp, 0, 0, 0) ? "true" : "false";
+        StringResult otp_now =  totp_generate(config);
+        StringResult otp_at = totp_generate_at(config, timestamp);
+        const char *verified = totp_verify_at(config, otp_at.data, timestamp, 0, 0, 0).data ? "true" : "false";
 
         if (config.length == 6 && config.radix == 10 && config.interval == 30 && strcmp(config.algorithm, "SHA1") == 0) {
             printf(
@@ -40,10 +40,11 @@ int main() {
                 config.radix,
                 config.interval,
                 timestamp,
-                otp_now,
-                otp_at,
+                otp_now.data,
+                otp_at.data,
                 verified,
-                totp_provisioning_uri(config, "rusotp", "user@email.mail"));
+                totp_provisioning_uri(config, "rusotp", "user@email.mail").data
+            );
         } else {
             printf(
                 "LENGTH: %d, RADIX: %d, INTERVAL: %lld, TIMESTAMP: %lu \t NOW: %s \tTOTP : %s \tVERIFIED : %s\n",
@@ -51,8 +52,8 @@ int main() {
                 config.radix,
                 config.interval,
                 timestamp,
-                otp_now,
-                otp_at,
+                otp_now.data,
+                otp_at.data,
                 verified
             );
         }
@@ -60,4 +61,3 @@ int main() {
 
     return 0;
 }
-
