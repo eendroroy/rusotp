@@ -2,6 +2,12 @@ use crate::ffi::converter::to_cstr;
 use std::ffi::c_char;
 use std::ptr::null;
 
+/// FFI-safe result type for operations returning a string.
+///
+/// # Fields
+/// - `success`: Indicates if the operation was successful.
+/// - `data`: Pointer to a C string containing the result data (valid if `success` is true).
+/// - `error`: Pointer to a C string containing the error message (valid if `success` is false).
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StringResult {
@@ -26,6 +32,12 @@ pub(crate) fn success_string_result(data: &str) -> StringResult {
     }
 }
 
+/// FFI-safe result type for operations returning a boolean value.
+///
+/// # Fields
+/// - `success`: Indicates if the operation was successful.
+/// - `data`: The boolean result (valid if `success` is true).
+/// - `error`: Pointer to a C string containing the error message (valid if `success` is false).
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct BoolResult {

@@ -4,6 +4,12 @@
 #include <ostream>
 #include <new>
 
+/// FFI-safe result type for operations returning a string.
+///
+/// # Fields
+/// - `success`: Indicates if the operation was successful.
+/// - `data`: Pointer to a C string containing the result data (valid if `success` is true).
+/// - `error`: Pointer to a C string containing the error message (valid if `success` is false).
 struct StringResult {
   bool success;
   const char *data;
@@ -24,6 +30,12 @@ struct HotpConfig {
   unsigned short radix;
 };
 
+/// FFI-safe result type for operations returning a boolean value.
+///
+/// # Fields
+/// - `success`: Indicates if the operation was successful.
+/// - `data`: The boolean result (valid if `success` is true).
+/// - `error`: Pointer to a C string containing the error message (valid if `success` is false).
 struct BoolResult {
   bool success;
   bool data;
