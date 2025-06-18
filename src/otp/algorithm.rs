@@ -15,7 +15,9 @@ use sha2::{Sha256, Sha512};
 /// The `hash` method returns an error if the hashing process fails.
 pub trait AlgorithmTrait {
     fn to_string(&self) -> String;
-    fn from_string(s: String) -> Option<Self> where Self: Sized;
+    fn from_string(s: String) -> Option<Self>
+    where
+        Self: Sized;
     fn hash(&self, secret: Vec<u8>, data: u64) -> Result<Vec<u8>, String>;
 }
 
@@ -38,7 +40,15 @@ impl AlgorithmTrait for Algorithm {
     ///
     /// # Returns
     ///
-    /// A `String` representing the algorithm.
+    /// A `String` representing the algorithm name.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use rusotp::{Algorithm, AlgorithmTrait};
+    ///
+    /// let algo = Algorithm::SHA256;
+    /// ```
     fn to_string(&self) -> String {
         match self {
             Algorithm::SHA1 => "SHA1".into(),
@@ -47,19 +57,24 @@ impl AlgorithmTrait for Algorithm {
         }
     }
 
-    /// Creates an algorithm instance from its string representation.
+    /// Creates an `Algorithm` instance from its string representation.
     ///
     /// # Arguments
     ///
-    /// * `name` - A `String` representing the algorithm.
+    /// * `name` - A `String` representing the algorithm name (e\.g\., `"SHA1"`, `"SHA256"`, or `"SHA512"`)\.
     ///
     /// # Returns
     ///
-    /// An `Algorithm` instance corresponding to the string representation.
+    /// An `Option<Algorithm>` corresponding to the string\. Returns `None` if the string does not match any supported algorithm\.
     ///
-    /// # Panics
+    /// # Example
     ///
-    /// This function will panic if the string does not match any supported algorithm.
+    /// ```rust
+    /// use rusotp::{Algorithm, AlgorithmTrait};
+    ///
+    /// let algo = Algorithm::from_string("SHA256".to_string());
+    /// assert_eq!(algo, Some(Algorithm::SHA256));
+    /// ```
     fn from_string(name: String) -> Option<Self> {
         match name.as_str() {
             "SHA1" => Some(Algorithm::SHA1),
@@ -69,7 +84,7 @@ impl AlgorithmTrait for Algorithm {
         }
     }
 
-    /// Hashes the given secret and data using the algorithm.
+    /// Hashes the given secret and data using the selected algorithm.
     ///
     /// # Arguments
     ///
@@ -82,7 +97,19 @@ impl AlgorithmTrait for Algorithm {
     ///
     /// # Errors
     ///
-    /// This function returns an error if the hashing process fails.
+    /// Returns an error if the HMAC construction or finalization fails.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::{Algorithm, AlgorithmTrait};
+    ///
+    /// let secret = vec![1, 2, 3, 4, 5, 6, 7, 8];
+    /// let data = 123456u64;
+    /// let algo = Algorithm::SHA256;
+    /// let result = algo.hash(secret, data);
+    /// assert!(result.is_ok());
+    /// ```
     fn hash(&self, secret: Vec<u8>, data: u64) -> Result<Vec<u8>, String> {
         match self {
             Algorithm::SHA1 => match hmac::Hmac::<Sha1>::new_from_slice(secret.as_ref()) {

@@ -1,23 +1,6 @@
 use crate::ffi::converter::{to_str, to_totp};
-use std::ffi::{c_char, c_ulonglong, c_ushort};
-
-/// Configuration for TOTP (Time-based One-Time Password).
-///
-/// # Fields
-/// - `algorithm`: A pointer to a C string representing the hashing algorithm (e.g., "SHA1").
-/// - `secret`: A pointer to a C string representing the shared secret key.
-/// - `length`: The length of the generated OTP.
-/// - `radix`: The base (radix) for the OTP (e.g., 10 for decimal).
-/// - `interval`: The time interval in seconds for the TOTP generation.
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct TotpConfig {
-    pub algorithm: *const c_char,
-    pub secret: *const c_char,
-    pub length: c_ushort,
-    pub radix: c_ushort,
-    pub interval: c_ulonglong,
-}
+use std::ffi::{c_char, c_ulonglong};
+use crate::ffi::TotpConfig;
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration for the current time.
 ///

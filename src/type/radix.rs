@@ -22,7 +22,7 @@ impl Default for Radix {
 }
 
 impl Radix {
-    /// Creates a new `Radix` if value is 2..=36.
+    /// Creates a new `Radix` if value is between 2 and 36 inclusive.
     pub fn new(radix: u8) -> RadixResult<Self> {
         match radix {
             2..=36 => Ok(Self(radix)),

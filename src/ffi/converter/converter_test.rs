@@ -1,3 +1,4 @@
+use crate::ffi::{HotpConfig, TotpConfig};
 use crate::{Algorithm, Radix, Secret, HOTP};
 use std::any::Any;
 use std::num::{NonZeroU64, NonZeroU8};
@@ -30,7 +31,7 @@ fn to_hotp_should_convert_hotp_config_to_hotp() {
     let secret = c_str.as_ptr();
     let c_str = std::ffi::CString::new("SHA1").unwrap();
     let algorithm = c_str.as_ptr();
-    let hotp_config = crate::ffi::hotp_c_binds::HotpConfig {
+    let hotp_config = HotpConfig {
         secret,
         algorithm,
         length: 6,
@@ -52,7 +53,7 @@ fn to_hotp_should_convert_hotp_config_to_hotp() {
 fn to_hotp_should_fail_with_empty_secret() {
     let c_str = std::ffi::CString::new("SHA1").unwrap();
     let algorithm = c_str.as_ptr();
-    let hotp_config = crate::ffi::hotp_c_binds::HotpConfig {
+    let hotp_config = HotpConfig {
         secret: std::ptr::null(),
         algorithm,
         length: 6,
@@ -67,7 +68,7 @@ fn to_hotp_should_fail_with_empty_secret() {
 fn to_hotp_should_fail_with_empty_algorithm() {
     let c_str = std::ffi::CString::new("Hello").unwrap();
     let secret = c_str.as_ptr();
-    let hotp_config = crate::ffi::hotp_c_binds::HotpConfig {
+    let hotp_config = HotpConfig {
         secret,
         algorithm: std::ptr::null(),
         length: 6,
@@ -84,7 +85,7 @@ fn to_hotp_should_panic_with_invalid_data() {
     let secret = c_str.as_ptr();
     let c_str = std::ffi::CString::new("SHA1").unwrap();
     let algorithm = c_str.as_ptr();
-    let hotp_config = crate::ffi::hotp_c_binds::HotpConfig {
+    let hotp_config = HotpConfig {
         secret,
         algorithm,
         length: 6,
@@ -101,7 +102,7 @@ fn to_totp_should_convert_totp_config_to_totp() {
     let secret = c_str.as_ptr();
     let c_str = std::ffi::CString::new("SHA1").unwrap();
     let algorithm = c_str.as_ptr();
-    let totp_config = crate::ffi::totp_c_binds::TotpConfig {
+    let totp_config = TotpConfig {
         secret,
         algorithm,
         length: 6,
@@ -125,7 +126,7 @@ fn to_totp_should_convert_totp_config_to_totp() {
 fn to_totp_should_fail_with_empty_secret() {
     let c_str = std::ffi::CString::new("SHA1").unwrap();
     let algorithm = c_str.as_ptr();
-    let totp_config = crate::ffi::totp_c_binds::TotpConfig {
+    let totp_config = TotpConfig {
         secret: std::ptr::null(),
         algorithm,
         length: 6,
@@ -141,7 +142,7 @@ fn to_totp_should_fail_with_empty_secret() {
 fn to_totp_should_fail_with_empty_algorithm() {
     let c_str = std::ffi::CString::new("Hello").unwrap();
     let secret = c_str.as_ptr();
-    let totp_config = crate::ffi::totp_c_binds::TotpConfig {
+    let totp_config = TotpConfig {
         secret,
         algorithm: std::ptr::null(),
         length: 6,
@@ -159,7 +160,7 @@ fn to_totp_should_panic_with_invalid_data() {
     let secret = c_str.as_ptr();
     let c_str = std::ffi::CString::new("SHA1").unwrap();
     let algorithm = c_str.as_ptr();
-    let totp_config = crate::ffi::totp_c_binds::TotpConfig {
+    let totp_config = TotpConfig {
         secret,
         algorithm,
         length: 6,

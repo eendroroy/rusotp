@@ -1,3 +1,4 @@
+use crate::ffi::{HotpConfig, TotpConfig};
 use crate::{Algorithm, AlgorithmTrait, Radix, Secret, HOTP, TOTP};
 use std::ffi::CStr;
 use std::num::{NonZeroU64, NonZeroU8};
@@ -11,7 +12,7 @@ pub(crate) unsafe fn to_str(ptr: *const c_char) -> &'static str {
     CStr::from_ptr(ptr).to_str().unwrap()
 }
 
-pub(crate) unsafe fn to_hotp(config: crate::ffi::hotp_c_binds::HotpConfig) -> HOTP {
+pub(crate) unsafe fn to_hotp(config: HotpConfig) -> HOTP {
     if config.secret.is_null() {
         panic!("Secret is null");
     }
@@ -27,7 +28,7 @@ pub(crate) unsafe fn to_hotp(config: crate::ffi::hotp_c_binds::HotpConfig) -> HO
     )
 }
 
-pub(crate) unsafe fn to_totp(config: crate::ffi::totp_c_binds::TotpConfig) -> TOTP {
+pub(crate) unsafe fn to_totp(config: TotpConfig) -> TOTP {
     if config.secret.is_null() {
         panic!("Secret is null");
     }
