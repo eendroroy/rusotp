@@ -1,4 +1,5 @@
 use super::*;
+use crate::ffi::converter::to_string;
 use std::ffi::CString;
 
 fn make_config() -> HotpConfig {
@@ -13,39 +14,27 @@ fn make_config() -> HotpConfig {
 #[test]
 fn test_hotp_generate() {
     let config = make_config();
-    let otp_ptr = unsafe { hotp_generate(config, 0) };
-    assert!(!otp_ptr.is_null());
-    let otp = unsafe { CStr::from_ptr(otp_ptr).to_str().unwrap().to_owned() };
-    assert_eq!(otp.len(), 6);
-    unsafe {
-        let _ = CString::from_raw(otp_ptr as *mut c_char);
-    }
+    let otp = unsafe { hotp_generate(config, 0) };
+    assert!(otp.success);
+    assert_eq!(to_string(otp.data).len(), 6);
 }
 
 #[test]
 fn test_hotp_provisioning_uri() {
     let config = make_config();
     let name = CString::new("testuser").unwrap();
-    let uri_ptr = unsafe { hotp_provisioning_uri(config, name.as_ptr(), 0) };
-    assert!(!uri_ptr.is_null());
-    let uri = unsafe { CStr::from_ptr(uri_ptr).to_str().unwrap().to_owned() };
-    assert!(uri.contains("otpauth://hotp/"));
-    unsafe {
-        let _ = CString::from_raw(uri_ptr as *mut c_char);
-    }
+    let uri = unsafe { hotp_provisioning_uri(config, name.as_ptr(), 0) };
+    assert!(uri.success);
+    assert!(to_string(uri.data).contains("otpauth://hotp/"));
 }
 
 #[test]
 fn test_hotp_verify() {
     let config = make_config();
-    let otp_ptr = unsafe { hotp_generate(config, 1) };
-    let otp = unsafe { CStr::from_ptr(otp_ptr).to_str().unwrap().to_owned() };
-    let otp_c = CString::new(otp.clone()).unwrap();
-    let verified = unsafe { hotp_verify(config, otp_c.as_ptr(), 1, 0) };
-    assert!(verified);
-    unsafe {
-        let _ = CString::from_raw(otp_ptr as *mut c_char);
-    }
+    let otp = unsafe { hotp_generate(config, 1) };
+    let verified = unsafe { hotp_verify(config, otp.data, 1, 0) };
+    assert!(verified.success);
+    assert!(verified.data);
 }
 // TODO
 // #[test]

@@ -24,7 +24,12 @@ use std::ffi::{c_char, c_ulonglong};
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -36,6 +41,9 @@ use std::ffi::{c_char, c_ulonglong};
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 #[no_mangle]
 pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> StringResult {
@@ -65,7 +73,12 @@ pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> StringResult {
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -78,6 +91,9 @@ pub unsafe extern "C" fn totp_generate(config: TotpConfig) -> StringResult {
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 #[no_mangle]
 pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulonglong) -> StringResult {
@@ -110,7 +126,12 @@ pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulong
 /// This function is unsafe because it dereferences raw pointers.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -125,6 +146,9 @@ pub unsafe extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulong
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 #[no_mangle]
 pub unsafe extern "C" fn totp_verify(
@@ -170,7 +194,12 @@ pub unsafe extern "C" fn totp_verify(
 /// This function is unsafe because it dereferences raw pointers.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -184,6 +213,9 @@ pub unsafe extern "C" fn totp_verify(
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 #[no_mangle]
 pub unsafe extern "C" fn totp_verify_at(
@@ -225,7 +257,12 @@ pub unsafe extern "C" fn totp_verify_at(
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -237,6 +274,9 @@ pub unsafe extern "C" fn totp_verify_at(
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 #[no_mangle]
 pub extern "C" fn totp_provisioning_uri(

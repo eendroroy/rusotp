@@ -10,8 +10,8 @@ fn test_hotp_generate_success() {
             HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
             unsigned long counter = 2;
 
-            const char *otp = hotp_generate(config, counter);
-            printf("%s", otp);
+            StringResult otp = hotp_generate(config, counter);
+            printf("%s", otp.data);
 
             return 0;
         }
@@ -30,10 +30,10 @@ fn test_hotp_verify() {
             HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
             unsigned long counter = 2;
 
-            const char *otp = hotp_generate(config, counter);
-            printf("%s", otp);
+            StringResult otp = hotp_generate(config, counter);
+            printf("%s", otp.data);
 
-            const char *verified = hotp_verify(config, otp, counter, 0) ? "true" : "false";
+            const char *verified = hotp_verify(config, otp.data, counter, 0).data ? "true" : "false";
             printf(":%s", verified);
 
             return 0;
@@ -53,8 +53,8 @@ fn test_hotp_provisioning_uri() {
             HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
             unsigned long counter = 2;
 
-            const char *uri = hotp_provisioning_uri(config, "rusotp", counter);
-            printf("%s", uri);
+            StringResult uri = hotp_provisioning_uri(config, "rusotp", counter);
+            printf("%s", uri.data);
 
             return 0;
         }

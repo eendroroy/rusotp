@@ -21,5 +21,12 @@ run totp_provisioning_uri
 echo
 echo
 
+run hotp_generate
+run hotp_provisioning_uri
+run hotp_verify
+
+echo
+echo
+
 run hotp_fn
 run totp_fn

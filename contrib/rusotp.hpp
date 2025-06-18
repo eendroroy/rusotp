@@ -4,6 +4,12 @@
 #include <ostream>
 #include <new>
 
+struct StringResult {
+  bool success;
+  const char *data;
+  const char *error;
+};
+
 /// Configuration for HOTP (HMAC-based One-Time Password).
 ///
 /// # Fields
@@ -18,9 +24,9 @@ struct HotpConfig {
   unsigned short radix;
 };
 
-struct StringResult {
+struct BoolResult {
   bool success;
-  const char *data;
+  bool data;
   const char *error;
 };
 
@@ -38,12 +44,6 @@ struct TotpConfig {
   unsigned short length;
   unsigned short radix;
   unsigned long long interval;
-};
-
-struct BoolResult {
-  bool success;
-  bool data;
-  const char *error;
 };
 
 extern "C" {
@@ -68,7 +68,11 @@ extern "C" {
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 ///
 /// # Example
-/// ```cpp
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -76,14 +80,17 @@ extern "C" {
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
 ///     unsigned long counter = 2;
 ///
-///     const char *otp = hotp_generate(config, counter);
-///     printf("HOTP : %s\n", otp);
+///     StringResult otp = hotp_generate(config, counter);
+///     printf("HOTP : %s\n", otp.data);
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 /// ```
-const char *hotp_generate(HotpConfig config,
-                          unsigned long long counter);
+StringResult hotp_generate(HotpConfig config,
+                           unsigned long long counter);
 
 /// Verifies an HOTP (HMAC-based One-Time Password) based on the provided configuration, OTP, counter, and retries.
 ///
@@ -107,7 +114,11 @@ const char *hotp_generate(HotpConfig config,
 /// This function is unsafe because it dereferences raw pointers.
 ///
 /// # Example
-/// ```cpp
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -115,19 +126,22 @@ const char *hotp_generate(HotpConfig config,
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
 ///     unsigned long counter = 2;
 ///
-///     const char *otp = hotp_generate(config, counter);
-///     printf("HOTP : %s\n", otp);
+///     StringResult otp = hotp_generate(config, counter);
+///     printf("HOTP : %s\n", otp.data);
 ///
-///     const char *verified = hotp_verify(config, otp, counter, 0) ? "true" : "false";
+///     const char *verified = hotp_verify(config, otp.data, counter, 0).data ? "true" : "false";
 ///     printf("VERIFIED : %s\n", verified);
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 /// ```
-bool hotp_verify(HotpConfig config,
-                 const char *otp,
-                 unsigned long long counter,
-                 unsigned long long retries);
+BoolResult hotp_verify(HotpConfig config,
+                       const char *otp,
+                       unsigned long long counter,
+                       unsigned long long retries);
 
 /// Generates a provisioning URI for HOTP (HMAC-based One-Time Password) based on the provided configuration, name, and counter.
 ///
@@ -150,7 +164,11 @@ bool hotp_verify(HotpConfig config,
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 ///
 /// # Example
-/// ```cpp
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -158,15 +176,18 @@ bool hotp_verify(HotpConfig config,
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
 ///     unsigned long counter = 2;
 ///
-///     const char *uri = hotp_provisioning_uri(config, "rusotp", counter);
-///     printf("URI : %s\n", uri);
+///     StringResult uri = hotp_provisioning_uri(config, "rusotp", counter);
+///     printf("URI : %s\n", uri.data);
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 /// ```
-const char *hotp_provisioning_uri(HotpConfig config,
-                                  const char *name,
-                                  unsigned long long counter);
+StringResult hotp_provisioning_uri(HotpConfig config,
+                                   const char *name,
+                                   unsigned long long counter);
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration for the current time.
 ///
@@ -187,7 +208,12 @@ const char *hotp_provisioning_uri(HotpConfig config,
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -199,6 +225,9 @@ const char *hotp_provisioning_uri(HotpConfig config,
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 StringResult totp_generate(TotpConfig config);
 
@@ -222,7 +251,12 @@ StringResult totp_generate(TotpConfig config);
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -235,6 +269,9 @@ StringResult totp_generate(TotpConfig config);
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 StringResult totp_generate_at(TotpConfig config,
                               unsigned long long timestamp);
@@ -262,7 +299,12 @@ StringResult totp_generate_at(TotpConfig config,
 /// This function is unsafe because it dereferences raw pointers.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -277,6 +319,9 @@ StringResult totp_generate_at(TotpConfig config,
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 BoolResult totp_verify(TotpConfig config,
                        const char *otp,
@@ -308,7 +353,12 @@ BoolResult totp_verify(TotpConfig config,
 /// This function is unsafe because it dereferences raw pointers.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -322,6 +372,9 @@ BoolResult totp_verify(TotpConfig config,
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 BoolResult totp_verify_at(TotpConfig config,
                           const char *otp,
@@ -351,7 +404,12 @@ BoolResult totp_verify_at(TotpConfig config,
 /// This function is unsafe because it dereferences raw pointers and returns a raw pointer.
 ///
 /// # Example
-/// ```cpp
+///
+/// ```
+/// # use inline_c::assert_cxx;
+/// #
+/// # fn main() {
+/// #     (assert_cxx! {
 /// #include <stdio.h>
 /// #include "rusotp.hpp"
 ///
@@ -363,6 +421,9 @@ BoolResult totp_verify_at(TotpConfig config,
 ///
 ///     return 0;
 /// }
+/// #    })
+/// #    .success();
+/// # }
 ///```
 StringResult totp_provisioning_uri(TotpConfig config,
                                    const char *issuer,

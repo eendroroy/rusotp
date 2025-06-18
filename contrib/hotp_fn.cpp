@@ -29,14 +29,29 @@ int main() {
         HotpConfig config = data[i].config;
         unsigned long counter = data[i].counter;
 
-        const char *otp = hotp_generate(config, counter);
-        const char *verified = hotp_verify(config, otp, counter, 0) ? "true" : "false";
+        StringResult otp = hotp_generate(config, counter);
+        const char *verified = hotp_verify(config, otp.data, counter, 0).data ? "true" : "false";
 
         if (config.radix == 10 && config.length == 6 && strcmp(config.algorithm, "SHA1") == 0) {
-            const char *uri = hotp_provisioning_uri(config, "rusotp", counter);
-            printf("LENGTH: %d, RADIX: %d, COUNTER: %lu \tHOTP : %s \tVERIFIED : %s \tURI : %s\n", config.length, config.radix, counter, otp, verified, uri);
+            StringResult uri = hotp_provisioning_uri(config, "rusotp", counter);
+            printf(
+                "LENGTH: %d, RADIX: %d, COUNTER: %lu \tHOTP : %s \tVERIFIED : %s \tURI : %s\n",
+                config.length,
+                config.radix,
+                counter,
+                otp.data,
+                verified,
+                uri.data
+            );
         } else {
-            printf("LENGTH: %d, RADIX: %d, COUNTER: %lu \tHOTP : %s \tVERIFIED : %s\n", config.length, config.radix, counter, otp, verified);
+            printf(
+                "LENGTH: %d, RADIX: %d, COUNTER: %lu \tHOTP : %s \tVERIFIED : %s\n",
+                config.length,
+                config.radix,
+                counter,
+                otp.data,
+                verified
+            );
         }
     }
 
