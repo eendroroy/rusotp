@@ -16,15 +16,14 @@ fn to_string_should_properly_convert_algorithm_to_string() {
 
 #[test]
 fn from_string_should_properly_convert_algorithm_from_string() {
-    assert_eq!(Algorithm::from_string("SHA1".to_string()), Algorithm::SHA1);
-    assert_eq!(Algorithm::from_string("SHA256".to_string()), Algorithm::SHA256);
-    assert_eq!(Algorithm::from_string("SHA512".to_string()), Algorithm::SHA512);
+    assert_eq!(Algorithm::from_string("SHA1".to_string()).unwrap(), Algorithm::SHA1);
+    assert_eq!(Algorithm::from_string("SHA256".to_string()).unwrap(), Algorithm::SHA256);
+    assert_eq!(Algorithm::from_string("SHA512".to_string()).unwrap(), Algorithm::SHA512);
 }
 
 #[test]
-#[should_panic(expected = "Unsupported algorithm")]
-fn from_string_should_panic_with_invalid_algorithm_name() {
-    Algorithm::from_string("INVALID".to_string());
+fn from_string_should_return_none_with_invalid_algorithm_name() {
+    assert_eq!(Algorithm::from_string("INVALID".to_string()), None);
 }
 
 #[test]

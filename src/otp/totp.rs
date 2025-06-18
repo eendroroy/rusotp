@@ -51,7 +51,7 @@ impl TOTP {
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
-    /// let radix = Radix(10);
+    /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
@@ -89,7 +89,7 @@ impl TOTP {
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
-    /// let radix = Radix(10);
+    /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
@@ -162,7 +162,7 @@ impl TOTP {
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
-    /// let radix = Radix(10);
+    /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
@@ -201,7 +201,7 @@ impl TOTP {
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
-    /// let radix = Radix(10);
+    /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
@@ -273,7 +273,7 @@ impl TOTP {
     /// use rusotp::Algorithm;
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
-    /// let radix = Radix(10);
+    /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///

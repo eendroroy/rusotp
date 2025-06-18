@@ -1,5 +1,3 @@
-use crate::messages::UNSUPPORTED_ALGORITHM;
-
 use hmac::Mac;
 use sha1::Sha1;
 use sha2::{Sha256, Sha512};
@@ -17,7 +15,7 @@ use sha2::{Sha256, Sha512};
 /// The `hash` method returns an error if the hashing process fails.
 pub trait AlgorithmTrait {
     fn to_string(&self) -> String;
-    fn from_string(s: String) -> Self;
+    fn from_string(s: String) -> Option<Self> where Self: Sized;
     fn hash(&self, secret: Vec<u8>, data: u64) -> Result<Vec<u8>, String>;
 }
 
@@ -62,12 +60,12 @@ impl AlgorithmTrait for Algorithm {
     /// # Panics
     ///
     /// This function will panic if the string does not match any supported algorithm.
-    fn from_string(name: String) -> Self {
+    fn from_string(name: String) -> Option<Self> {
         match name.as_str() {
-            "SHA1" => Algorithm::SHA1,
-            "SHA256" => Algorithm::SHA256,
-            "SHA512" => Algorithm::SHA512,
-            _ => panic!("{}", UNSUPPORTED_ALGORITHM),
+            "SHA1" => Some(Algorithm::SHA1),
+            "SHA256" => Some(Algorithm::SHA256),
+            "SHA512" => Some(Algorithm::SHA512),
+            _ => None,
         }
     }
 

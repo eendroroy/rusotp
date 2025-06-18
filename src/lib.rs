@@ -1,5 +1,4 @@
 mod ffi;
-mod messages;
 mod otp;
 mod r#type;
 

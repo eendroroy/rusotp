@@ -20,7 +20,7 @@ pub(crate) unsafe fn to_hotp(config: crate::ffi::hotp_c_binds::HotpConfig) -> HO
     }
 
     HOTP::new(
-        Algorithm::from_string(to_string(config.algorithm)),
+        Algorithm::from_string(to_string(config.algorithm)).unwrap(),
         Secret::new(to_str(config.secret)).unwrap(),  // TODO
         NonZeroU8::new(config.length as u8).unwrap(), // TODO
         Radix::new(config.radix as u8).unwrap(),      // TODO
@@ -36,7 +36,7 @@ pub(crate) unsafe fn to_totp(config: crate::ffi::totp_c_binds::TotpConfig) -> TO
     }
 
     match TOTP::new(
-        Algorithm::from_string(to_string(config.algorithm)),
+        Algorithm::from_string(to_string(config.algorithm)).unwrap(),
         Secret::new(to_str(config.secret)).unwrap(),  // TODO
         NonZeroU8::new(config.length as u8).unwrap(), // TODO
         Radix::new(config.radix as u8).unwrap(),      // TODO
