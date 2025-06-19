@@ -22,6 +22,7 @@ fn main() {
 
     // Emit INLINE_C_RS_CFLAGS based on platform
     #[cfg(target_os = "linux")]
+    println!("cargo:warning=Target OS: linux");
     println!(
         "cargo:rustc-env=INLINE_C_RS_CFLAGS=-I{I} -L{L} -D_DEBUG -D_GNU_SOURCE",
         I = manifest_dir,
@@ -29,6 +30,7 @@ fn main() {
     );
 
     #[cfg(target_os = "macos")]
+    println!("cargo:warning=Target OS: macos");
     println!(
         "cargo:rustc-env=INLINE_C_RS_CFLAGS=-I{I} -L{L} -D_DEBUG -D_DARWIN",
         I = manifest_dir,
@@ -36,6 +38,7 @@ fn main() {
     );
 
     #[cfg(target_os = "windows")]
+    println!("cargo:warning=Target OS: windows");
     println!(
         "cargo:rustc-env=INLINE_C_RS_CFLAGS=-I{I} -L{L} -D_DEBUG -D_CRT_SECURE_NO_WARNINGS -DWIN32",
         I = manifest_dir,
@@ -45,4 +48,7 @@ fn main() {
     // Linker flags
     let lib_name = format!("{}{}{}", DLL_PREFIX, package, DLL_SUFFIX);
     println!("cargo:rustc-env=INLINE_C_RS_LDFLAGS={}/{}", shared_object_dir, lib_name);
+
+    println!("cargo:warning=Shared object dir: {}", shared_object_dir);
+    println!("cargo:warning=Library name: {}", lib_name);
 }
