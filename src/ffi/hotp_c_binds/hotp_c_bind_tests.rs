@@ -41,7 +41,7 @@ fn test_hotp_verify() {
 fn test_hotp_verify_null_otp() {
     let config = make_config();
     let data = hotp_verify(config, std::ptr::null(), 1, 0);
-    assert_eq!(data.success, false);
+    assert!(!data.success);
     assert_eq!(to_str(data.error), "OTP is null");
 }
 
@@ -49,6 +49,6 @@ fn test_hotp_verify_null_otp() {
 fn test_hotp_provisioning_uri_null_name() {
     let config = make_config();
     let data = hotp_provisioning_uri(config, std::ptr::null(), 0);
-    assert_eq!(data.success, false);
+    assert!(!data.success);
     assert_eq!(to_str(data.error), "Name is null");
 }

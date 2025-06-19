@@ -25,8 +25,19 @@ fn main() {
         L = shared_object_dir,
     );
 
+    let lib_name = if cfg!(target_os = "macos") {
+        "librusotp.dylib"
+    } else if cfg!(target_os = "linux") {
+        "librusotp.so"
+    } else if cfg!(target_os = "windows") {
+        "rusotp.dll"
+    } else {
+        panic!("Unsupported platform");
+    };
+
     println!(
-        "cargo:rustc-env=INLINE_C_RS_LDFLAGS={shared_object_dir}/librusotp.dylib",
+        "cargo:rustc-env=INLINE_C_RS_LDFLAGS={shared_object_dir}/{libname}",
         shared_object_dir = shared_object_dir,
+        libname = lib_name,
     );
 }
