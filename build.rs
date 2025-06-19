@@ -44,11 +44,9 @@ fn main() {
         );
     } else if cfg!(target_os = "windows") {
         println!("cargo:warning=Detected target_os: windows");
-        println!(
-            "cargo:rustc-env=INLINE_C_RS_CFLAGS=-I{I} -L{L} -D_DEBUG -D_CRT_SECURE_NO_WARNINGS",
-            I = manifest_dir,
-            L = shared_object_dir,
-        );
+        println!("cargo:rustc-env=INLINE_C_RS_CFLAGS=-I{I} -D_DEBUG -D_CRT_SECURE_NO_WARNINGS", I = manifest_dir,);
+        println!("cargo:rustc-link-search=native={}", shared_object_dir);
+        println!("cargo:rustc-link-lib=dylib=rusotp");
     } else {
         println!("cargo:warning=Unsupported target_os");
     }
