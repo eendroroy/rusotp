@@ -25,32 +25,27 @@ fn main() {
     let mut shared_object_dir = PathBuf::from(manifest_dir);
     shared_object_dir.push("target");
     shared_object_dir.push(env::var("PROFILE").unwrap());
-
-    let shared_object_dir = shared_object_dir
-        .canonicalize()
-        .expect("Failed to canonicalize target directory")
-        .to_string_lossy()
-        .replace("\\", "/"); // Normalize for Windows shell compatibility
+    let shared_object_dir = shared_object_dir.as_path().to_string_lossy();
 
     // Detect and print target_os
     if cfg!(target_os = "linux") {
         println!("cargo:warning=Detected target_os: linux");
         println!(
-            "cargo:rustc-env=INLINE_C_RS_CFLAGS=-std=c++11 -I{I} -L{L} -D_DEBUG -D_GNU_SOURCE",
+            "cargo:rustc-env=INLINE_C_RS_CFLAGS=-std=c++11 -I{I} -L{L} -D_DEBUG",
             I = manifest_dir,
             L = shared_object_dir,
         );
     } else if cfg!(target_os = "macos") {
         println!("cargo:warning=Detected target_os: macos");
         println!(
-            "cargo:rustc-env=INLINE_C_RS_CFLAGS=-std=c++11 -I{I} -L{L} -D_DEBUG -D_DARWIN",
+            "cargo:rustc-env=INLINE_C_RS_CFLAGS=-std=c++11 -I{I} -L{L} -D_DEBUG",
             I = manifest_dir,
             L = shared_object_dir,
         );
     } else if cfg!(target_os = "windows") {
         println!("cargo:warning=Detected target_os: windows");
         println!(
-            "cargo:rustc-env=INLINE_C_RS_CFLAGS=-std=c++11 -mthreads -static-libgcc -static-libstdc++ -I{I} -L{L} -D_DEBUG -D_CRT_SECURE_NO_WARNINGS -DWIN32",
+            "cargo:rustc-env=INLINE_C_RS_CFLAGS=-I{I} -L{L} -D_DEBUG -D_CRT_SECURE_NO_WARNINGS",
             I = manifest_dir,
             L = shared_object_dir,
         );
