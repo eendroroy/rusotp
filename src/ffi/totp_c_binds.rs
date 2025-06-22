@@ -104,8 +104,10 @@ pub extern "C" fn totp_generate_at(config: TotpConfig, timestamp: c_ulonglong) -
 /// # Example
 ///
 /// ```
+/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
+/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
@@ -164,8 +166,10 @@ pub extern "C" fn totp_verify(
 /// # Example
 ///
 /// ```
+/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
+/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
@@ -219,8 +223,10 @@ pub extern "C" fn totp_verify_at(
 /// # Example
 ///
 /// ```
+/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
+/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>

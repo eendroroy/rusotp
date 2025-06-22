@@ -1,3 +1,4 @@
+#[cfg(not(any(target_os = "windows")))]
 use inline_c::assert_cxx;
 
 #[test]
