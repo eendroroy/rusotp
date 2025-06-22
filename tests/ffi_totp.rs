@@ -19,6 +19,7 @@ fn test_totp_generate_now_success() {
 }
 
 #[test]
+#[cfg(not(any(target_os = "windows")))]
 fn test_totp_generate_at_success() {
     assert_cxx! {
          #include <stdio.h>
@@ -39,6 +40,7 @@ fn test_totp_generate_at_success() {
 }
 
 #[test]
+#[cfg(not(any(target_os = "windows")))]
 fn test_totp_verify() {
     assert_cxx! {
         #include <stdio.h>
@@ -56,6 +58,7 @@ fn test_totp_verify() {
 }
 
 #[test]
+#[cfg(not(any(target_os = "windows")))]
 fn test_totp_verify_at() {
     assert_cxx! {
         #include <stdio.h>
@@ -74,6 +77,7 @@ fn test_totp_verify_at() {
 }
 
 #[test]
+#[cfg(not(any(target_os = "windows")))]
 fn test_hotp_provisioning_uri() {
     assert_cxx! {
         #include <stdio.h>

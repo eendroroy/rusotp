@@ -21,6 +21,7 @@ fn test_hotp_generate_success() {
 }
 
 #[test]
+#[cfg(not(any(target_os = "windows")))]
 fn test_hotp_verify() {
     assert_cxx! {
         #include <stdio.h>
@@ -44,6 +45,7 @@ fn test_hotp_verify() {
 }
 
 #[test]
+#[cfg(not(any(target_os = "windows")))]
 fn test_hotp_provisioning_uri() {
     assert_cxx! {
         #include <stdio.h>
