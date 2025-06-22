@@ -19,10 +19,8 @@ use std::os::raw::c_char;
 ///
 /// # Example
 /// ```
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
@@ -64,10 +62,8 @@ pub extern "C" fn hotp_generate(config: HotpConfig, counter: c_ulonglong) -> Str
 ///
 /// # Example
 /// ```
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
@@ -120,10 +116,8 @@ pub extern "C" fn hotp_verify(
 ///
 /// # Example
 /// ```
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>

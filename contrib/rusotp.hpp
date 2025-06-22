@@ -73,10 +73,8 @@ extern "C" {
 ///
 /// # Example
 /// ```
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
@@ -113,10 +111,8 @@ StringResult hotp_generate(HotpConfig config,
 ///
 /// # Example
 /// ```
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
@@ -157,10 +153,8 @@ BoolResult hotp_verify(HotpConfig config,
 ///
 /// # Example
 /// ```
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
@@ -271,10 +265,8 @@ StringResult totp_generate_at(TotpConfig config,
 /// # Example
 ///
 /// ```
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
@@ -319,10 +311,8 @@ BoolResult totp_verify(TotpConfig config,
 /// # Example
 ///
 /// ```
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
@@ -364,10 +354,8 @@ BoolResult totp_verify_at(TotpConfig config,
 /// # Example
 ///
 /// ```
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # use inline_c::assert_cxx;
 /// #
-/// # #[cfg(not(any(target_os = "windows")))]
 /// # fn main() {
 /// #     (assert_cxx! {
 /// #include <stdio.h>
