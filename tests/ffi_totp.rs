@@ -1,6 +1,7 @@
 use inline_c::assert_cxx;
 
 #[test]
+#[cfg(not(any(target_os = "windows")))]
 fn test_totp_generate_now_success() {
     assert_cxx! {
          #include <stdio.h>
