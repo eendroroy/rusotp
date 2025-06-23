@@ -21,6 +21,8 @@ rusotp = "0.3.9"
 
 ## HOTP Usage
 
+[![asciicast](https://asciinema.org/a/724158.svg)](https://asciinema.org/a/724158)
+
 ```rust
 use rusotp::{Algorithm, Radix, Secret, HOTP};
 use std::num::NonZeroU8;
