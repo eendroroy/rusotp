@@ -52,6 +52,8 @@ fn main() {
 
 ## TOTP Usage
 
+[![asciicast](https://asciinema.org/a/724168.svg)](https://asciinema.org/a/724168)
+
 ```rust
 use rusotp::{Algorithm, Radix, Secret, TOTP};
 use std::num::NonZero;
