@@ -1,3 +1,4 @@
+#[cfg(not(any(target_os = "windows")))]
 use rusotp::{Algorithm, Radix, Secret, TOTP};
 use std::io::{stdin, stdout, Stdout, Write};
 use std::num::{NonZeroU64, NonZeroU8};
@@ -7,6 +8,7 @@ use termion::event::Key;
 use termion::input::TermRead;
 use termion::raw::{IntoRawMode, RawTerminal};
 
+#[cfg(not(any(target_os = "windows")))]
 fn main() {
     let stdin = stdin();
     let stdout = &mut stdout().into_raw_mode().unwrap();
