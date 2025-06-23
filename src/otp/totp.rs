@@ -51,7 +51,7 @@ impl TOTP {
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret , length, radix, interval).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret , length, radix, interval);
     /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
