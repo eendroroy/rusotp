@@ -16,10 +16,12 @@ Add `rusotp` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rusotp = "0.3.10"
+rusotp = "0.4.0"
 ```
 
 ## HOTP Usage
+
+[![asciicast](https://asciinema.org/a/724158.svg)](https://asciinema.org/a/724158)
 
 ```rust
 use rusotp::{Algorithm, Radix, Secret, HOTP};
@@ -50,6 +52,8 @@ fn main() {
 
 ## TOTP Usage
 
+[![asciicast](https://asciinema.org/a/724168.svg)](https://asciinema.org/a/724168)
+
 ```rust
 use rusotp::{Algorithm, Radix, Secret, TOTP};
 use std::num::NonZero;
@@ -63,8 +67,7 @@ fn main() {
     let secret = Secret::new("12345678901234567890").unwrap();
 
     // Generate an OTP
-    let totp =
-        TOTP::new(ALGORITHM, secret, NonZero::new(LENGTH).unwrap(), radix, NonZero::new(INTERVAL).unwrap()).unwrap();
+    let totp = TOTP::new(ALGORITHM, secret, NonZero::new(LENGTH).unwrap(), radix, NonZero::new(INTERVAL).unwrap());
     let otp = totp.generate().unwrap();
     println!("Generated OTP: {}", otp);
 

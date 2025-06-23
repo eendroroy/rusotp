@@ -49,10 +49,6 @@ impl HOTP {
     ///
     /// A `HOTP` instance
     ///
-    /// # Errors
-    ///
-    /// This function returns an error if the secret is empty, the length is less than 1, or the radix is not between 2 and 36.
-    ///
     /// # Example
     ///
     /// ```

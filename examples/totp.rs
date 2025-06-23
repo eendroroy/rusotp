@@ -22,16 +22,13 @@ fn main() {
     ];
 
     data.iter().for_each(|(length, radix, interval, timestamp, otp)| {
-        let totp = match rusotp::TOTP::new(
+        let totp = rusotp::TOTP::new(
             Algorithm::SHA1,
             secret.clone(),
             NonZero::new(*length).unwrap(),
             Radix::new(*radix).unwrap(),
             NonZero::new(*interval).unwrap(),
-        ) {
-            Ok(hotp) => hotp,
-            Err(e) => panic!("{}", e),
-        };
+        );
         if *length == 6 && *radix == 10 && *interval == 30 {
             println!(
                 "LENGTH: {}, RADIX: {}, INTERVAL: {}, TIMESTAMP: {} \tNOW: {} \tTOTP : {} \tVERIFIED : {}\tURI : {}",

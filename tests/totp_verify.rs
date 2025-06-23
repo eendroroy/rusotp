@@ -17,8 +17,7 @@ fn should_fail_with_otp_length_not_matched() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
     let result = totp.verify_at("12345", 10, Some(AFTER), DRIFT_AHEAD, DRIFT_BEHIND);
 
     assert!(result.is_ok(), "Expected a result");
@@ -33,8 +32,7 @@ fn should_fail_if_after_is_greater_than_at() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
     let otp = totp.generate_at(10000).unwrap();
     let result = totp.verify_at(&otp, 10000, Some(10000 + 1), DRIFT_AHEAD, DRIFT_BEHIND);
 
@@ -50,8 +48,7 @@ fn should_fail_if_drift_behind_is_greater_than_at() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
     let otp = totp.generate_at(10000).unwrap();
     let result = totp.verify_at(&otp, 10000, Some(10000), DRIFT_AHEAD, 10000 + 1);
 
@@ -67,8 +64,7 @@ fn should_verify_within_interval() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let now = totp.generate_at(1).unwrap();
     let verify = totp.verify_at(&now, 29, Some(AFTER), DRIFT_AHEAD, DRIFT_BEHIND);
@@ -84,8 +80,7 @@ fn should_not_verify_after_interval() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let now = totp.generate_at(1).unwrap();
     let verify = totp.verify_at(&now, 30, Some(AFTER), DRIFT_AHEAD, DRIFT_BEHIND);
@@ -101,8 +96,7 @@ fn should_verify_with_after_less_than_at() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let now = totp.generate().unwrap();
     let verify = totp.verify_at(
@@ -124,8 +118,7 @@ fn should_verify_with_after_less_than_at_and_drift_behind() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let now = totp.generate().unwrap();
     let verify = totp.verify_at(
@@ -147,8 +140,7 @@ fn should_not_verify_with_after_greater_than_at() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let now = totp.generate().unwrap();
     let at = std::time::UNIX_EPOCH.elapsed().unwrap().as_secs();
@@ -167,8 +159,7 @@ fn should_verify_without_after() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let now = totp.generate().unwrap();
     let verify =
@@ -185,8 +176,7 @@ fn should_verify_with_drift_behind() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let now = totp.generate_at(90).unwrap();
     let verify = totp.verify_at(&now, 91, Some(AFTER), DRIFT_AHEAD, 1);
@@ -202,8 +192,7 @@ fn should_verify_with_drift_ahead() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let now = totp.generate_at(90).unwrap();
     let verify = totp.verify_at(&now, 89, Some(AFTER), 1, DRIFT_BEHIND);
