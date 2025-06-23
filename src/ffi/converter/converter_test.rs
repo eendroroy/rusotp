@@ -105,7 +105,7 @@ fn to_totp_should_convert_totp_config_to_totp() {
         Radix::new(10).unwrap(),
         NonZeroU64::new(30).unwrap(),
     );
-    assert_eq!(totp, totp_orig.unwrap());
+    assert_eq!(totp, totp_orig);
 }
 
 #[test]

@@ -10,8 +10,7 @@ fn main() {
     let secret = Secret::new("12345678901234567890").unwrap();
 
     // Generate an OTP
-    let totp =
-        TOTP::new(ALGORITHM, secret, NonZero::new(LENGTH).unwrap(), radix, NonZero::new(INTERVAL).unwrap()).unwrap();
+    let totp = TOTP::new(ALGORITHM, secret, NonZero::new(LENGTH).unwrap(), radix, NonZero::new(INTERVAL).unwrap());
     let otp = totp.generate().unwrap();
     println!("Generated OTP: {}", otp);
 

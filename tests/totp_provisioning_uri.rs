@@ -19,8 +19,7 @@ fn provisioning_uri_should_be_correct() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 
@@ -36,8 +35,7 @@ fn provisioning_uri_should_be_correct_if_issuer_is_empty() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let result = totp.provisioning_uri("", NAME);
 
@@ -53,8 +51,7 @@ fn provisioning_uri_should_fail_with_sha256() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 
@@ -70,8 +67,7 @@ fn provisioning_uri_should_fail_with_sha512() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 
@@ -86,8 +82,7 @@ fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
         NonZero::new(5).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 
@@ -103,8 +98,7 @@ fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
         NonZero::new(7).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 
@@ -120,8 +114,7 @@ fn provisioning_uri_should_fail_with_radix_less_than_10() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(9).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 
@@ -137,8 +130,7 @@ fn provisioning_uri_should_fail_with_radix_more_than_10() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(11).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 
@@ -154,8 +146,7 @@ fn provisioning_uri_should_fail_with_interval_less_than_30() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(29).unwrap(),
-    )
-    .unwrap();
+    );
 
     let result = totp.provisioning_uri(ISSUER, NAME);
 

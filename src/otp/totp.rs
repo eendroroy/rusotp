@@ -37,11 +37,7 @@ impl TOTP {
     ///
     /// # Returns
     ///
-    /// A `Result` containing the TOTP instance if successful, or a `String` with the error message if the creation fails.
-    ///
-    /// # Errors
-    ///
-    /// This function returns an error if the secret is empty, the length is less than 1, or the radix is not between 2 and 36.
+    /// A `TOTP` instance
     ///
     /// # Example
     ///
@@ -59,20 +55,14 @@ impl TOTP {
     /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
-    pub fn new(
-        algorithm: Algorithm,
-        secret: Secret,
-        length: NonZeroU8,
-        radix: Radix,
-        interval: NonZeroU64,
-    ) -> OtpResult<TOTP> {
-        Ok(Self {
+    pub fn new(algorithm: Algorithm, secret: Secret, length: NonZeroU8, radix: Radix, interval: NonZeroU64) -> TOTP {
+        Self {
             algorithm,
             secret,
             length,
             radix,
             interval,
-        })
+        }
     }
 
     /// Generates an OTP based on the current time.
@@ -93,7 +83,7 @@ impl TOTP {
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval);
     /// let otp = totp.generate().unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
@@ -129,7 +119,7 @@ impl TOTP {
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval);
     /// let otp = totp.generate_at(1622548800).unwrap();
     /// println!("Generated OTP: {}", otp);
     /// ```
@@ -166,7 +156,7 @@ impl TOTP {
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval);
     /// let otp = totp.generate().unwrap();
     /// let verified = totp.verify(&otp, None, 30, 30).unwrap();
     /// assert!(verified.is_some());
@@ -205,7 +195,7 @@ impl TOTP {
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval);
     /// let otp = totp.generate_at(1622548800).unwrap();
     /// let verified = totp.verify_at(&otp, 1622548800, None, 30, 30).unwrap();
     /// assert_eq!(verified, Some(1622548800));
@@ -277,7 +267,7 @@ impl TOTP {
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
     ///
-    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval).unwrap();
+    /// let totp = TOTP::new(Algorithm::SHA1, secret, length, radix, interval);
     /// let uri = totp.provisioning_uri("ExampleIssuer", "example@example.com").unwrap();
     /// println!("Provisioning URI: {}", uri);
     /// ```

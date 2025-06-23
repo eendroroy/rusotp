@@ -14,8 +14,7 @@ fn should_generate_otp_now() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
     let otp = totp.generate().unwrap();
 
     assert_eq!(otp.len(), LENGTH as usize);
@@ -29,8 +28,7 @@ fn should_generate_otp_now_using_current_at() {
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
-    )
-    .unwrap();
+    );
 
     let now = totp.generate().unwrap();
     let at = totp
