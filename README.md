@@ -10,6 +10,8 @@ OTP generation and validation library.
 **Note:** `HmacSha1` support is provided for RFC compliance.
 It is recommended to use `HmacSha256` or `HmacSha512` for better security.
 
+[![asciicast](https://asciinema.org/a/724539.svg)](https://asciinema.org/a/724539)
+
 ## installation
 
 Add `rusotp` to your `Cargo.toml`:
@@ -20,8 +22,6 @@ rusotp = "0.4.0"
 ```
 
 ## HOTP Usage
-
-[![asciicast](https://asciinema.org/a/724158.svg)](https://asciinema.org/a/724158)
 
 ```rust
 use rusotp::{Algorithm, Radix, Secret, HOTP};
@@ -51,8 +51,6 @@ fn main() {
 ```
 
 ## TOTP Usage
-
-[![asciicast](https://asciinema.org/a/724168.svg)](https://asciinema.org/a/724168)
 
 ```rust
 use rusotp::{Algorithm, Radix, Secret, TOTP};
