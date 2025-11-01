@@ -1,6 +1,9 @@
 use crate::otp::algorithm::Algorithm;
 use crate::otp::base::otp;
-use crate::{OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError, UnsupportedRadixError};
+use crate::{
+    HOTPUri, OtpGenericError, OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError,
+    UnsupportedRadixError,
+};
 use std::num::NonZeroU8;
 
 /// Represents an HOTP (HMAC-based One-Time Password) generator.
@@ -68,6 +71,35 @@ impl HOTP {
             secret,
             length,
             radix,
+        }
+    }
+
+    /// Creates a `HOTP` instance from a provisioning URI.
+    ///
+    /// # Arguments
+    ///
+    /// * `uri` - A string slice that holds the provisioning URI.
+    ///
+    /// # Returns
+    ///
+    /// A `HOTP` instance initialized with the secret parsed from the URI, using RFC 4226 defaults.
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if the URI cannot be parsed.
+    ///
+    /// # Example
+    /// ```
+    /// use rusotp::HOTP;
+    ///
+    /// let uri = "otpauth://hotp/Example:alice@google.com?secret=JBSWY3DPEHPK3PXP&counter=1";
+    /// let hotp = HOTP::from_uri(uri);
+    /// ```
+    pub fn from_uri(uri: &str) -> OtpResult<HOTP> {
+        let huri = HOTPUri::parse(uri);
+        match huri {
+            Ok(h) => Ok(Self::default(h.secret)),
+            Err(e) => Err(Box::new(OtpGenericError(e))),
         }
     }
 
@@ -231,13 +263,7 @@ impl HOTP {
         } else if self.algorithm != Algorithm::SHA1 {
             Err(Box::new(UnsupportedAlgorithmError(self.algorithm)))
         } else {
-            let query = format!(
-                "secret={}&counter={}",
-                urlencoding::encode(&String::from_utf8_lossy(&self.secret.clone().get())),
-                initial_count
-            );
-
-            Ok(format!("otpauth://hotp/{}?{}", urlencoding::encode(name), query))
+            Ok(HOTPUri::new(name, self.secret.clone(), initial_count).uri())
         }
     }
 }

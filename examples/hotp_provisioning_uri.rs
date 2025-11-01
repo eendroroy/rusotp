@@ -1,10 +1,16 @@
-use rusotp::{Secret, HOTP};
+use rusotp::{HOTPUri, Secret, HOTP};
 
 fn main() {
     let secret = Secret::new("1234567890").unwrap();
 
     let hotp = HOTP::default(secret);
-
+    let url = hotp.provisioning_uri("Github", 0).unwrap();
     // otpauth://hotp/Github?secret=1234567890&counter=0
-    println!("{}", hotp.provisioning_uri("Github", 0).unwrap());
+    println!("{}", url);
+
+    let huri = HOTPUri::parse(url.as_str()).unwrap();
+
+    println!("NAME: {}", huri.name);
+    println!("SECRET: {:?}", String::from_utf8_lossy(&huri.secret.clone().get()));
+    println!("INITIAL_COUNT: {:?}", huri.initial_count);
 }
