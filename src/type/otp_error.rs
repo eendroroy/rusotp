@@ -1,3 +1,10 @@
+// Copyright (c) Indrajit Roy
+//
+// This file is licensed under the Affero General Public License version 3 or
+// any later version.
+//
+// See the file LICENSE for details.
+
 //! Error types and result alias for OTP (One-Time Password) operations.
 
 use crate::{Algorithm, AlgorithmTrait};

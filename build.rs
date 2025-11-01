@@ -1,3 +1,10 @@
+// Copyright (c) Indrajit Roy
+//
+// This file is licensed under the Affero General Public License version 3 or
+// any later version.
+//
+// See the file LICENSE for details.
+
 use std::env;
 use std::path::PathBuf;
 
@@ -13,10 +20,19 @@ fn main() {
     };
     let header_path = PathBuf::from("contrib").join("rusotp.hpp");
 
+    let header = "\
+// Copyright (c) Indrajit Roy
+//
+// This file is licensed under the Affero General Public License version 3 or
+// any later version.
+//
+// See the file LICENSE for details.";
+
     // Generate C++ header
     cbindgen::Builder::new()
         .with_crate(include_dir)
         .with_language(cbindgen::Language::Cxx)
+        .with_header(header)
         .generate()
         .unwrap_or_else(|e| panic!("Failed to generate bindings: {}", e))
         .write_to_file(header_path.clone());

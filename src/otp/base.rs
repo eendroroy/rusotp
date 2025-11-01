@@ -1,3 +1,10 @@
+// Copyright (c) Indrajit Roy
+//
+// This file is licensed under the Affero General Public License version 3 or
+// any later version.
+//
+// See the file LICENSE for details.
+
 use crate::otp::algorithm::{Algorithm, AlgorithmTrait};
 use crate::{OtpGenericError, OtpResult};
 use num_bigint::BigUint;

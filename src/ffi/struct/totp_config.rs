@@ -1,3 +1,10 @@
+// Copyright (c) Indrajit Roy
+//
+// This file is licensed under the Affero General Public License version 3 or
+// any later version.
+//
+// See the file LICENSE for details.
+
 use std::ffi::{c_char, c_ulonglong, c_ushort};
 
 /// Configuration for TOTP (Time-based One-Time Password).

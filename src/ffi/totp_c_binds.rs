@@ -1,3 +1,10 @@
+// Copyright (c) Indrajit Roy
+//
+// This file is licensed under the Affero General Public License version 3 or
+// any later version.
+//
+// See the file LICENSE for details.
+
 use crate::ffi::converter::{to_str, to_totp};
 use crate::ffi::{
     error_bool_result, error_string_result, success_bool_result, success_string_result, BoolResult, StringResult,

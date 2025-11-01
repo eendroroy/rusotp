@@ -1,3 +1,10 @@
+// Copyright (c) Indrajit Roy
+//
+// This file is licensed under the Affero General Public License version 3 or
+// any later version.
+//
+// See the file LICENSE for details.
+
 use crate::ffi::{HotpConfig, TotpConfig};
 use crate::{Algorithm, AlgorithmTrait, Radix, Secret, HOTP, TOTP};
 use std::ffi::CStr;
