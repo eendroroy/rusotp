@@ -39,4 +39,14 @@ impl Secret {
     pub fn get(self) -> Vec<u8> {
         self.0
     }
+    /// Returns the secret as an owned `String`.
+    ///
+    /// Consumes the `Secret` and attempts to decode the internal byte vector
+    /// as UTF-8. This will panic if the bytes are not valid UTF-8 (it uses
+    /// `String::from_utf8(...).unwrap()`).
+    ///
+    /// Use `get` to obtain the raw `Vec<u8>` without interpreting it as UTF-8.
+    pub fn string(self) -> String {
+        String::from_utf8(self.0).unwrap()
+    }
 }

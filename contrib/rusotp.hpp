@@ -151,7 +151,7 @@ BoolResult hotp_verify(HotpConfig config,
 /// # Arguments
 ///
 /// * `config` - A `HotpConfig` struct containing the configuration for the HOTP generation.
-/// * `name` - A pointer to a C string representing the name of the user or account.
+/// * `user` - A pointer to a C string representing the name of the user or account.
 /// * `counter` - A counter value used in the HOTP generation.
 ///
 /// # Returns
@@ -171,7 +171,7 @@ BoolResult hotp_verify(HotpConfig config,
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
 ///     unsigned long counter = 2;
 ///
-///     StringResult uri = hotp_provisioning_uri(config, "rusotp", counter);
+///     StringResult uri = hotp_provisioning_uri(config, "rusotp", "rusotp", counter);
 ///     printf("URI : %s\n", uri.data);
 ///
 ///     return 0;
@@ -181,7 +181,8 @@ BoolResult hotp_verify(HotpConfig config,
 /// # }
 /// ```
 StringResult hotp_provisioning_uri(HotpConfig config,
-                                   const char *name,
+                                   const char *issuer,
+                                   const char *user,
                                    unsigned long long counter);
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration for the current time.

@@ -25,7 +25,6 @@ fn main() {
     println!("Is OTP valid? {}", is_valid.is_some());
 
     // Generate provisioning URI
-    const ISSUER: &str = "MyService";
-    let uri = hotp.provisioning_uri(ISSUER, COUNTER).unwrap();
+    let uri = hotp.provisioning_uri("Rusotp", "otp@rusotp", COUNTER).unwrap();
     println!("Provisioning URI: {}", uri);
 }

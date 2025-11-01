@@ -5,7 +5,7 @@
 //
 // See the file LICENSE for details.
 
-use colored::Color::{BrightBlue, BrightCyan, Cyan, Green, Magenta, Red, Yellow};
+use colored::Color::{BrightBlue, BrightCyan, Green, Magenta, Red, Yellow};
 use colored::Colorize;
 use rusotp::HOTP;
 #[cfg(not(any(target_os = "windows")))]
@@ -157,7 +157,7 @@ fn main() {
             Ok(uri) => uri.parse().unwrap(),
             Err(e) => e.to_string().parse().unwrap(),
         };
-        *h_uri = match &mut hotp.provisioning_uri("RUSOTP", counter) {
+        *h_uri = match &mut hotp.provisioning_uri("RUSOTP", "RUSOTP", counter) {
             Ok(uri) => uri.parse().unwrap(),
             Err(e) => e.to_string().parse().unwrap(),
         };

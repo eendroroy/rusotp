@@ -39,7 +39,7 @@ fn main() {
                 counter,
                 hotp.generate(*counter).unwrap(),
                 hotp.verify(otp, *counter, 0).unwrap().is_some(),
-                hotp.provisioning_uri("IAM", *counter).unwrap(),
+                hotp.provisioning_uri("IAM", "IAM", *counter).unwrap(),
             );
         } else {
             println!(

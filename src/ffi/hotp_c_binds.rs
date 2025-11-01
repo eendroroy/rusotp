@@ -114,7 +114,7 @@ pub extern "C" fn hotp_verify(
 /// # Arguments
 ///
 /// * `config` - A `HotpConfig` struct containing the configuration for the HOTP generation.
-/// * `name` - A pointer to a C string representing the name of the user or account.
+/// * `user` - A pointer to a C string representing the name of the user or account.
 /// * `counter` - A counter value used in the HOTP generation.
 ///
 /// # Returns
@@ -134,7 +134,7 @@ pub extern "C" fn hotp_verify(
 ///     HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
 ///     unsigned long counter = 2;
 ///
-///     StringResult uri = hotp_provisioning_uri(config, "rusotp", counter);
+///     StringResult uri = hotp_provisioning_uri(config, "rusotp", "rusotp", counter);
 ///     printf("URI : %s\n", uri.data);
 ///
 ///     return 0;
@@ -144,11 +144,16 @@ pub extern "C" fn hotp_verify(
 /// # }
 /// ```
 #[no_mangle]
-pub extern "C" fn hotp_provisioning_uri(config: HotpConfig, name: *const c_char, counter: c_ulonglong) -> StringResult {
-    if name.is_null() {
+pub extern "C" fn hotp_provisioning_uri(
+    config: HotpConfig,
+    issuer: *const c_char,
+    user: *const c_char,
+    counter: c_ulonglong,
+) -> StringResult {
+    if user.is_null() {
         error_string_result("Name is null")
     } else {
-        match to_hotp(config).provisioning_uri(to_str(name), counter) {
+        match to_hotp(config).provisioning_uri(to_str(issuer), to_str(user), counter) {
             Ok(uri) => success_string_result(uri.as_str()),
             Err(e) => error_string_result(e.to_string().as_str()),
         }

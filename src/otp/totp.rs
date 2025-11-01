@@ -82,7 +82,7 @@ impl TOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::{Secret};
+    /// use rusotp::{Secret, TOTP};
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     ///
@@ -110,11 +110,11 @@ impl TOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::{Secret};
+    /// use rusotp::{Secret, TOTP};
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     ///
-    /// let totp = TOTP::rfc4226_default(secret);
+    /// let totp = TOTP::rfc6238_default(secret);
     /// ```
     pub fn rfc6238_default(secret: Secret) -> TOTP {
         Self::default(secret)

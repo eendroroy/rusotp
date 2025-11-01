@@ -64,12 +64,12 @@ fn test_hotp_provisioning_uri() {
             HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
             unsigned long counter = 2;
 
-            StringResult uri = hotp_provisioning_uri(config, "rusotp", counter);
+            StringResult uri = hotp_provisioning_uri(config, "rusotp", "rusotp", counter);
             printf("%s", uri.data);
 
             return 0;
         }
     }
     .success()
-    .stdout("otpauth://hotp/rusotp?secret=12345678901234567890&counter=2");
+    .stdout("otpauth://hotp/rusotp:rusotp?secret=12345678901234567890&algorithm=SHA1&length=6&counter=2&issuer=rusotp");
 }

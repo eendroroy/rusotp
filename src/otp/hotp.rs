@@ -6,8 +6,9 @@
 // See the file LICENSE for details.
 
 use crate::otp::algorithm::Algorithm;
+use crate::otp::algorithm::AlgorithmTrait;
 use crate::otp::base::otp;
-use crate::{OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError, UnsupportedRadixError};
+use crate::{OtpResult, Radix, Secret};
 use std::num::NonZeroU8;
 
 /// Represents an HOTP (HMAC-based One-Time Password) generator.
@@ -88,7 +89,7 @@ impl HOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::{Secret};
+    /// use rusotp::{Secret, HOTP};
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     ///
@@ -110,7 +111,7 @@ impl HOTP {
     /// # Example
     ///
     /// ```
-    /// use rusotp::{Secret};
+    /// use rusotp::{Secret, HOTP};
     ///
     /// let secret = Secret::new("12345678901234567890").unwrap();
     ///
@@ -204,8 +205,9 @@ impl HOTP {
     ///
     /// # Arguments
     ///
+    /// * `issuer` - The issuer of the TOTP as a string.
     /// * `name` - The name of the user or account as a string.
-    /// * `initial_count` - The initial counter value used in the HOTP generation.
+    /// * `counter` - The initial counter value used in the HOTP generation.
     ///
     /// # Returns
     ///
@@ -227,24 +229,25 @@ impl HOTP {
     /// let length = NonZeroU8::new(6).unwrap();
     ///
     /// let hotp = HOTP::new(Algorithm::SHA1, secret, length, radix);
-    /// let uri = hotp.provisioning_uri("rusotp", 1).unwrap();
+    /// let uri = hotp.provisioning_uri("rusotp", "rusotp", 1).unwrap();
     /// println!("Provisioning URI: {}", uri);
     /// ```
-    pub fn provisioning_uri(&self, name: &str, initial_count: u64) -> OtpResult<String> {
-        if self.length.get() != 6 {
-            Err(Box::new(UnsupportedLengthError(self.length.get())))
-        } else if self.radix.get() != 10 {
-            Err(Box::new(UnsupportedRadixError(self.radix.get())))
-        } else if self.algorithm != Algorithm::SHA1 {
-            Err(Box::new(UnsupportedAlgorithmError(self.algorithm)))
-        } else {
-            let query = format!(
-                "secret={}&counter={}",
-                urlencoding::encode(&String::from_utf8_lossy(&self.secret.clone().get())),
-                initial_count
-            );
+    pub fn provisioning_uri(&self, issuer: &str, user: &str, counter: u64) -> OtpResult<String> {
+        let mut uri = format!(
+            "otpauth://hotp/{}:{}?secret={}&algorithm={}&length={}&counter={}&issuer={}",
+            urlencoding::encode(issuer),
+            urlencoding::encode(user),
+            urlencoding::encode(&self.secret.clone().string()),
+            self.algorithm.to_string(),
+            self.length.get(),
+            counter,
+            issuer
+        );
 
-            Ok(format!("otpauth://hotp/{}?{}", urlencoding::encode(name), query))
+        if self.radix.get() != 10 {
+            uri = format!("{}&radix={}", uri, self.radix.get());
         }
+
+        Ok(uri)
     }
 }

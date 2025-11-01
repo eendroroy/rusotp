@@ -29,8 +29,9 @@ fn test_hotp_generate() {
 #[test]
 fn test_hotp_provisioning_uri() {
     let config = make_config();
-    let name = CString::new("testuser").unwrap();
-    let uri = hotp_provisioning_uri(config, name.as_ptr(), 0);
+    let issuer = CString::new("testissuer").unwrap();
+    let user = CString::new("testuser").unwrap();
+    let uri = hotp_provisioning_uri(config, issuer.as_ptr(), user.as_ptr(), 0);
     assert!(uri.success);
     assert!(to_string(uri.data).contains("otpauth://hotp/"));
 }
@@ -55,7 +56,7 @@ fn test_hotp_verify_null_otp() {
 #[test]
 fn test_hotp_provisioning_uri_null_name() {
     let config = make_config();
-    let data = hotp_provisioning_uri(config, std::ptr::null(), 0);
+    let data = hotp_provisioning_uri(config, std::ptr::null(), std::ptr::null(), 0);
     assert!(!data.success);
     assert_eq!(to_str(data.error), "Name is null");
 }
