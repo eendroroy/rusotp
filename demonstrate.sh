@@ -7,12 +7,11 @@
 #
 # See the file LICENSE for details.
 
-
 function run() {
     echo " ===========> Running ${1} ..."
     echo
     g++ contrib/"${1}".cpp -Ltarget/debug -lrusotp -o target/"${1}".out
-    ./target/"${1}".out
+    time ./target/"${1}".out
     echo
 }
 
