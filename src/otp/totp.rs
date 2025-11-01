@@ -65,6 +65,54 @@ impl TOTP {
         }
     }
 
+    /// Returns a TOTP configured with RFC 4226 recommended defaults:
+    /// - `algorithm`: SHA1
+    /// - `length`: 6 digits
+    /// - `radix`: 10 (decimal)
+    ///
+    /// The provided `secret` is used as the shared key for TOTP generation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::{Secret};
+    ///
+    /// let secret = Secret::new("12345678901234567890").unwrap();
+    ///
+    /// let totp = TOTP::default(secret);
+    /// ```
+    pub fn default(secret: Secret) -> TOTP {
+        Self::new(
+            Algorithm::SHA1,
+            secret,
+            NonZeroU8::new(6).unwrap(),
+            Radix::new(10).unwrap(),
+            NonZeroU64::new(30).unwrap(),
+        )
+    }
+
+    /// Returns a TOTP configured with RFC 4226 recommended defaults:
+    /// - Algorithm: SHA1
+    /// - Length: 6 digits
+    /// - Radix: 10 (decimal)
+    ///
+    /// The provided `secret` is used as the shared key for TOTP generation.
+    ///
+    /// Convenience constructor equivalent to `TOTP::default`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::{Secret};
+    ///
+    /// let secret = Secret::new("12345678901234567890").unwrap();
+    ///
+    /// let totp = TOTP::rfc4226_default(secret);
+    /// ```
+    pub fn rfc6238_default(secret: Secret) -> TOTP {
+        Self::default(secret)
+    }
+
     /// Generates an OTP based on the current time.
     ///
     /// # Returns

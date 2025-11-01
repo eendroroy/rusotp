@@ -21,6 +21,19 @@ fn should_generate_otp_now() {
 }
 
 #[test]
+fn should_generate_otp_now_with_defaults() {
+    let totp = TOTP::default(Secret::new("12345678901234567890").unwrap());
+    let otp = totp.generate().unwrap();
+
+    assert_eq!(otp.len(), LENGTH as usize);
+
+    let totp = TOTP::rfc6238_default(Secret::new("12345678901234567890").unwrap());
+    let otp = totp.generate().unwrap();
+
+    assert_eq!(otp.len(), LENGTH as usize);
+}
+
+#[test]
 fn should_generate_otp_now_using_current_at() {
     let totp = TOTP::new(
         ALGORITHM,
@@ -29,6 +42,31 @@ fn should_generate_otp_now_using_current_at() {
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
     );
+
+    let now = totp.generate().unwrap();
+    let at = totp
+        .generate_at(std::time::UNIX_EPOCH.elapsed().unwrap().as_secs())
+        .unwrap();
+
+    assert_eq!(now.len(), LENGTH as usize, "Expected OTP length to be 6");
+    assert_eq!(at.len(), LENGTH as usize, "Expected OTP length to be 6");
+    assert_eq!(at, now, "Expected OTPs to be equal");
+}
+
+#[test]
+fn should_generate_otp_now_using_current_at_with_defaults() {
+    let totp = TOTP::default(Secret::new("12345678901234567890").unwrap());
+
+    let now = totp.generate().unwrap();
+    let at = totp
+        .generate_at(std::time::UNIX_EPOCH.elapsed().unwrap().as_secs())
+        .unwrap();
+
+    assert_eq!(now.len(), LENGTH as usize, "Expected OTP length to be 6");
+    assert_eq!(at.len(), LENGTH as usize, "Expected OTP length to be 6");
+    assert_eq!(at, now, "Expected OTPs to be equal");
+
+    let totp = TOTP::rfc6238_default(Secret::new("12345678901234567890").unwrap());
 
     let now = totp.generate().unwrap();
     let at = totp
