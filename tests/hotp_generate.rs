@@ -23,3 +23,21 @@ fn otp_should_be_generated() {
             assert!(result.is_ok(), "Expected a result");
         });
 }
+
+#[test]
+fn otp_should_be_generated_with_defaults() {
+    let secret = "12345678901234567890";
+    let counters = [10, 16, 24, 36];
+
+    counters.iter().for_each(|counter| {
+        let hotp = HOTP::default(Secret::new(secret).unwrap());
+        let result = hotp.generate(*counter);
+        assert!(result.is_ok(), "Expected a result");
+    });
+
+    counters.iter().for_each(|counter| {
+        let hotp = HOTP::rfc4226_default(Secret::new(secret).unwrap());
+        let result = hotp.generate(*counter);
+        assert!(result.is_ok(), "Expected a result");
+    });
+}

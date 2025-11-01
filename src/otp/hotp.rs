@@ -71,6 +71,48 @@ impl HOTP {
         }
     }
 
+    /// Returns a HOTP configured with RFC 4226 recommended defaults:
+    /// - `algorithm`: SHA1
+    /// - `length`: 6 digits
+    /// - `radix`: 10 (decimal)
+    ///
+    /// The provided `secret` is used as the shared key for HOTP generation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::{Secret};
+    ///
+    /// let secret = Secret::new("12345678901234567890").unwrap();
+    ///
+    /// let hotp = HOTP::default(secret);
+    /// ```
+    pub fn default(secret: Secret) -> HOTP {
+        Self::new(Algorithm::SHA1, secret, NonZeroU8::new(6).unwrap(), Radix::new(10).unwrap())
+    }
+
+    /// Returns a HOTP configured with RFC 4226 recommended defaults:
+    /// - Algorithm: SHA1
+    /// - Length: 6 digits
+    /// - Radix: 10 (decimal)
+    ///
+    /// The provided `secret` is used as the shared key for HOTP generation.
+    ///
+    /// Convenience constructor equivalent to `HOTP::default`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rusotp::{Secret};
+    ///
+    /// let secret = Secret::new("12345678901234567890").unwrap();
+    ///
+    /// let hotp = HOTP::rfc4226_default(secret);
+    /// ```
+    pub fn rfc4226_default(secret: Secret) -> HOTP {
+        Self::default(secret)
+    }
+
     /// Generates an OTP based on the provided counter value.
     ///
     /// # Arguments
@@ -79,7 +121,8 @@ impl HOTP {
     ///
     /// # Returns
     ///
-    /// A `Result` containing the generated OTP as a `String` if successful, or a `String` with the error message if the generation fails.
+    /// A `Result` containing the generated OTP as a `String` if successful,
+    /// or a `String` with the error message if the generation fails.
     ///
     /// # Example
     ///
