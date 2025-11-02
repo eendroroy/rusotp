@@ -44,8 +44,12 @@ fn to_hotp_should_convert_hotp_config_to_hotp() {
     };
 
     let hotp = super::to_hotp(hotp_config);
-    let hotp_orig =
-        HOTP::new(Algorithm::SHA1, Secret::from_str("Hello").unwrap(), NonZeroU8::new(6).unwrap(), Radix::new(10).unwrap());
+    let hotp_orig = HOTP::new(
+        Algorithm::SHA1,
+        Secret::from_str("Hello").unwrap(),
+        NonZeroU8::new(6).unwrap(),
+        Radix::new(10).unwrap(),
+    );
     assert_eq!(hotp, hotp_orig);
 }
 

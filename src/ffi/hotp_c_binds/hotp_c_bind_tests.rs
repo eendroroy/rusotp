@@ -47,10 +47,12 @@ fn test_hotp_from_uri() {
 
     let config_parsed = hotp_from_uri(uri.data);
 
-    unsafe { assert_eq!(to_string((*config_parsed.data).algorithm), to_string(config.algorithm)); }
-    unsafe { assert_eq!(to_string((*config_parsed.data).secret), to_string(config.secret)); }
-    unsafe { assert_eq!((*config_parsed.data).length, config.length); }
-    unsafe { assert_eq!((*config_parsed.data).radix, config.radix); }
+    unsafe {
+        assert_eq!(to_string((*config_parsed.data).algorithm), to_string(config.algorithm));
+        assert_eq!(to_string((*config_parsed.data).secret), to_string(config.secret));
+        assert_eq!((*config_parsed.data).length, config.length);
+        assert_eq!((*config_parsed.data).radix, config.radix);
+    }
 }
 
 #[test]
