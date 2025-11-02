@@ -60,5 +60,8 @@ fn test_totp_provisioning_uri() {
     let uri_ptr = totp_provisioning_uri(config, issuer.as_ptr(), name.as_ptr());
     assert!(uri_ptr.success);
     assert!(uri_ptr.error.is_null());
-    assert_eq!(to_str(uri_ptr.data), "otpauth://totp/TestIssuer%3ATestUser?secret=JBSWY3DPEHPK3PXP&issuer=TestIssuer");
+    assert_eq!(
+        to_str(uri_ptr.data),
+        "otpauth://totp/TestIssuer%3ATestUser?secret=jjbfgv2zgncfarkikbftgucyka======&issuer=TestIssuer"
+    );
 }

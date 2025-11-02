@@ -31,7 +31,10 @@ fn provisioning_uri_should_be_correct() {
     let result = totp.provisioning_uri(ISSUER, NAME);
 
     assert!(result.is_ok(), "Expected a result");
-    assert_eq!(result.unwrap(), "otpauth://totp/rusotp%3Auser%40email.mail?secret=12345678901234567890&issuer=rusotp");
+    assert_eq!(
+        result.unwrap(),
+        "otpauth://totp/rusotp%3Auser%40email.mail?secret=gezdgnbvgy3tqojqgezdgnbvgy3tqojq&issuer=rusotp"
+    );
 }
 
 #[test]
@@ -47,7 +50,7 @@ fn provisioning_uri_should_be_correct_if_issuer_is_empty() {
     let result = totp.provisioning_uri("", NAME);
 
     assert!(result.is_ok(), "Expected a result");
-    assert_eq!(result.unwrap(), "otpauth://totp/user%40email.mail?secret=12345678901234567890");
+    assert_eq!(result.unwrap(), "otpauth://totp/%3Auser%40email.mail?secret=gezdgnbvgy3tqojqgezdgnbvgy3tqojq&issuer=");
 }
 
 #[test]

@@ -27,11 +27,11 @@ fn provisioning_uri_should_be_correct() {
     assert!(result.is_ok(), "Expected a result");
     assert_eq!(
         result.unwrap(),
-        "otpauth://hotp/test:test?secret=12345678901234567890&algorithm=SHA1&length=6&counter=0&issuer=test"
+        "otpauth://hotp/test%3Atest?secret=gezdgnbvgy3tqojqgezdgnbvgy3tqojq&counter=0&issuer=test"
     );
 }
 
-// #[test]
+#[test]
 fn provisioning_uri_should_fail_with_sha256() {
     let hotp_tool = HOTP::new(
         Algorithm::SHA256,
@@ -46,7 +46,7 @@ fn provisioning_uri_should_fail_with_sha256() {
     assert_eq!(result.err().unwrap().to_string(), UnsupportedAlgorithmError(Algorithm::SHA256).to_string());
 }
 
-// #[test]
+#[test]
 fn provisioning_uri_should_fail_with_sha512() {
     let hotp_tool = HOTP::new(
         Algorithm::SHA512,
@@ -61,7 +61,7 @@ fn provisioning_uri_should_fail_with_sha512() {
     assert_eq!(result.err().unwrap().to_string(), UnsupportedAlgorithmError(Algorithm::SHA512).to_string());
 }
 
-// #[test]
+#[test]
 fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
     let hotp_tool = HOTP::new(
         ALGORITHM,
@@ -76,7 +76,7 @@ fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
     assert_eq!(result.err().unwrap().to_string(), UnsupportedLengthError(5).to_string());
 }
 
-// #[test]
+#[test]
 fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
     let hotp_tool = HOTP::new(
         ALGORITHM,
@@ -91,7 +91,7 @@ fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
     assert_eq!(result.err().unwrap().to_string(), UnsupportedLengthError(7).to_string());
 }
 
-// #[test]
+#[test]
 fn provisioning_uri_should_fail_with_radix_less_than_10() {
     let hotp_tool = HOTP::new(
         ALGORITHM,
@@ -106,7 +106,7 @@ fn provisioning_uri_should_fail_with_radix_less_than_10() {
     assert_eq!(result.err().unwrap().to_string(), UnsupportedRadixError(9).to_string());
 }
 
-// #[test]
+#[test]
 fn provisioning_uri_should_fail_with_radix_more_than_10() {
     let hotp_tool = HOTP::new(
         ALGORITHM,

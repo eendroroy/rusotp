@@ -99,5 +99,5 @@ fn test_hotp_provisioning_uri() {
         }
     }
     .success()
-    .stdout("otpauth://totp/rusotp%3Auser%40email.mail?secret=12345678901234567890&issuer=rusotp");
+    .stdout("otpauth://totp/rusotp%3Auser%40email.mail?secret=gezdgnbvgy3tqojqgezdgnbvgy3tqojq&issuer=rusotp");
 }

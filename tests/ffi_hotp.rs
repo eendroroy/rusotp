@@ -71,5 +71,5 @@ fn test_hotp_provisioning_uri() {
         }
     }
     .success()
-    .stdout("otpauth://hotp/rusotp:rusotp?secret=12345678901234567890&algorithm=SHA1&length=6&counter=2&issuer=rusotp");
+    .stdout("otpauth://hotp/rusotp%3Arusotp?secret=gezdgnbvgy3tqojqgezdgnbvgy3tqojq&counter=2&issuer=rusotp");
 }
