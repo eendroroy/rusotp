@@ -27,7 +27,7 @@ Add `rusotp` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rusotp = "0.5.0-alpha2"
+rusotp = "0.5.0"
 ```
 
 ## HOTP Usage
