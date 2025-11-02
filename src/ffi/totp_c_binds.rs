@@ -5,12 +5,12 @@
 //
 // See the file LICENSE for details.
 
-use crate::otp::algorithm::AlgorithmTrait;
 use crate::ffi::converter::{to_cstr, to_str, to_totp};
 use crate::ffi::{
-    error_bool_result, error_string_result, error_totp_config_result, success_bool_result,
-    success_string_result, success_totp_config_result, BoolResult, StringResult, TotpConfig, TotpConfigResult,
+    error_bool_result, error_string_result, error_totp_config_result, success_bool_result, success_string_result,
+    success_totp_config_result, BoolResult, StringResult, TotpConfig, TotpConfigResult,
 };
+use crate::otp::algorithm::AlgorithmTrait;
 use crate::TOTP;
 use std::ffi::{c_char, c_ulonglong, c_ushort};
 
