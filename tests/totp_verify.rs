@@ -20,7 +20,7 @@ const DRIFT_BEHIND: u64 = 0;
 fn should_fail_with_otp_length_not_matched() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -35,7 +35,7 @@ fn should_fail_with_otp_length_not_matched() {
 fn should_fail_if_after_is_greater_than_at() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -51,7 +51,7 @@ fn should_fail_if_after_is_greater_than_at() {
 fn should_fail_if_drift_behind_is_greater_than_at() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -67,7 +67,7 @@ fn should_fail_if_drift_behind_is_greater_than_at() {
 fn should_verify_within_interval() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -83,7 +83,7 @@ fn should_verify_within_interval() {
 fn should_not_verify_after_interval() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -99,7 +99,7 @@ fn should_not_verify_after_interval() {
 fn should_verify_with_after_less_than_at() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -121,7 +121,7 @@ fn should_verify_with_after_less_than_at() {
 fn should_verify_with_after_less_than_at_and_drift_behind() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -143,7 +143,7 @@ fn should_verify_with_after_less_than_at_and_drift_behind() {
 fn should_not_verify_with_after_greater_than_at() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -162,7 +162,7 @@ fn should_not_verify_with_after_greater_than_at() {
 fn should_verify_without_after() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -179,7 +179,7 @@ fn should_verify_without_after() {
 fn should_verify_with_drift_behind() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -195,7 +195,7 @@ fn should_verify_with_drift_behind() {
 fn should_verify_with_drift_ahead() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),

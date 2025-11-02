@@ -101,3 +101,15 @@ impl Display for UnsupportedAlgorithmError {
         write!(f, "{} must be {}", self.0.to_string(), Algorithm::SHA1.to_string())
     }
 }
+
+/// Error invalid Secret.
+#[derive(Debug, Clone, PartialEq)]
+pub struct InvalidSecretError();
+
+impl OtpError for InvalidSecretError {}
+
+impl Display for InvalidSecretError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Invalid secret")
+    }
+}

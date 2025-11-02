@@ -9,7 +9,7 @@ use rusotp::{Secret, HOTP};
 
 #[test]
 fn otp_should_match_with_rfc_samples() {
-    let secret = Secret::new("12345678901234567890").unwrap();
+    let secret = Secret::from_str("12345678901234567890").unwrap();
 
     vec![
         (0, "755224"),

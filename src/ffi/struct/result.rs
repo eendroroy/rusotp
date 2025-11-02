@@ -6,6 +6,7 @@
 // See the file LICENSE for details.
 
 use crate::ffi::converter::to_cstr;
+use crate::ffi::HotpConfig;
 use std::ffi::c_char;
 use std::ptr::null;
 
@@ -65,6 +66,36 @@ pub(crate) fn success_bool_result(data: bool) -> BoolResult {
     BoolResult {
         success: true,
         data,
+        error: null(),
+    }
+}
+
+/// FFI-safe result type for operations returning a `HotpConfig` pointer.
+///
+/// # Fields
+/// - `success`: Indicates if the operation was successful.
+/// - `data`: Pointer to a `HotpConfig` (valid if `success` is true).
+/// - `error`: Pointer to a C string containing the error message (valid if `success` is false).
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct HotpConfigResult {
+    pub success: bool,
+    pub data: *const HotpConfig,
+    pub error: *const c_char,
+}
+
+pub(crate) fn error_hotp_config_result(error: &str) -> HotpConfigResult {
+    HotpConfigResult {
+        success: false,
+        data: null(),
+        error: to_cstr(error),
+    }
+}
+
+pub(crate) fn success_hotp_config_result(data: HotpConfig) -> HotpConfigResult {
+    HotpConfigResult {
+        success: true,
+        data: Box::into_raw(Box::new(data)) as *const HotpConfig,
         error: null(),
     }
 }

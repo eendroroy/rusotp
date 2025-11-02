@@ -37,6 +37,23 @@ fn test_hotp_provisioning_uri() {
 }
 
 #[test]
+fn test_hotp_from_uri() {
+    let config = make_config();
+    let issuer = CString::new("testissuer").unwrap();
+    let user = CString::new("testuser").unwrap();
+    let uri = hotp_provisioning_uri(config, issuer.as_ptr(), user.as_ptr(), 0);
+    assert!(uri.success);
+    assert!(to_string(uri.data).contains("otpauth://hotp/"));
+
+    let config_parsed = hotp_from_uri(uri.data);
+
+    unsafe { assert_eq!(to_string((*config_parsed.data).algorithm), to_string(config.algorithm)); }
+    unsafe { assert_eq!(to_string((*config_parsed.data).secret), to_string(config.secret)); }
+    unsafe { assert_eq!((*config_parsed.data).length, config.length); }
+    unsafe { assert_eq!((*config_parsed.data).radix, config.radix); }
+}
+
+#[test]
 fn test_hotp_verify() {
     let config = make_config();
     let otp = hotp_generate(config, 1);

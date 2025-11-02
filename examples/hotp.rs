@@ -9,7 +9,7 @@ use rusotp::{Algorithm, Radix, Secret};
 use std::num::NonZero;
 
 fn main() {
-    let secret = Secret::new("12345678901234567890").unwrap();
+    let secret = Secret::from_str("12345678901234567890").unwrap();
 
     let data = vec![
         (Algorithm::SHA1, 6, 10, 1, "247374"),

@@ -17,7 +17,7 @@ const RADIX: u8 = 10;
 fn provisioning_uri_should_be_correct() {
     let hotp_tool = HOTP::new(
         Algorithm::SHA1,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(RADIX).unwrap(),
     );
@@ -35,7 +35,7 @@ fn provisioning_uri_should_be_correct() {
 fn provisioning_uri_should_fail_with_sha256() {
     let hotp_tool = HOTP::new(
         Algorithm::SHA256,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(RADIX).unwrap(),
     );
@@ -50,7 +50,7 @@ fn provisioning_uri_should_fail_with_sha256() {
 fn provisioning_uri_should_fail_with_sha512() {
     let hotp_tool = HOTP::new(
         Algorithm::SHA512,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(RADIX).unwrap(),
     );
@@ -65,7 +65,7 @@ fn provisioning_uri_should_fail_with_sha512() {
 fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
     let hotp_tool = HOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(5).unwrap(),
         Radix::new(RADIX).unwrap(),
     );
@@ -80,7 +80,7 @@ fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
 fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
     let hotp_tool = HOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(7).unwrap(),
         Radix::new(RADIX).unwrap(),
     );
@@ -95,7 +95,7 @@ fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
 fn provisioning_uri_should_fail_with_radix_less_than_10() {
     let hotp_tool = HOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(9).unwrap(),
     );
@@ -110,7 +110,7 @@ fn provisioning_uri_should_fail_with_radix_less_than_10() {
 fn provisioning_uri_should_fail_with_radix_more_than_10() {
     let hotp_tool = HOTP::new(
         ALGORITHM,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(11).unwrap(),
     );

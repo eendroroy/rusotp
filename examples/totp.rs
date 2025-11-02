@@ -9,7 +9,7 @@ use rusotp::{Algorithm, Radix, Secret};
 use std::num::NonZero;
 
 fn main() {
-    let secret = Secret::new("12345678901234567890").unwrap();
+    let secret = Secret::from_str("12345678901234567890").unwrap();
 
     let data = vec![
         (6, 10, 10, 10000, "959738"),

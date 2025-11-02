@@ -49,6 +49,18 @@ struct BoolResult {
   const char *error;
 };
 
+/// FFI-safe result type for operations returning a `HotpConfig` pointer.
+///
+/// # Fields
+/// - `success`: Indicates if the operation was successful.
+/// - `data`: Pointer to a `HotpConfig` (valid if `success` is true).
+/// - `error`: Pointer to a C string containing the error message (valid if `success` is false).
+struct HotpConfigResult {
+  bool success;
+  const HotpConfig *data;
+  const char *error;
+};
+
 /// Configuration for TOTP (Time-based One-Time Password).
 ///
 /// # Fields
@@ -184,6 +196,8 @@ StringResult hotp_provisioning_uri(HotpConfig config,
                                    const char *issuer,
                                    const char *user,
                                    unsigned long long counter);
+
+HotpConfigResult hotp_from_uri(const char *uri);
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration for the current time.
 ///

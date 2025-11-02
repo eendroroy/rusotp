@@ -5,12 +5,13 @@
 //
 // See the file LICENSE for details.
 
-use crate::ffi::converter::{to_hotp, to_str};
+use crate::ffi::converter::{to_cstr, to_hotp, to_str};
 use crate::ffi::{
-    error_bool_result, error_string_result, success_bool_result, success_string_result, BoolResult, HotpConfig,
-    StringResult,
+    error_bool_result, error_hotp_config_result, error_string_result, success_bool_result, success_hotp_config_result,
+    success_string_result, BoolResult, HotpConfig, HotpConfigResult, StringResult,
 };
-use std::ffi::c_ulonglong;
+use crate::{AlgorithmTrait, HOTP};
+use std::ffi::{c_ulonglong, c_ushort};
 use std::os::raw::c_char;
 
 /// Generates an HOTP (HMAC-based One-Time Password) based on the provided configuration and counter.
@@ -156,6 +157,23 @@ pub extern "C" fn hotp_provisioning_uri(
         match to_hotp(config).provisioning_uri(to_str(issuer), to_str(user), counter) {
             Ok(uri) => success_string_result(uri.as_str()),
             Err(e) => error_string_result(e.to_string().as_str()),
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn hotp_from_uri(uri: *const c_char) -> HotpConfigResult {
+    if uri.is_null() {
+        error_hotp_config_result("URI is null")
+    } else {
+        match HOTP::from_uri(to_str(uri)) {
+            Ok(hotp) => success_hotp_config_result(HotpConfig {
+                algorithm: to_cstr(hotp.algorithm.to_string().as_str()),
+                secret: to_cstr(hotp.secret.string().as_str()),
+                length: hotp.length.get() as c_ushort,
+                radix: hotp.radix.get() as c_ushort,
+            }),
+            Err(e) => error_hotp_config_result(e.to_string().as_str()),
         }
     }
 }

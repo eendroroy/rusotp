@@ -12,7 +12,7 @@ use std::num::NonZeroU8;
 fn generate_hotp_sha256(c: &mut Criterion) {
     let hotp = HOTP::new(
         Algorithm::SHA256,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(10).unwrap(),
     );
@@ -24,7 +24,7 @@ fn generate_hotp_sha256(c: &mut Criterion) {
 fn generate_hotp_sha512(c: &mut Criterion) {
     let hotp = HOTP::new(
         Algorithm::SHA512,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(10).unwrap(),
     );
@@ -36,7 +36,7 @@ fn generate_hotp_sha512(c: &mut Criterion) {
 fn verify_hotp_sha1_success(c: &mut Criterion) {
     let hotp = HOTP::new(
         Algorithm::SHA1,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(10).unwrap(),
     );
@@ -46,7 +46,7 @@ fn verify_hotp_sha1_success(c: &mut Criterion) {
 fn verify_hotp_sha1_fail(c: &mut Criterion) {
     let hotp = HOTP::new(
         Algorithm::SHA1,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(10).unwrap(),
     );
@@ -56,7 +56,7 @@ fn verify_hotp_sha1_fail(c: &mut Criterion) {
 fn verify_hotp_sha256_success(c: &mut Criterion) {
     let hotp = HOTP::new(
         Algorithm::SHA256,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(10).unwrap(),
     );
@@ -66,7 +66,7 @@ fn verify_hotp_sha256_success(c: &mut Criterion) {
 fn verify_hotp_sha256_fail(c: &mut Criterion) {
     let hotp = HOTP::new(
         Algorithm::SHA256,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(10).unwrap(),
     );
@@ -76,7 +76,7 @@ fn verify_hotp_sha256_fail(c: &mut Criterion) {
 fn verify_hotp_sha512_success(c: &mut Criterion) {
     let hotp = HOTP::new(
         Algorithm::SHA512,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(10).unwrap(),
     );
@@ -86,7 +86,7 @@ fn verify_hotp_sha512_success(c: &mut Criterion) {
 fn verify_hotp_sha512_fail(c: &mut Criterion) {
     let hotp = HOTP::new(
         Algorithm::SHA512,
-        Secret::new("12345678901234567890").unwrap(),
+        Secret::from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(10).unwrap(),
     );

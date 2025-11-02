@@ -7,7 +7,10 @@
 
 use crate::otp::algorithm::Algorithm;
 use crate::otp::base::otp;
-use crate::{OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError, UnsupportedRadixError};
+use crate::{
+    InvalidSecretError, OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError,
+    UnsupportedRadixError,
+};
 use base32ct::{Base32, Encoding};
 use std::num::NonZeroU8;
 
@@ -27,7 +30,7 @@ use std::num::NonZeroU8;
 /// use rusotp::{Radix, Secret, HOTP};
 /// use rusotp::Algorithm;
 ///
-/// let secret = Secret::new("12345678901234567890").unwrap();
+/// let secret = Secret::from_str("12345678901234567890").unwrap();
 /// let radix = Radix::new(10).unwrap();
 /// let length = NonZeroU8::new(6).unwrap();
 ///
@@ -37,10 +40,10 @@ use std::num::NonZeroU8;
 /// ```
 #[derive(Debug, PartialEq)]
 pub struct HOTP {
-    algorithm: Algorithm,
-    secret: Secret,
-    length: NonZeroU8,
-    radix: Radix,
+    pub(crate) algorithm: Algorithm,
+    pub(crate) secret: Secret,
+    pub(crate) length: NonZeroU8,
+    pub(crate) radix: Radix,
 }
 
 impl HOTP {
@@ -64,7 +67,7 @@ impl HOTP {
     /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::new("12345678901234567890").unwrap();
+    /// let secret = Secret::from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     ///
@@ -91,7 +94,7 @@ impl HOTP {
     /// ```
     /// use rusotp::{Secret, HOTP};
     ///
-    /// let secret = Secret::new("12345678901234567890").unwrap();
+    /// let secret = Secret::from_str("12345678901234567890").unwrap();
     ///
     /// let hotp = HOTP::default(secret);
     /// ```
@@ -113,7 +116,7 @@ impl HOTP {
     /// ```
     /// use rusotp::{Secret, HOTP};
     ///
-    /// let secret = Secret::new("12345678901234567890").unwrap();
+    /// let secret = Secret::from_str("12345678901234567890").unwrap();
     ///
     /// let hotp = HOTP::rfc4226_default(secret);
     /// ```
@@ -139,7 +142,7 @@ impl HOTP {
     /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::new("12345678901234567890").unwrap();
+    /// let secret = Secret::from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     ///
@@ -174,7 +177,7 @@ impl HOTP {
     /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::new("12345678901234567890").unwrap();
+    /// let secret = Secret::from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     ///
@@ -224,7 +227,7 @@ impl HOTP {
     /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::new("12345678901234567890").unwrap();
+    /// let secret = Secret::from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     ///
@@ -243,10 +246,67 @@ impl HOTP {
             Ok(format!(
                 "otpauth://hotp/{}?secret={}&counter={}&issuer={}",
                 urlencoding::encode(&format!("{}:{}", issuer, user)),
-                Base32::encode_string(&self.secret.clone().get()),
-                counter,
-                issuer
+                urlencoding::encode(Base32::encode_string(&self.secret.clone().get()).as_str()),
+                urlencoding::encode(&counter.to_string()),
+                urlencoding::encode(issuer)
             ))
         }
+    }
+
+    /// Parse an `otpauth://hotp/...` provisioning URI and construct an `HOTP` instance.
+    ///
+    /// The function extracts query parameters from the provided `uri` and uses them to
+    /// populate an `HOTP`. The following query keys are recognized:
+    /// - `secret` (required): Base32-encoded shared secret. If missing, returns `InvalidSecretError`.
+    /// - `counter` (optional): Initial counter value (parsed as `u64`).
+    /// - `issuer` (optional): Issuer string.
+    ///
+    /// # Arguments
+    ///
+    /// * `uri` - A provisioning URI string in the `otpauth` HOTP format.
+    ///
+    /// # Returns
+    ///
+    /// Returns `OtpResult<HOTP>`:
+    /// - `Ok(HOTP)` on success (the returned `HOTP` uses RFC4226 defaults except for the provided secret).
+    /// - `Err` if the `secret` parameter is missing or if parsing/decoding fails (note: this implementation
+    ///   uses `unwrap()` on some decoding/parsing operations, which will panic on invalid input).
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use rusotp::HOTP;
+    ///
+    /// // Example URI with a Base32 secret for "1234"
+    /// let uri = "otpauth://hotp/rusotp%3Aeendroroy%40rusotp?secret=gezdgna%3D&counter=0&issuer=rusotp";
+    /// let hotp = HOTP::from_uri(uri).unwrap();
+    /// let otp = hotp.generate(1).unwrap();
+    /// assert_eq!(otp.len(), 6);
+    /// ```
+    pub fn from_uri(uri: &str) -> OtpResult<HOTP> {
+        let params = uri.split('?').last().unwrap().split('&');
+
+        let mut secret: Option<Secret> = None;
+
+        for param in params {
+            if let Some((key, value)) = param.split_once('=') {
+                match key {
+                    "secret" => {
+                        if !value.is_empty() {
+                            secret = Some(Secret::from_vec(
+                                Base32::decode_vec(urlencoding::decode(value).unwrap().trim()).unwrap(),
+                            ))
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        if secret.is_none() {
+            return Err(Box::new(InvalidSecretError()));
+        }
+
+        Ok(HOTP::default(secret.ok_or(InvalidSecretError()).unwrap()))
     }
 }
