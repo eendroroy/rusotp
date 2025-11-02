@@ -11,10 +11,10 @@ use std::num::NonZero;
 #[test]
 fn otp_should_match_with_rfc_samples() {
     let radix = Radix::new(10).unwrap();
-    let secret_sha1: Secret = Secret::from_str("12345678901234567890").unwrap();
-    let secret_sha256: Secret = Secret::from_str("12345678901234567890123456789012").unwrap();
+    let secret_sha1: Secret = Secret::new_from_str("12345678901234567890").unwrap();
+    let secret_sha256: Secret = Secret::new_from_str("12345678901234567890123456789012").unwrap();
     let secret_sha512: Secret =
-        Secret::from_str("1234567890123456789012345678901234567890123456789012345678901234").unwrap();
+        Secret::new_from_str("1234567890123456789012345678901234567890123456789012345678901234").unwrap();
 
     vec![
         (secret_sha1.clone(), 59, "94287082", Algorithm::SHA1),

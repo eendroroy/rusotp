@@ -54,7 +54,7 @@ impl TOTP {
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
@@ -85,7 +85,7 @@ impl TOTP {
     /// ```
     /// use rusotp::{Secret, TOTP};
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     ///
     /// let totp = TOTP::default(secret);
     /// ```
@@ -113,7 +113,7 @@ impl TOTP {
     /// ```
     /// use rusotp::{Secret, TOTP};
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     ///
     /// let totp = TOTP::rfc6238_default(secret);
     /// ```
@@ -134,7 +134,7 @@ impl TOTP {
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
@@ -170,7 +170,7 @@ impl TOTP {
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
@@ -207,7 +207,7 @@ impl TOTP {
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
@@ -246,7 +246,7 @@ impl TOTP {
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
@@ -318,7 +318,7 @@ impl TOTP {
     /// use rusotp::{Radix, Secret, TOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     /// let interval = NonZeroU64::new(30).unwrap();
@@ -380,12 +380,10 @@ impl TOTP {
 
         for param in params {
             if let Some((key, value)) = param.split_once('=') {
-                if key == "secret" {
-                    if !value.is_empty() {
-                        secret = Some(Secret::from_vec(
-                            Base32::decode_vec(urlencoding::decode(value).unwrap().trim()).unwrap(),
-                        ))
-                    }
+                if key == "secret" && !value.is_empty() {
+                    secret = Some(Secret::new_from_vec(
+                        Base32::decode_vec(urlencoding::decode(value).unwrap().trim()).unwrap(),
+                    ))
                 }
             }
         }

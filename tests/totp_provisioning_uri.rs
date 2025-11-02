@@ -22,7 +22,7 @@ const NAME: &str = "user@email.mail";
 fn provisioning_uri_should_be_correct() {
     let totp = TOTP::new(
         Algorithm::SHA1,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -41,7 +41,7 @@ fn provisioning_uri_should_be_correct() {
 fn provisioning_uri_should_be_correct_if_issuer_is_empty() {
     let totp = TOTP::new(
         Algorithm::SHA1,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -57,7 +57,7 @@ fn provisioning_uri_should_be_correct_if_issuer_is_empty() {
 fn provisioning_uri_should_fail_with_sha256() {
     let totp = TOTP::new(
         Algorithm::SHA256,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -73,7 +73,7 @@ fn provisioning_uri_should_fail_with_sha256() {
 fn provisioning_uri_should_fail_with_sha512() {
     let totp = TOTP::new(
         Algorithm::SHA512,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -88,7 +88,7 @@ fn provisioning_uri_should_fail_with_sha512() {
 fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZero::new(5).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -104,7 +104,7 @@ fn provisioning_uri_should_fail_with_otp_length_less_than_6() {
 fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZero::new(7).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -120,7 +120,7 @@ fn provisioning_uri_should_fail_with_otp_length_more_than_6() {
 fn provisioning_uri_should_fail_with_radix_less_than_10() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(9).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -136,7 +136,7 @@ fn provisioning_uri_should_fail_with_radix_less_than_10() {
 fn provisioning_uri_should_fail_with_radix_more_than_10() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(11).unwrap(),
         NonZero::new(INTERVAL).unwrap(),
@@ -152,7 +152,7 @@ fn provisioning_uri_should_fail_with_radix_more_than_10() {
 fn provisioning_uri_should_fail_with_interval_less_than_30() {
     let totp = TOTP::new(
         ALGORITHM,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZero::new(LENGTH).unwrap(),
         Radix::new(RADIX).unwrap(),
         NonZero::new(29).unwrap(),

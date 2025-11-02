@@ -8,7 +8,7 @@
 use rusotp::{Secret, HOTP};
 
 fn main() {
-    let secret = Secret::from_str("1234567890").unwrap();
+    let secret = Secret::new_from_str("1234567890").unwrap();
 
     let hotp = HOTP::default(secret);
 

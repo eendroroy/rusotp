@@ -33,9 +33,9 @@ pub(crate) fn to_hotp(config: HotpConfig) -> HOTP {
 
     HOTP::new(
         Algorithm::from_string(to_string(config.algorithm)).unwrap(),
-        Secret::from_str(to_str(config.secret)).unwrap(), // TODO
-        NonZeroU8::new(config.length as u8).unwrap(),     // TODO
-        Radix::new(config.radix as u8).unwrap(),          // TODO
+        Secret::new_from_str(to_str(config.secret)).unwrap(), // TODO
+        NonZeroU8::new(config.length as u8).unwrap(),         // TODO
+        Radix::new(config.radix as u8).unwrap(),              // TODO
     )
 }
 
@@ -49,10 +49,10 @@ pub(crate) fn to_totp(config: TotpConfig) -> TOTP {
 
     TOTP::new(
         Algorithm::from_string(to_string(config.algorithm)).unwrap(),
-        Secret::from_str(to_str(config.secret)).unwrap(), // TODO
-        NonZeroU8::new(config.length as u8).unwrap(),     // TODO
-        Radix::new(config.radix as u8).unwrap(),          // TODO
-        NonZeroU64::new(config.interval).unwrap(),        // TODO
+        Secret::new_from_str(to_str(config.secret)).unwrap(), // TODO
+        NonZeroU8::new(config.length as u8).unwrap(),         // TODO
+        Radix::new(config.radix as u8).unwrap(),              // TODO
+        NonZeroU64::new(config.interval).unwrap(),            // TODO
     )
 }
 

@@ -12,7 +12,7 @@ const ALGORITHM: Algorithm = Algorithm::SHA1;
 const COUNTER: u64 = 1;
 
 fn main() {
-    let secret = Secret::from_str("12345678901234567890").unwrap();
+    let secret = Secret::new_from_str("12345678901234567890").unwrap();
     let radix = Radix::new(10).unwrap();
 
     // Generate an OTP

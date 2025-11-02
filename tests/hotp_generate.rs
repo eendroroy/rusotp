@@ -22,7 +22,7 @@ fn otp_should_be_generated() {
         .for_each(|(algorithm, length, radix, counter)| {
             let hotp = HOTP::new(
                 *algorithm,
-                Secret::from_str(secret).unwrap(),
+                Secret::new_from_str(secret).unwrap(),
                 NonZero::new(*length).unwrap(),
                 Radix::new(*radix).unwrap(),
             );
@@ -36,8 +36,8 @@ fn otp_should_be_generated() {
 fn otp_should_be_generated_with_defaults() {
     let secret = "12345678901234567890";
     let counters = [10, 16, 24, 36];
-    let hotp = HOTP::default(Secret::from_str(secret).unwrap());
-    let hotp_default = HOTP::rfc4226_default(Secret::from_str(secret).unwrap());
+    let hotp = HOTP::default(Secret::new_from_str(secret).unwrap());
+    let hotp_default = HOTP::rfc4226_default(Secret::new_from_str(secret).unwrap());
 
     counters.iter().for_each(|counter| {
         let result = hotp.generate(*counter);
@@ -58,7 +58,7 @@ fn otp_should_be_generated_from_uri() {
     let uri =
         "otpauth://hotp/rusotp%3Aeendroroy%40rusotp?secret=gezdgnbvgy3tqojqgezdgnbvgy3tqojq&counter=0&issuer=rusotp";
     let counters = [10, 16, 24, 36];
-    let hotp_raw = HOTP::default(Secret::from_str(secret).unwrap());
+    let hotp_raw = HOTP::default(Secret::new_from_str(secret).unwrap());
     let hotp_parsed = HOTP::from_uri(uri).unwrap();
 
     counters.iter().for_each(|counter| {

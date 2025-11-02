@@ -28,14 +28,14 @@ impl Secret {
     /// # Errors
     ///
     /// Returns `SecretError` if the input string is empty.
-    pub fn from_str(secret: &str) -> SecretResult<Self> {
+    pub fn new_from_str(secret: &str) -> SecretResult<Self> {
         if secret.is_empty() {
             return Err(SecretError);
         }
         Ok(Self(secret.as_bytes().to_vec()))
     }
 
-    pub fn from_vec(secret: Vec<u8>) -> Secret {
+    pub fn new_from_vec(secret: Vec<u8>) -> Secret {
         Self(secret)
     }
 

@@ -16,7 +16,7 @@ const RADIX: u8 = 10;
 fn should_not_get_verified_with_otp_length_not_matched() {
     let hotp = HOTP::new(
         ALGORITHM,
-        Secret::from_str("12345678901234567890").unwrap(),
+        Secret::new_from_str("12345678901234567890").unwrap(),
         NonZeroU8::new(6).unwrap(),
         Radix::new(RADIX).unwrap(),
     );
@@ -39,7 +39,7 @@ fn wrong_otp_should_not_get_verified() {
         .for_each(|(algorithm, length, radix, counter)| {
             let hotp = HOTP::new(
                 *algorithm,
-                Secret::from_str(secret).unwrap(),
+                Secret::new_from_str(secret).unwrap(),
                 NonZero::new(*length).unwrap(),
                 Radix::new(*radix).unwrap(),
             );
@@ -64,7 +64,7 @@ fn otp_get_verified_with_retries() {
         .for_each(|(algorithm, length, radix, counter, retry)| {
             let hotp = HOTP::new(
                 *algorithm,
-                Secret::from_str(secret).unwrap(),
+                Secret::new_from_str(secret).unwrap(),
                 NonZero::new(*length).unwrap(),
                 Radix::new(*radix).unwrap(),
             );

@@ -30,7 +30,7 @@ use std::num::NonZeroU8;
 /// use rusotp::{Radix, Secret, HOTP};
 /// use rusotp::Algorithm;
 ///
-/// let secret = Secret::from_str("12345678901234567890").unwrap();
+/// let secret = Secret::new_from_str("12345678901234567890").unwrap();
 /// let radix = Radix::new(10).unwrap();
 /// let length = NonZeroU8::new(6).unwrap();
 ///
@@ -67,7 +67,7 @@ impl HOTP {
     /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     ///
@@ -94,7 +94,7 @@ impl HOTP {
     /// ```
     /// use rusotp::{Secret, HOTP};
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     ///
     /// let hotp = HOTP::default(secret);
     /// ```
@@ -116,7 +116,7 @@ impl HOTP {
     /// ```
     /// use rusotp::{Secret, HOTP};
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     ///
     /// let hotp = HOTP::rfc4226_default(secret);
     /// ```
@@ -142,7 +142,7 @@ impl HOTP {
     /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     ///
@@ -177,7 +177,7 @@ impl HOTP {
     /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     ///
@@ -227,7 +227,7 @@ impl HOTP {
     /// use rusotp::{Radix, Secret, HOTP};
     /// use rusotp::Algorithm;
     ///
-    /// let secret = Secret::from_str("12345678901234567890").unwrap();
+    /// let secret = Secret::new_from_str("12345678901234567890").unwrap();
     /// let radix = Radix::new(10).unwrap();
     /// let length = NonZeroU8::new(6).unwrap();
     ///
@@ -290,12 +290,10 @@ impl HOTP {
 
         for param in params {
             if let Some((key, value)) = param.split_once('=') {
-                if key == "secret" {
-                    if !value.is_empty() {
-                        secret = Some(Secret::from_vec(
-                            Base32::decode_vec(urlencoding::decode(value).unwrap().trim()).unwrap(),
-                        ))
-                    }
+                if key == "secret" && !value.is_empty() {
+                    secret = Some(Secret::new_from_vec(
+                        Base32::decode_vec(urlencoding::decode(value).unwrap().trim()).unwrap(),
+                    ))
                 }
             }
         }
