@@ -8,8 +8,8 @@
 use crate::otp::algorithm::Algorithm;
 use crate::otp::base::otp;
 use crate::{
-    AfterError, DriftBehindError, OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedIntervalError,
-    UnsupportedLengthError, UnsupportedRadixError,
+    AfterError, DriftBehindError, InvalidSecretError, OtpResult, Radix, Secret, UnsupportedAlgorithmError,
+    UnsupportedIntervalError, UnsupportedLengthError, UnsupportedRadixError,
 };
 use base32ct::{Base32, Encoding};
 use std::num::{NonZeroU64, NonZeroU8};
@@ -25,11 +25,11 @@ use std::num::{NonZeroU64, NonZeroU8};
 /// * `interval` - The time interval in seconds for TOTP generation.
 #[derive(Debug, PartialEq)]
 pub struct TOTP {
-    algorithm: Algorithm,
-    secret: Secret,
-    length: NonZeroU8,
-    radix: Radix,
-    interval: NonZeroU64,
+    pub(crate) algorithm: Algorithm,
+    pub(crate) secret: Secret,
+    pub(crate) length: NonZeroU8,
+    pub(crate) radix: Radix,
+    pub(crate) interval: NonZeroU64,
 }
 
 impl TOTP {
@@ -344,6 +344,57 @@ impl TOTP {
                 urlencoding::encode(issuer)
             ))
         }
+    }
+
+    /// Parse an `otpauth://totp/...` provisioning URI and construct a `TOTP` instance.
+    ///
+    /// This function extracts query parameters from the provided `uri` and builds a `TOTP`
+    /// configured with RFC 6238 defaults (Algorithm: SHA1, Length: 6, Radix: 10, Interval: 30)
+    /// except for the `secret` which is taken from the URI. The following query keys are recognized:
+    /// - `secret` (required): Base32-encoded shared secret. Must be present and non-empty.
+    /// - `issuer` (optional): Issuer string (ignored by this constructor other than parsing).
+    ///
+    /// # Arguments:
+    /// * `uri` - A provisioning URI string in the `otpauth` TOTP format, e.g.
+    ///   `otpauth://totp/Label?secret=BASE32SECRET&issuer=Example`.
+    ///
+    /// # Returns:
+    /// * `Ok(TOTP)` on success (uses RFC6238 defaults except for the provided secret).
+    /// * `Err` if the `secret` parameter is missing or if decoding fails (note: current
+    ///   implementation may panic on invalid encoding instead of returning an `Err`).
+    ///
+    /// # Example:
+    /// ```rust
+    /// use rusotp::TOTP;
+    ///
+    /// // Example URI with a Base32 secret for "1234"
+    /// let uri = "otpauth://totp/rusotp%3Aeendroroy%40rusotp?secret=gezdgna=&issuer=rusotp";
+    /// let hotp = TOTP::from_uri(uri).unwrap();
+    /// let otp = hotp.generate().unwrap();
+    /// assert_eq!(otp.len(), 6);
+    /// ```
+    pub fn from_uri(uri: &str) -> OtpResult<TOTP> {
+        let params = uri.split('?').next_back().unwrap().split('&');
+
+        let mut secret: Option<Secret> = None;
+
+        for param in params {
+            if let Some((key, value)) = param.split_once('=') {
+                if key == "secret" {
+                    if !value.is_empty() {
+                        secret = Some(Secret::from_vec(
+                            Base32::decode_vec(urlencoding::decode(value).unwrap().trim()).unwrap(),
+                        ))
+                    }
+                }
+            }
+        }
+
+        if secret.is_none() {
+            return Err(Box::new(InvalidSecretError()));
+        }
+
+        Ok(TOTP::default(secret.ok_or(InvalidSecretError()).unwrap()))
     }
 
     fn time_code(&self, timestamp: u64) -> u64 {

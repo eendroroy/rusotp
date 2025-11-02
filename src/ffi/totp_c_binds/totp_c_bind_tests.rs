@@ -6,7 +6,9 @@
 // See the file LICENSE for details.
 
 use super::*;
+use crate::ffi::converter::to_string;
 use std::ffi::CString;
+use std::ptr::null;
 
 fn make_config() -> TotpConfig {
     TotpConfig {
@@ -64,4 +66,47 @@ fn test_totp_provisioning_uri() {
         to_str(uri_ptr.data),
         "otpauth://totp/TestIssuer%3ATestUser?secret=jjbfgv2zgncfarkikbftgucyka======&issuer=TestIssuer"
     );
+}
+
+#[test]
+fn test_totp_from_uri() {
+    let config = make_config();
+    let issuer = CString::new("testissuer").unwrap();
+    let user = CString::new("testuser").unwrap();
+    let uri = totp_provisioning_uri(config, issuer.as_ptr(), user.as_ptr());
+    assert!(uri.success);
+    assert!(to_string(uri.data).contains("otpauth://totp/"));
+
+    let config_parsed = totp_from_uri(uri.data);
+
+    unsafe {
+        assert_eq!(to_string((*config_parsed.data).algorithm), to_string(config.algorithm));
+        assert_eq!(to_string((*config_parsed.data).secret), to_string(config.secret));
+        assert_eq!((*config_parsed.data).length, config.length);
+        assert_eq!((*config_parsed.data).radix, config.radix);
+        assert_eq!((*config_parsed.data).interval, config.interval);
+    }
+}
+
+#[test]
+fn test_totp_from_uri_fail() {
+    let config = make_config();
+    let issuer = CString::new("testissuer").unwrap();
+    let user = CString::new("testuser").unwrap();
+    let uri = totp_provisioning_uri(config, issuer.as_ptr(), user.as_ptr());
+    assert!(uri.success);
+    assert!(to_string(uri.data).contains("otpauth://totp/"));
+
+    let config_parsed = totp_from_uri(uri.data);
+
+    unsafe {
+        assert_eq!(to_string((*config_parsed.data).algorithm), to_string(config.algorithm));
+        assert_eq!(to_string((*config_parsed.data).secret), to_string(config.secret));
+        assert_eq!((*config_parsed.data).length, config.length);
+        assert_eq!((*config_parsed.data).radix, config.radix);
+        assert_eq!((*config_parsed.data).interval, config.interval);
+    }
+
+    let fail_result = totp_from_uri(null());
+    assert_eq!(to_string(fail_result.error), "URI is null");
 }

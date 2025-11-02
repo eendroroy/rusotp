@@ -77,6 +77,18 @@ struct TotpConfig {
   unsigned long long interval;
 };
 
+/// FFI-safe result type for operations returning a `TotpConfig` pointer.
+///
+/// # Fields
+/// - `success`: Indicates if the operation was successful.
+/// - `data`: Pointer to a `TotpConfig` (valid if `success` is true).
+/// - `error`: Pointer to a C string containing the error message (valid if `success` is false).
+struct TotpConfigResult {
+  bool success;
+  const TotpConfig *data;
+  const char *error;
+};
+
 extern "C" {
 
 /// Generates an HOTP (HMAC-based One-Time Password) based on the provided configuration and counter.
@@ -398,5 +410,7 @@ BoolResult totp_verify_at(TotpConfig config,
 StringResult totp_provisioning_uri(TotpConfig config,
                                    const char *issuer,
                                    const char *name);
+
+TotpConfigResult totp_from_uri(const char *uri);
 
 }  // extern "C"

@@ -5,12 +5,14 @@
 //
 // See the file LICENSE for details.
 
-use crate::ffi::converter::{to_str, to_totp};
+use crate::otp::algorithm::AlgorithmTrait;
+use crate::ffi::converter::{to_cstr, to_str, to_totp};
 use crate::ffi::{
-    error_bool_result, error_string_result, success_bool_result, success_string_result, BoolResult, StringResult,
-    TotpConfig,
+    error_bool_result, error_string_result, error_totp_config_result, success_bool_result,
+    success_string_result, success_totp_config_result, BoolResult, StringResult, TotpConfig, TotpConfigResult,
 };
-use std::ffi::{c_char, c_ulonglong};
+use crate::TOTP;
+use std::ffi::{c_char, c_ulonglong, c_ushort};
 
 /// Generates a TOTP (Time-based One-Time Password) based on the provided configuration for the current time.
 ///
@@ -259,6 +261,24 @@ pub extern "C" fn totp_provisioning_uri(
         match to_totp(config).provisioning_uri(to_str(issuer), to_str(name)) {
             Ok(uri) => success_string_result(uri.as_str()),
             Err(e) => error_string_result(e.to_string().as_str()),
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn totp_from_uri(uri: *const c_char) -> TotpConfigResult {
+    if uri.is_null() {
+        error_totp_config_result("URI is null")
+    } else {
+        match TOTP::from_uri(to_str(uri)) {
+            Ok(totp) => success_totp_config_result(TotpConfig {
+                algorithm: to_cstr(totp.algorithm.to_string().as_str()),
+                secret: to_cstr(totp.secret.string().as_str()),
+                length: totp.length.get() as c_ushort,
+                radix: totp.radix.get() as c_ushort,
+                interval: totp.interval.get() as c_ulonglong,
+            }),
+            Err(e) => error_totp_config_result(e.to_string().as_str()),
         }
     }
 }

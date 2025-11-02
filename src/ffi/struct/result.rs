@@ -6,7 +6,7 @@
 // See the file LICENSE for details.
 
 use crate::ffi::converter::to_cstr;
-use crate::ffi::HotpConfig;
+use crate::ffi::{HotpConfig, TotpConfig};
 use std::ffi::c_char;
 use std::ptr::null;
 
@@ -96,6 +96,36 @@ pub(crate) fn success_hotp_config_result(data: HotpConfig) -> HotpConfigResult {
     HotpConfigResult {
         success: true,
         data: Box::into_raw(Box::new(data)) as *const HotpConfig,
+        error: null(),
+    }
+}
+
+/// FFI-safe result type for operations returning a `TotpConfig` pointer.
+///
+/// # Fields
+/// - `success`: Indicates if the operation was successful.
+/// - `data`: Pointer to a `TotpConfig` (valid if `success` is true).
+/// - `error`: Pointer to a C string containing the error message (valid if `success` is false).
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct TotpConfigResult {
+    pub success: bool,
+    pub data: *const TotpConfig,
+    pub error: *const c_char,
+}
+
+pub(crate) fn error_totp_config_result(error: &str) -> TotpConfigResult {
+    TotpConfigResult {
+        success: false,
+        data: null(),
+        error: to_cstr(error),
+    }
+}
+
+pub(crate) fn success_totp_config_result(data: TotpConfig) -> TotpConfigResult {
+    TotpConfigResult {
+        success: true,
+        data: Box::into_raw(Box::new(data)) as *const TotpConfig,
         error: null(),
     }
 }

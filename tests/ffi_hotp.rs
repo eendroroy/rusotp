@@ -124,3 +124,26 @@ fn test_hotp_from_uri_fail() {
     .stdout("")
     .stderr("Invalid secret");
 }
+
+#[test]
+#[cfg(not(any(target_os = "windows")))]
+fn test_hotp_from_uri_null_fail() {
+    assert_cxx! {
+        #include <stdio.h>
+        #include "contrib/rusotp.hpp"
+
+        int main() {
+            HotpConfigResult config_parsed = hotp_from_uri(NULL);
+
+            if (!config_parsed.success) {
+                fprintf(stderr, "%s", config_parsed.error);
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
+    .failure()
+    .stdout("")
+    .stderr("URI is null");
+}

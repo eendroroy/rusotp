@@ -8,6 +8,7 @@
 use super::*;
 use crate::ffi::converter::to_string;
 use std::ffi::CString;
+use std::ptr::null;
 
 fn make_config() -> HotpConfig {
     HotpConfig {
@@ -53,6 +54,9 @@ fn test_hotp_from_uri() {
         assert_eq!((*config_parsed.data).length, config.length);
         assert_eq!((*config_parsed.data).radix, config.radix);
     }
+
+    let fail_result = hotp_from_uri(null());
+    assert_eq!(to_string(fail_result.error), "URI is null");
 }
 
 #[test]

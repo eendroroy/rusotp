@@ -87,7 +87,7 @@ fn test_totp_verify_at() {
 
 #[test]
 #[cfg(not(any(target_os = "windows")))]
-fn test_hotp_provisioning_uri() {
+fn test_totp_provisioning_uri() {
     assert_cxx! {
         #include <stdio.h>
         #include "contrib/rusotp.hpp"
@@ -100,4 +100,74 @@ fn test_hotp_provisioning_uri() {
     }
     .success()
     .stdout("otpauth://totp/rusotp%3Auser%40email.mail?secret=gezdgnbvgy3tqojqgezdgnbvgy3tqojq&issuer=rusotp");
+}
+
+#[test]
+#[cfg(not(any(target_os = "windows")))]
+fn test_totp_from_uri() {
+    assert_cxx! {
+        #include <stdio.h>
+        #include "contrib/rusotp.hpp"
+
+        int main() {
+            TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
+
+            StringResult uri = totp_provisioning_uri(config, "rusotp", "rusotp");
+            TotpConfigResult config_parsed = totp_from_uri(uri.data);
+
+            printf("%s (%llu) == %s (%llu)", config_parsed.data->secret, config_parsed.data->interval, config.secret, config.interval);
+
+            return 0;
+        }
+    }
+    .success()
+    .stdout("12345678901234567890 (30) == 12345678901234567890 (30)")
+    .stderr("");
+}
+
+#[test]
+#[cfg(not(any(target_os = "windows")))]
+fn test_totp_from_uri_fail() {
+    assert_cxx! {
+        #include <stdio.h>
+        #include "contrib/rusotp.hpp"
+
+        int main() {
+            char uri[] = "otpauth://totp/rusotp%3Arusotp?secret=&issuer=rusotp";
+            TotpConfigResult config_parsed = totp_from_uri(uri);
+
+            if (!config_parsed.success) {
+                fprintf(stderr, "%s", config_parsed.error);
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
+    .failure()
+    .stdout("")
+    .stderr("Invalid secret");
+}
+
+#[test]
+#[cfg(not(any(target_os = "windows")))]
+fn test_totp_from_uri_null_fail() {
+    assert_cxx! {
+        #include <stdio.h>
+        #include "contrib/rusotp.hpp"
+
+        int main() {
+            TotpConfigResult config_parsed = totp_from_uri(NULL);
+
+            if (!config_parsed.success) {
+                fprintf(stderr, "%s", config_parsed.error);
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
+    .failure()
+    .stdout("")
+    .stderr("URI is null");
 }
