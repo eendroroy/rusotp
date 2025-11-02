@@ -5,13 +5,14 @@
 //
 // See the file LICENSE for details.
 
-use rusotp::{Secret, TOTP};
+use rusotp::{generate_qr_code_image, Secret, TOTP};
 
 fn main() {
-    let secret = Secret::new_from_str("1234567890").unwrap();
+    let secret = Secret::new_from_str("1238*&^$*&JHGHJI^&@#^&*%%^*&hj1HJV761298").unwrap();
 
     let totp = TOTP::default(secret);
 
-    // otpauth://totp/Github%3Auser%40github.com?secret=1234567890&issuer=Github
-    println!("{}", totp.provisioning_uri("Github", "user@github.com").unwrap());
+    let data = totp.provisioning_uri("Github", "user@github.com").unwrap();
+    println!("{}", data);
+    generate_qr_code_image(data.clone(), "./code.png".to_string());
 }

@@ -7,6 +7,7 @@
 
 mod otp;
 mod r#type;
+mod util;
 
 pub mod ffi;
 
@@ -17,3 +18,5 @@ pub use otp::totp::TOTP;
 pub use r#type::otp_error::*;
 pub use r#type::radix::*;
 pub use r#type::secret::*;
+pub use util::qr_code::generate_qr_code_string;
+pub use util::qr_code::generate_qr_code_image;
