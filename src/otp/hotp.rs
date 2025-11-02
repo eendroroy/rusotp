@@ -284,21 +284,18 @@ impl HOTP {
     /// assert_eq!(otp.len(), 6);
     /// ```
     pub fn from_uri(uri: &str) -> OtpResult<HOTP> {
-        let params = uri.split('?').last().unwrap().split('&');
+        let params = uri.split('?').next_back().unwrap().split('&');
 
         let mut secret: Option<Secret> = None;
 
         for param in params {
             if let Some((key, value)) = param.split_once('=') {
-                match key {
-                    "secret" => {
-                        if !value.is_empty() {
-                            secret = Some(Secret::from_vec(
-                                Base32::decode_vec(urlencoding::decode(value).unwrap().trim()).unwrap(),
-                            ))
-                        }
+                if key == "secret" {
+                    if !value.is_empty() {
+                        secret = Some(Secret::from_vec(
+                            Base32::decode_vec(urlencoding::decode(value).unwrap().trim()).unwrap(),
+                        ))
                     }
-                    _ => {}
                 }
             }
         }
