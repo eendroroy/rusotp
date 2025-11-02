@@ -6,9 +6,9 @@
 // See the file LICENSE for details.
 
 use crate::otp::algorithm::Algorithm;
-use crate::otp::algorithm::AlgorithmTrait;
 use crate::otp::base::otp;
-use crate::{OtpResult, Radix, Secret};
+use crate::{OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedLengthError, UnsupportedRadixError};
+use base32ct::{Base32, Encoding};
 use std::num::NonZeroU8;
 
 /// Represents an HOTP (HMAC-based One-Time Password) generator.
@@ -233,21 +233,20 @@ impl HOTP {
     /// println!("Provisioning URI: {}", uri);
     /// ```
     pub fn provisioning_uri(&self, issuer: &str, user: &str, counter: u64) -> OtpResult<String> {
-        let mut uri = format!(
-            "otpauth://hotp/{}:{}?secret={}&algorithm={}&length={}&counter={}&issuer={}",
-            urlencoding::encode(issuer),
-            urlencoding::encode(user),
-            urlencoding::encode(&self.secret.clone().string()),
-            self.algorithm.to_string(),
-            self.length.get(),
-            counter,
-            issuer
-        );
-
-        if self.radix.get() != 10 {
-            uri = format!("{}&radix={}", uri, self.radix.get());
+        if self.length.get() != 6 {
+            Err(Box::new(UnsupportedLengthError(self.length.get())))
+        } else if self.radix.get() != 10 {
+            Err(Box::new(UnsupportedRadixError(self.radix.get())))
+        } else if self.algorithm != Algorithm::SHA1 {
+            Err(Box::new(UnsupportedAlgorithmError(self.algorithm)))
+        } else {
+            Ok(format!(
+                "otpauth://hotp/{}?secret={}&counter={}&issuer={}",
+                urlencoding::encode(&format!("{}:{}", issuer, user)),
+                Base32::encode_string(&self.secret.clone().get()),
+                counter,
+                issuer
+            ))
         }
-
-        Ok(uri)
     }
 }

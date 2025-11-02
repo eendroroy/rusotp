@@ -23,7 +23,7 @@ fn main() {
     let stdin = stdin();
     let stdout = &mut stdout().into_raw_mode().unwrap();
 
-    let secret = Secret::new("secret").unwrap();
+    let secret = Secret::new("1238*&^$*&JHGHJI^&@#^&*%%^*&hj1HJV761298").unwrap();
     let mut counter = 0;
     let mut length = NonZeroU8::new(6).unwrap();
     let mut radix = Radix::new(10).unwrap();

@@ -11,6 +11,7 @@ use crate::{
     AfterError, DriftBehindError, OtpResult, Radix, Secret, UnsupportedAlgorithmError, UnsupportedIntervalError,
     UnsupportedLengthError, UnsupportedRadixError,
 };
+use base32ct::{Base32, Encoding};
 use std::num::{NonZeroU64, NonZeroU8};
 
 /// Represents a TOTP (Time-based One-Time Password) generator.
@@ -300,7 +301,7 @@ impl TOTP {
     /// # Arguments
     ///
     /// * `issuer` - The issuer of the TOTP as a string.
-    /// * `name` - The name of the user or account as a string.
+    /// * `user` - The name of the user or account as a string.
     ///
     /// # Returns
     ///
@@ -326,7 +327,7 @@ impl TOTP {
     /// let uri = totp.provisioning_uri("ExampleIssuer", "example@example.com").unwrap();
     /// println!("Provisioning URI: {}", uri);
     /// ```
-    pub fn provisioning_uri(&self, issuer: &str, name: &str) -> OtpResult<String> {
+    pub fn provisioning_uri(&self, issuer: &str, user: &str) -> OtpResult<String> {
         if self.interval.get() < 30 {
             Err(Box::new(UnsupportedIntervalError(self.interval.get())))
         } else if self.length.get() != 6 {
@@ -336,23 +337,12 @@ impl TOTP {
         } else if self.algorithm != Algorithm::SHA1 {
             Err(Box::new(UnsupportedAlgorithmError(self.algorithm)))
         } else {
-            let issuer_str = if !issuer.is_empty() {
-                format!("{}{}", urlencoding::encode(issuer), urlencoding::encode(":"))
-            } else {
-                String::new()
-            };
-
-            let query = if !issuer.is_empty() {
-                format!(
-                    "secret={}&issuer={}",
-                    urlencoding::encode(&String::from_utf8_lossy(&self.secret.clone().get())),
-                    urlencoding::encode(issuer)
-                )
-            } else {
-                format!("secret={}", urlencoding::encode(&String::from_utf8_lossy(&self.secret.clone().get())),)
-            };
-
-            Ok(format!("otpauth://totp/{}{}?{}", issuer_str, urlencoding::encode(name), query))
+            Ok(format!(
+                "otpauth://totp/{}?secret={}&issuer={}",
+                urlencoding::encode(&format!("{}:{}", issuer, user)),
+                Base32::encode_string(&self.secret.clone().get()),
+                issuer
+            ))
         }
     }
 
