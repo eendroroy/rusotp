@@ -159,7 +159,7 @@ int main() {
   bash demonstrate.sh
 ```
 
-#### Run a line demo using 
+#### Run a live demo
 
 ```shell
   cargo demo
