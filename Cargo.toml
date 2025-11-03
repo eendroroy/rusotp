@@ -50,3 +50,9 @@ cbindgen = "=0.29.2"
 [[bench]]
 name = "hotp"
 harness = false
+
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "vendor"

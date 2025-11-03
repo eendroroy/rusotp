@@ -12,7 +12,7 @@ fn main() {
 
     let totp = TOTP::default(secret);
 
-    let data = totp.provisioning_uri("Github", "user@github.com").unwrap();
+    let data = totp.provisioning_uri("Rusotp", "user@rusotp.com").unwrap();
     println!("{}", data);
     generate_qr_code_image(data.clone(), "./code.png".to_string());
 }

@@ -40,7 +40,7 @@ const ALGORITHM: Algorithm = Algorithm::SHA1;
 const COUNTER: u64 = 1;
 
 fn main() {
-    let secret = Secret::new("12345678901234567890").unwrap();
+    let secret = Secret::new_from_str("12345678901234567890").unwrap();
     let radix = Radix::new(10).unwrap();
 
     // Generate an OTP
@@ -53,8 +53,7 @@ fn main() {
     println!("Is OTP valid? {}", is_valid.is_some());
 
     // Generate provisioning URI
-    const ISSUER: &str = "MyService";
-    let uri = hotp.provisioning_uri(ISSUER, COUNTER).unwrap();
+    let uri = hotp.provisioning_uri("Rusotp", "otp@rusotp", COUNTER).unwrap();
     println!("Provisioning URI: {}", uri);
 }
 ```
@@ -71,7 +70,7 @@ const INTERVAL: u64 = 30;
 
 fn main() {
     let radix = Radix::new(10).unwrap();
-    let secret = Secret::new("12345678901234567890").unwrap();
+    let secret = Secret::new_from_str("12345678901234567890").unwrap();
 
     // Generate an OTP
     let totp = TOTP::new(ALGORITHM, secret, NonZero::new(LENGTH).unwrap(), radix, NonZero::new(INTERVAL).unwrap());
@@ -99,21 +98,29 @@ fn main() {
 #include "rusotp.hpp"
 
 int main() {
-    HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
-    unsigned long counter = 2;
-    
+    TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
+    unsigned long timestamp = 10000;
+
     // Generate an OTP
-    StringResult otp = hotp_generate(config, counter);
-    printf("HOTP : %s\n", otp.data);
-    
+    StringResult otp_now =  totp_generate(config);
+    printf("NOW: %s\n", otp_now.data);
+
     // Verify an OTP
-    const char *verified = hotp_verify(config, otp.data, counter, 0).data ? "true" : "false";
+    const char *verified = totp_verify(config, otp_now.data, 0, 0, 0).data ? "true" : "false";
     printf("VERIFIED : %s\n", verified);
-    
+
+    // Generate an OTP at given timestamp
+    StringResult otp_at = totp_generate_at(config, timestamp);
+    printf("AT: %s\n", otp_at.data);
+
+    // Verify an OTP generated at given timestamp
+    const char *verified_at = totp_verify_at(config, otp_at.data, timestamp, 0, 0, 0).data ? "true" : "false";
+    printf("VERIFIED : %s\n", verified_at);
+
     // Generate provisioning URI
-    StringResult uri = hotp_provisioning_uri(config, "rusotp", counter);
-    printf("URI : %s\n", uri.data);
-    
+    StringResult provisioning_uri = totp_provisioning_uri(config, "rusotp", "user@email.mail");
+    printf("URI : %s\n", provisioning_uri.data);
+
     return 0;
 }
 ```
@@ -125,32 +132,56 @@ int main() {
 #include "rusotp.hpp"
 
 int main() {
-    TotpConfig config = {"SHA1", "12345678901234567890", 6, 10, 30};
-    unsigned long timestamp = 10000;
-    
+    HotpConfig config = {"SHA1", "12345678901234567890", 6, 10};
+    unsigned long counter = 2;
+
     // Generate an OTP
-    StringResult otp_now =  totp_generate(config);
-    printf("NOW: %s\n", otp_now.data);
-    
+    StringResult otp = hotp_generate(config, counter);
+    printf("HOTP : %s\n", otp.data);
+
     // Verify an OTP
-    const char *verified = totp_verify(config, otp_now.data, 0, 0, 0).data ? "true" : "false";
+    const char *verified = hotp_verify(config, otp.data, counter, 0).data ? "true" : "false";
     printf("VERIFIED : %s\n", verified);
-    
-    // Generate an OTP at given timestamp
-    StringResult otp_at = totp_generate_at(config, timestamp);
-    printf("AT: %s\n", otp_at.data);
-    
-    // Verify an OTP generated at given timestamp
-    const char *verified_at = totp_verify_at(config, otp_at.data, timestamp, 0, 0, 0).data ? "true" : "false";
-    printf("VERIFIED : %s\n", verified_at);
-    
+
     // Generate provisioning URI
-    StringResult provisioning_uri = totp_provisioning_uri(config, "rusotp", "user@email.mail");
-    printf("URI : %s\n", provisioning_uri.data);
-    
+    StringResult uri = hotp_provisioning_uri(config, "rusotp", "user@rusotp.com", counter);
+    printf("URI : %s\n", uri.data);
+
     return 0;
 }
 ```
+
+### Demonstration
+
+#### Execute `demonstrate.sh` file to run the `c` examples (`contrib/hotp_fn.cpp` and `contrib/totp_fn.cpp`).
+
+```shell
+  bash demonstrate.sh
+```
+
+#### Run a line demo using 
+
+```shell
+  cargo demo
+```
+
+Scan the below QR code in any Authenticator App 
+(i.e. 
+[Google Authenticator](https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2)
+or
+[Microsoft Authenticator](https://play.google.com/store/apps/details?id=com.azure.authenticator)
+)
+and check the matching `TOTP` displayed in `demo` program and Authenticator App. 
+
+![code.png](code.png)
+
+_Note: You can also generate a QR Code yourself by modifying `examples/totp_provisioning_uri.rs` and running below command:_
+
+```shell
+  cargo run --example totp_provisioning_uri
+```
+
+# :)
 
 ## Documentation
 

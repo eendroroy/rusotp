@@ -153,11 +153,11 @@ fn main() {
         *t_otp_at = totp.generate_at(counter).unwrap();
         *h_otp = hotp.generate(counter).unwrap();
 
-        *t_uri = match &mut totp.provisioning_uri("RUSOTP", "RUSOTP") {
+        *t_uri = match &mut totp.provisioning_uri("Rusotp", "user@rusotp.com") {
             Ok(uri) => uri.parse().unwrap(),
             Err(e) => e.to_string().parse().unwrap(),
         };
-        *h_uri = match &mut hotp.provisioning_uri("RUSOTP", "RUSOTP", counter) {
+        *h_uri = match &mut hotp.provisioning_uri("Rusotp", "user@rusotp.com", counter) {
             Ok(uri) => uri.parse().unwrap(),
             Err(e) => e.to_string().parse().unwrap(),
         };

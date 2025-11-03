@@ -25,7 +25,7 @@ fn main() {
             printf("VERIFIED : %s\n", verified);
 
             // Generate provisioning URI
-            StringResult uri = hotp_provisioning_uri(config, "rusotp", counter);
+            StringResult uri = hotp_provisioning_uri(config, "rusotp", "user@rusotp.com", counter);
             printf("URI : %s\n", uri.data);
 
             return 0;
