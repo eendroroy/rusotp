@@ -200,8 +200,6 @@ We welcome contributions to the [rusotp](https://github.com/eendroroy/rusotp) pr
     4. Push to the branch (`git push origin my-new-feature`)
     5. Open a Pull Request
 
-Please make sure your contributions adhere to our [Code of Conduct](http://contributor-covenant.org).
-
 ## License
 
 This project is licensed under the [GNU AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html).
