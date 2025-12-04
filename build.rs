@@ -51,10 +51,4 @@ fn main() {
     // Here, we pass the full path to the shared object with
     // `LDFLAGS`.
     println!("cargo:rustc-env=INLINE_C_RS_LDFLAGS={}/{}", shared_object_dir, lib_name);
-
-    // Optional debug info
-    println!("cargo:warning=Generated C++ header at {:?}", header_path);
-    println!("cargo:warning=Shared object dir: {}", shared_object_dir);
-    println!("cargo:warning=Library name: {}", lib_name);
-    println!("cargo:warning=Target OS: {}", target_os.as_str());
 }
